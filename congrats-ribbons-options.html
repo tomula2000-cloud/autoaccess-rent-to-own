@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transparent Congratulations Ribbons</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f5f5;
+      padding: 24px;
+      color: #111827;
+    }
+
+    .page-title {
+      max-width: 1200px;
+      margin: 0 auto 24px;
+      text-align: center;
+    }
+
+    .page-title h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      margin-bottom: 10px;
+    }
+
+    .page-title p {
+      max-width: 760px;
+      margin: 0 auto;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    .grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .demo {
+      position: relative;
+      height: 420px;
+      overflow: hidden;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(255,255,255,0.95);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .inner h2 {
+      font-size: 28px;
+      line-height: 1.15;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+
+    .inner p {
+      color: #6b7280;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .effect-layer {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .label {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 3;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.82);
+      color: #374151;
+      border: 1px solid rgba(255,255,255,0.95);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+    }
+
+    /* OPTION 1 */
+    .ribbon {
+      position: absolute;
+      top: -60px;
+      width: 8px;
+      height: 90px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.72);
+      box-shadow: 0 0 10px rgba(255,255,255,0.45);
+      animation: fallRibbon linear infinite;
+      transform-origin: center top;
+    }
+
+    @keyframes fallRibbon {
+      0% {
+        transform: translateY(-80px) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateY(520px) rotate(260deg);
+        opacity: 0.1;
+      }
+    }
+
+    /* OPTION 2 */
+    .streamer {
+      position: absolute;
+      top: -80px;
+      width: 4px;
+      height: 130px;
+      border-radius: 999px;
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.05),
+        rgba(255,255,255,0.95),
+        rgba(255,255,255,0.15)
+      );
+      filter: blur(0.3px);
+      animation: luxuryDrop linear infinite;
+    }
+
+    @keyframes luxuryDrop {
+      0% {
+        transform: translateY(-100px) rotate(8deg);
+        opacity: 0;
+      }
+      12% {
+        opacity: 0.95;
+      }
+      100% {
+        transform: translateY(560px) rotate(-18deg);
+        opacity: 0.05;
+      }
+    }
+
+    /* OPTION 3 */
+    .confetti-piece {
+      position: absolute;
+      top: -40px;
+      background: rgba(255,255,255,0.88);
+      animation: confettiFall linear infinite;
+      box-shadow: 0 0 8px rgba(255,255,255,0.25);
+    }
+
+    .confetti-rect {
+      width: 10px;
+      height: 18px;
+      border-radius: 3px;
+    }
+
+    .confetti-circle {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .confetti-line {
+      width: 4px;
+      height: 26px;
+      border-radius: 999px;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-60px) rotate(0deg) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(520px) rotate(380deg) translateX(35px);
+        opacity: 0.08;
+      }
+    }
+
+    /* OPTION 4 */
+    .spark-ribbon {
+      position: absolute;
+      top: -80px;
+      width: 6px;
+      height: 70px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.75);
+      box-shadow:
+        0 0 10px rgba(255,255,255,0.4),
+        0 0 24px rgba(255,255,255,0.2);
+      animation: sparkleFloat linear infinite;
+    }
+
+    .spark-ribbon::before,
+    .spark-ribbon::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.85);
+      box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    .spark-ribbon::before {
+      width: 8px;
+      height: 8px;
+      top: -10px;
+      left: -1px;
+    }
+
+    .spark-ribbon::after {
+      width: 5px;
+      height: 5px;
+      bottom: -8px;
+      right: 0;
+    }
+
+    @keyframes sparkleFloat {
+      0% {
+        transform: translateY(-80px) translateX(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(180px) translateX(12px) rotate(100deg);
+      }
+      100% {
+        transform: translateY(520px) translateX(-10px) rotate(220deg);
+        opacity: 0.05;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .demo {
+        height: 360px;
+      }
+
+      .inner h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-title">
+    <h1>Transparent Congratulations Effects</h1>
+    <p>
+      These are four white transparent ribbon/confetti styles you can place over a congratulations or approval page.
+      All are subtle, clean, and suitable for a premium layout.
+    </p>
+  </div>
+
+  <div class="grid">
+    <section class="demo">
+      <div class="label">Option 1 — Soft Falling Ribbons</div>
+      <div class="effect-layer" id="effect1"></div>
+      <div class="content">
+        <div class="inner">
+          <h2>Congratulations!</h2>
+          <p>Your application has been approved.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="label">Option 2 — Luxury Thin Streamers</div>
+      <div class="effect-layer" id="effect2"></div>
+      <div class="content">
+        <div class="inner">
+          <h2>Approved Successfully</h2>
+          <p>Your next step is now ready.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="label">Option 3 — Celebration Confetti Mix</div>
+      <div class="effect-layer" id="effect3"></div>
+      <div class="content">
+        <div class="inner">
+          <h2>Well Done</h2>
+          <p>Your application outcome is confirmed.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="label">Option 4 — Floating Sparkle Ribbons</div>
+      <div class="effect-layer" id="effect4"></div>
+      <div class="content">
+        <div class="inner">
+          <h2>Congratulations</h2>
+          <p>You have been successfully approved.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function createRibbons(containerId, count) {
+      const container = document.getElementById(containerId);
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("span");
+        el.className = "ribbon";
+        el.style.left = `${random(0, 100)}%`;
+        el.style.height = `${random(60, 110)}px`;
+        el.style.width = `${random(5, 10)}px`;
+        el.style.opacity = random(0.45, 0.95);
+        el.style.animationDuration = `${random(4, 7)}s`;
+        el.style.animationDelay = `${random(0, 4)}s`;
+        container.appendChild(el);
+      }
+    }
+
+    function createStreamers(containerId, count) {
+      const container = document.getElementById(containerId);
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("span");
+        el.className = "streamer";
+        el.style.left = `${random(0, 100)}%`;
+        el.style.height = `${random(90, 160)}px`;
+        el.style.width = `${random(3, 5)}px`;
+        el.style.opacity = random(0.35, 0.95);
+        el.style.animationDuration = `${random(5, 8)}s`;
+        el.style.animationDelay = `${random(0, 5)}s`;
+        container.appendChild(el);
+      }
+    }
+
+    function createConfetti(containerId, count) {
+      const container = document.getElementById(containerId);
+      const types = ["confetti-rect", "confetti-circle", "confetti-line"];
+
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("span");
+        const type = types[Math.floor(Math.random() * types.length)];
+        el.className = `confetti-piece ${type}`;
+        el.style.left = `${random(0, 100)}%`;
+        el.style.opacity = random(0.45, 1);
+        el.style.animationDuration = `${random(3.5, 6.5)}s`;
+        el.style.animationDelay = `${random(0, 4)}s`;
+        container.appendChild(el);
+      }
+    }
+
+    function createSparkRibbons(containerId, count) {
+      const container = document.getElementById(containerId);
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("span");
+        el.className = "spark-ribbon";
+        el.style.left = `${random(0, 100)}%`;
+        el.style.height = `${random(55, 95)}px`;
+        el.style.width = `${random(4, 7)}px`;
+        el.style.opacity = random(0.4, 0.95);
+        el.style.animationDuration = `${random(4.2, 7.2)}s`;
+        el.style.animationDelay = `${random(0, 4)}s`;
+        container.appendChild(el);
+      }
+    }
+
+    createRibbons("effect1", 24);
+    createStreamers("effect2", 20);
+    createConfetti("effect3", 34);
+    createSparkRibbons("effect4", 22);
+  </script>
+</body>
+</html>
