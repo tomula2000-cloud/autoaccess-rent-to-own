@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -168,9 +168,25 @@ const IconUsers = () => (
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  MAIN COMPONENT
+//  LOADING FALLBACK
 // ─────────────────────────────────────────────────────────────────────────────
-export default function HomePage() {
+function HomePageFallback() {
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-[#f4f6fb] text-black">
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-[3px] border-[#eef0f7] border-t-[#2f67de]" />
+          <p className="mt-4 text-[13px] text-[#68708a]">Loading…</p>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  INNER COMPONENT (contains useSearchParams)
+// ─────────────────────────────────────────────────────────────────────────────
+function HomePageContent() {
   // ── Search params — UNCHANGED ──
   const searchParams = useSearchParams();
   const prefilledVehicle = useMemo(
@@ -1340,5 +1356,16 @@ export default function HomePage() {
         </div>
       </div>
     </main>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  EXPORTED WRAPPER (Suspense boundary for useSearchParams)
+// ─────────────────────────────────────────────────────────────────────────────
+export default function HomePage() {
+  return (
+    <Suspense fallback={<HomePageFallback />}>
+      <HomePageContent />
+    </Suspense>
   );
 }

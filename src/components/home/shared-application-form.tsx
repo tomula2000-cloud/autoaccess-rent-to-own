@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 type SubmitState = "idle" | "processing" | "success";
@@ -14,7 +14,26 @@ function digitsOnly(value: string) {
   return value.replace(/\D/g, "");
 }
 
-export default function SharedApplicationForm({
+function SharedApplicationFormFallback({
+  compact = false,
+}: SharedApplicationFormProps) {
+  const shellClass = compact
+    ? "relative rounded-[24px] border border-white/70 bg-white/92 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.10)] backdrop-blur-xl"
+    : "relative rounded-[34px] border border-white bg-white/90 p-6 shadow-[0_18px_55px_rgba(15,23,42,0.10)] backdrop-blur-xl md:p-8";
+
+  return (
+    <section id="application-form" className={shellClass}>
+      <div className="flex min-h-[220px] items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
+          <p className="mt-4 text-sm text-gray-600">Loading application form...</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SharedApplicationFormContent({
   compact = false,
 }: SharedApplicationFormProps) {
   const searchParams = useSearchParams();
@@ -675,5 +694,13 @@ export default function SharedApplicationForm({
         </div>
       ) : null}
     </section>
+  );
+}
+
+export default function SharedApplicationForm(props: SharedApplicationFormProps) {
+  return (
+    <Suspense fallback={<SharedApplicationFormFallback compact={props.compact} />}>
+      <SharedApplicationFormContent {...props} />
+    </Suspense>
   );
 }

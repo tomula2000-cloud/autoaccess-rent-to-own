@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 type SubmitState = "idle" | "processing" | "success";
@@ -10,7 +10,7 @@ function digitsOnly(value: string) {
   return value.replace(/\D/g, "");
 }
 
-export default function HomePage() {
+function ApplyPageContent() {
   const searchParams = useSearchParams();
   const prefilledVehicle = useMemo(
     () => searchParams.get("vehicle") ?? "",
@@ -816,5 +816,30 @@ export default function HomePage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[linear-gradient(135deg,#eef4ff_0%,#f8fbff_40%,#fff8f0_100%)] text-slate-900">
+          <section className="px-4 py-10 md:px-6 md:py-12">
+            <div className="mx-auto max-w-[1240px] rounded-[34px] border border-white/40 bg-white/35 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.18)] backdrop-blur-[18px] md:p-8">
+              <div className="flex min-h-[420px] items-center justify-center rounded-[28px] border border-white/50 bg-white/70 p-8">
+                <div className="text-center">
+                  <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
+                  <p className="mt-4 text-sm font-semibold text-slate-700">
+                    Loading application page...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      }
+    >
+      <ApplyPageContent />
+    </Suspense>
   );
 }
