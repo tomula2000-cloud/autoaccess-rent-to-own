@@ -9,6 +9,20 @@ type PageProps = {
   }>;
 };
 
+type ApplicationDocument = {
+  id: string;
+  fileName: string;
+  documentType: string;
+  createdAt: Date;
+};
+
+type ApplicationStatusLog = {
+  id: string;
+  toStatus: string;
+  note: string | null;
+  createdAt: Date;
+};
+
 function formatStatus(status: string) {
   return status.replaceAll("_", " ");
 }
@@ -198,22 +212,24 @@ export default async function AdminApplicationDetailPage({ params }: PageProps) 
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {application.documents.map((document, index) => (
-                    <div
-                      key={document.id}
-                      className="rounded-xl border border-gray-200 bg-gray-50 p-4"
-                    >
-                      <p className="font-semibold">
-                        File {index + 1}: {document.fileName}
-                      </p>
-                      <p className="mt-1 text-sm text-gray-600">
-                        Type: {formatStatus(document.documentType)}
-                      </p>
-                      <p className="mt-1 text-sm text-gray-500">
-                        Uploaded: {new Date(document.createdAt).toLocaleString()}
-                      </p>
-                    </div>
-                  ))}
+                  {application.documents.map(
+                    (document: ApplicationDocument, index: number) => (
+                      <div
+                        key={document.id}
+                        className="rounded-xl border border-gray-200 bg-gray-50 p-4"
+                      >
+                        <p className="font-semibold">
+                          File {index + 1}: {document.fileName}
+                        </p>
+                        <p className="mt-1 text-sm text-gray-600">
+                          Type: {formatStatus(document.documentType)}
+                        </p>
+                        <p className="mt-1 text-sm text-gray-500">
+                          Uploaded: {new Date(document.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                    )
+                  )}
                 </div>
               )}
             </div>
@@ -227,7 +243,7 @@ export default async function AdminApplicationDetailPage({ params }: PageProps) 
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {application.statusLogs.map((log) => (
+                  {application.statusLogs.map((log: ApplicationStatusLog) => (
                     <div
                       key={log.id}
                       className="rounded-xl border border-gray-200 bg-gray-50 p-4"
