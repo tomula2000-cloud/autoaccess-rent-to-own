@@ -2,8 +2,22 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import VehicleOfferCard from "@/components/vehicle-offer-card";
 
+type GalleryVehicleOffer = {
+  id: string;
+  slug: string;
+  title: string;
+  featuredImage: string;
+  depositAmount: string;
+  monthlyPayment: string;
+  yearModel: string;
+  mileage: string;
+  transmission: string;
+  fuelType: string;
+  status: string;
+};
+
 export default async function GalleryPage() {
-  const vehicles = await prisma.vehicleOffer.findMany({
+  const vehicles: GalleryVehicleOffer[] = await prisma.vehicleOffer.findMany({
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
     select: {
       id: true,
@@ -20,12 +34,10 @@ export default async function GalleryPage() {
     },
   });
 
-  // Purely visual derivation — no logic change
   const vehicleCount = vehicles.length;
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#f4f6fb] text-black">
-      {/* ============== AMBIENT BACKGROUND — matches portal pages ============== */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(47,103,222,0.08),transparent_55%),radial-gradient(circle_at_top_right,rgba(213,151,88,0.06),transparent_50%)]" />
         <div
@@ -40,7 +52,6 @@ export default async function GalleryPage() {
 
       <div className="px-4 py-6 sm:px-6 md:py-10">
         <div className="mx-auto max-w-7xl">
-          {/* ============== PREMIUM HERO ============== */}
           <div className="hidden md:block">
             <section className="relative overflow-hidden rounded-[36px] border border-white/10 bg-gradient-to-br from-[#0b1532] via-[#102046] to-[#1b3375] p-10 shadow-[0_30px_80px_-20px_rgba(11,21,50,0.55)]">
               <div className="absolute inset-0">
@@ -89,7 +100,6 @@ export default async function GalleryPage() {
                   </div>
                 </div>
 
-                {/* Showroom emblem */}
                 <div className="relative flex justify-center lg:justify-end">
                   <div className="relative">
                     <div className="absolute inset-0 rounded-full bg-[#2f67de]/30 blur-2xl" />
@@ -131,7 +141,6 @@ export default async function GalleryPage() {
             </section>
           </div>
 
-          {/* ============== MOBILE HERO (kept simple, unchanged-feel for mobile scope) ============== */}
           <div className="md:hidden text-center">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#2f67de]">
               Auto Access · Showroom
@@ -144,7 +153,6 @@ export default async function GalleryPage() {
             </p>
           </div>
 
-          {/* ============== TRUST STRIP ============== */}
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="group relative overflow-hidden rounded-[22px] border border-[#e1e4ee] bg-white p-5 shadow-[0_6px_18px_-8px_rgba(15,23,42,0.1)] transition hover:border-[#2f67de]/30 hover:shadow-[0_12px_30px_-12px_rgba(47,103,222,0.2)]">
               <div className="absolute right-0 top-0 h-24 w-24 rounded-full bg-gradient-to-br from-[#2f67de]/10 to-transparent blur-2xl" />
@@ -227,10 +235,8 @@ export default async function GalleryPage() {
             </div>
           </div>
 
-          {/* ============== COLLECTION PANEL — card-in-card shell matching portal ============== */}
           <div className="mt-6 overflow-hidden rounded-[30px] border border-[#e1e4ee] bg-white/95 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.18)] backdrop-blur md:p-2">
             <div className="overflow-hidden rounded-[26px] bg-white">
-              {/* Dark navy section header — matches portal panel headers */}
               <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4 sm:px-7 sm:py-5">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
@@ -257,7 +263,6 @@ export default async function GalleryPage() {
                 </div>
               </div>
 
-              {/* Card grid area */}
               <div className="p-5 sm:p-7">
                 {vehicles.length === 0 ? (
                   <div className="rounded-[22px] border-2 border-dashed border-[#d7d9e2] bg-gradient-to-br from-[#fafbff] to-white p-10 text-center sm:p-14">
@@ -277,7 +282,7 @@ export default async function GalleryPage() {
                   </div>
                 ) : (
                   <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-                    {vehicles.map((offer) => (
+                    {vehicles.map((offer: GalleryVehicleOffer) => (
                       <VehicleOfferCard key={offer.id} offer={offer} />
                     ))}
                   </div>
@@ -286,7 +291,6 @@ export default async function GalleryPage() {
             </div>
           </div>
 
-          {/* ============== CLOSING CTA BAND ============== */}
           {vehicles.length > 0 ? (
             <section className="relative mt-6 overflow-hidden rounded-[36px] border border-white/10 bg-gradient-to-br from-[#0b1532] via-[#102046] to-[#1b3375] p-8 shadow-[0_30px_80px_-20px_rgba(11,21,50,0.55)] md:p-10">
               <div className="absolute inset-0">
@@ -344,7 +348,6 @@ export default async function GalleryPage() {
             </section>
           ) : null}
 
-          {/* ============== FOOTER BAND ============== */}
           <footer className="mt-6 overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-gradient-to-r from-[#fafbff] to-white">
             <div className="grid gap-6 p-6 sm:p-8 md:grid-cols-[1.2fr_1fr] md:items-center">
               <div className="flex items-center gap-4">
