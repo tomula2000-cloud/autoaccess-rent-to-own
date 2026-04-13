@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
+type ApplicationDocumentRow = {
+  documentType: string;
+};
+
 const BASE_REQUIRED_TYPES = [
   ["ID_DOCUMENT", "PASSPORT"],
   ["BANK_STATEMENT"],
@@ -74,7 +78,9 @@ export async function POST(request: Request) {
       : EMPLOYED_REQUIRED_TYPES;
 
     const submittedTypes = new Set(
-      application.documents.map((doc) => doc.documentType)
+      application.documents.map(
+        (doc: ApplicationDocumentRow) => doc.documentType
+      )
     );
 
     const allRequiredSubmitted = requiredTypes.every((group) =>
