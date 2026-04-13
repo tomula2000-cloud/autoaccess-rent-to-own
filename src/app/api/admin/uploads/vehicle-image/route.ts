@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../../../auth";
-import { promises as fs } from "fs";
-import path from "path";
+import { put } from "@vercel/blob";
 import crypto from "crypto";
+import path from "path";
 
 export const runtime = "nodejs";
 
 const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 
 function getExtensionFromMimeType(type: string) {
   switch (type) {
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    if (!ALLOWED_TYPES.includes(file.type as (typeof ALLOWED_TYPES)[number])) {
       return NextResponse.json(
         {
           success: false,
@@ -70,9 +70,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
     const extension = getExtensionFromMimeType(file.type);
     const safeBaseName = path
       .basename(file.name, path.extname(file.name))
@@ -84,18 +81,17 @@ export async function POST(request: Request) {
     const uniqueId = crypto.randomBytes(8).toString("hex");
     const fileName = `${Date.now()}-${safeBaseName}-${uniqueId}.${extension}`;
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "vehicles");
-    await fs.mkdir(uploadDir, { recursive: true });
+    const blobPath = `vehicles/${fileName}`;
 
-    const filePath = path.join(uploadDir, fileName);
-    await fs.writeFile(filePath, buffer);
-
-    const publicUrl = `/uploads/vehicles/${fileName}`;
+    const blob = await put(blobPath, file, {
+      access: "private",
+      addRandomSuffix: false,
+    });
 
     return NextResponse.json({
       success: true,
       message: "Image uploaded successfully.",
-      url: publicUrl,
+      url: blob.url,
     });
   } catch (error) {
     console.error("Vehicle image upload failed:", error);
