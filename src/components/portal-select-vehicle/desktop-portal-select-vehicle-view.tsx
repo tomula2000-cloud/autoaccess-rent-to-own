@@ -104,14 +104,14 @@ export default async function DesktopPortalSelectVehicleView() {
     monthlyIncomeValue * MAX_INSTALLMENT_PERCENTAGE
   );
 
-  const vehicles = allVehicles.filter((vehicle) => {
+  const vehicles = allVehicles.filter((vehicle: PageVehicle) => {
     const vehicleMonthly = parseMoney(vehicle.monthlyPayment);
     return vehicleMonthly <= maxAllowedInstallment;
   });
 
   const selectedVehicle =
-    vehicles.find((vehicle) => vehicle.id === application.selectedVehicleId) ||
-    allVehicles.find((vehicle) => vehicle.id === application.selectedVehicleId) ||
+    vehicles.find((vehicle: PageVehicle) => vehicle.id === application.selectedVehicleId) ||
+    allVehicles.find((vehicle: PageVehicle) => vehicle.id === application.selectedVehicleId) ||
     null;
 
   const depositAmount = selectedVehicle
@@ -292,7 +292,7 @@ export default async function DesktopPortalSelectVehicleView() {
                       </p>
                     </div>
                   ) : (
-                    vehicles.map((vehicle) => {
+                    vehicles.map((vehicle: PageVehicle) => {
                       const isSelected =
                         application.selectedVehicleId === vehicle.id;
                       const vehicleDeposit = parseMoney(vehicle.depositAmount);
