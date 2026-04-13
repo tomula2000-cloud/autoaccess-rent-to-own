@@ -2,6 +2,18 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import AdminHeader from "@/components/admin-header";
 
+type AdminVehicleRow = {
+  id: string;
+  title: string;
+  slug: string;
+  featuredImage: string;
+  depositAmount: string;
+  monthlyPayment: string;
+  yearModel: string;
+  status: string;
+  featured: boolean;
+};
+
 function getStatusBadgeClass(status: string) {
   switch (status) {
     case "AVAILABLE":
@@ -20,7 +32,7 @@ function formatStatus(status: string) {
 }
 
 export default async function AdminVehiclesPage() {
-  const vehicles = await prisma.vehicleOffer.findMany({
+  const vehicles: AdminVehicleRow[] = await prisma.vehicleOffer.findMany({
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
     select: {
       id: true,
@@ -74,7 +86,7 @@ export default async function AdminVehiclesPage() {
                 </thead>
 
                 <tbody>
-                  {vehicles.map((vehicle) => (
+                  {vehicles.map((vehicle: AdminVehicleRow) => (
                     <tr
                       key={vehicle.id}
                       className="border-t border-gray-200 align-top"
