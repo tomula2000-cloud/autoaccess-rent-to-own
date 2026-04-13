@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+type PortalLoginApplication = {
+  id: string;
+  referenceNumber: string;
+  email: string;
+  fullName: string;
+};
+
 function normalizeEmail(value: string) {
   return value.trim().toLowerCase();
 }
@@ -9,11 +16,14 @@ function normalizeReference(value: string) {
   return value.replace(/\s+/g, "").trim().toUpperCase();
 }
 
-function setPortalCookies(response: NextResponse, application: {
-  id: string;
-  referenceNumber: string;
-  email: string;
-}) {
+function setPortalCookies(
+  response: NextResponse,
+  application: {
+    id: string;
+    referenceNumber: string;
+    email: string;
+  }
+) {
   const isProduction = process.env.NODE_ENV === "production";
 
   const cookieOptions = {
@@ -75,28 +85,36 @@ export async function POST(request: Request) {
       }
 
       return NextResponse.redirect(
-        new URL("/portal-login?error=Email%20and%20reference%20number%20are%20required.", request.url)
+        new URL(
+          "/portal-login?error=Email%20and%20reference%20number%20are%20required.",
+          request.url
+        )
       );
     }
 
-    const applications = await prisma.application.findMany({
-      select: {
-        id: true,
-        referenceNumber: true,
-        email: true,
-        fullName: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const applications: PortalLoginApplication[] =
+      await prisma.application.findMany({
+        select: {
+          id: true,
+          referenceNumber: true,
+          email: true,
+          fullName: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
 
-    const matchedApplication = applications.find((application) => {
-      const appEmail = normalizeEmail(application.email || "");
-      const appReference = normalizeReference(application.referenceNumber || "");
+    const matchedApplication = applications.find(
+      (application: PortalLoginApplication) => {
+        const appEmail = normalizeEmail(application.email || "");
+        const appReference = normalizeReference(
+          application.referenceNumber || ""
+        );
 
-      return appEmail === email && appReference === referenceNumber;
-    });
+        return appEmail === email && appReference === referenceNumber;
+      }
+    );
 
     if (!matchedApplication) {
       if (contentType.includes("application/json")) {
@@ -110,7 +128,10 @@ export async function POST(request: Request) {
       }
 
       return NextResponse.redirect(
-        new URL("/portal-login?error=Invalid%20email%20or%20reference%20number.", request.url)
+        new URL(
+          "/portal-login?error=Invalid%20email%20or%20reference%20number.",
+          request.url
+        )
       );
     }
 
@@ -143,7 +164,10 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.redirect(
-      new URL("/portal-login?error=Something%20went%20wrong%20during%20portal%20login.", request.url)
+      new URL(
+        "/portal-login?error=Something%20went%20wrong%20during%20portal%20login.",
+        request.url
+      )
     );
   }
 }
