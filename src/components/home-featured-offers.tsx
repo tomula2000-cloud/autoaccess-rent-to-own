@@ -1,25 +1,22 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
-function formatStatus(status: string) {
-  return status.replaceAll("_", " ");
-}
-
-function getStatusBadgeClass(status: string) {
-  switch (status) {
-    case "AVAILABLE":
-      return "border-green-200 bg-green-50 text-green-800";
-    case "UNDER_OFFER":
-      return "border-orange-200 bg-orange-50 text-orange-800";
-    case "SOLD":
-      return "border-red-200 bg-red-50 text-red-800";
-    default:
-      return "border-gray-200 bg-gray-50 text-gray-800";
-  }
-}
+type FeaturedOffer = {
+  id: string;
+  slug: string;
+  title: string;
+  featuredImage: string;
+  depositAmount: string;
+  monthlyPayment: string;
+  yearModel: string;
+  mileage: string;
+  transmission: string;
+  fuelType: string;
+  status: string;
+};
 
 export default async function HomeFeaturedOffers() {
-  const featuredOffers = await prisma.vehicleOffer.findMany({
+  const featuredOffers: FeaturedOffer[] = await prisma.vehicleOffer.findMany({
     where: {
       featured: true,
     },
@@ -32,8 +29,10 @@ export default async function HomeFeaturedOffers() {
       featuredImage: true,
       depositAmount: true,
       monthlyPayment: true,
-      term: true,
       yearModel: true,
+      mileage: true,
+      transmission: true,
+      fuelType: true,
       status: true,
     },
   });
@@ -43,109 +42,92 @@ export default async function HomeFeaturedOffers() {
   }
 
   return (
-    <section className="bg-white px-6 py-20 text-black">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <section className="py-16">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-orange-500">
-              Latest Rent To Own Offers
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-500">
+              Featured Offers
             </p>
-            <h2 className="mt-3 text-4xl font-bold md:text-5xl">
-              Featured vehicle opportunities
+            <h2 className="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
+              Selected vehicle opportunities
             </h2>
-            <p className="mt-4 max-w-3xl text-lg leading-8 text-gray-600">
-              Explore our latest rent-to-own offers with structured deposits,
-              monthly payment options, and carefully presented vehicle details.
-            </p>
           </div>
 
           <Link
             href="/gallery"
-            className="inline-flex rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
+            className="inline-flex rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:border-blue-600 hover:text-blue-600"
           >
-            View More
+            View all vehicles
           </Link>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
-          {featuredOffers.map((offer) => (
+          {featuredOffers.map((offer: FeaturedOffer) => (
             <article
               key={offer.id}
-              className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+              className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
             >
-              <Link href={`/gallery/${offer.slug}`} className="block">
-                <div className="relative">
-                  <img
-                    src={offer.featuredImage}
-                    alt={offer.title}
-                    className="h-72 w-full object-cover"
-                  />
-                  <div className="absolute left-4 top-4 rounded-full bg-black/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white">
-                    Featured Offer
-                  </div>
+              <div className="relative h-64 overflow-hidden">
+                <img
+                  src={offer.featuredImage}
+                  alt={offer.title}
+                  className="h-full w-full object-cover"
+                />
+              </div>
 
-                  <div className="absolute right-4 top-4">
-                    <span
-                      className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getStatusBadgeClass(
-                        offer.status
-                      )}`}
-                    >
-                      {formatStatus(offer.status)}
+              <div className="p-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-500">
+                  {offer.yearModel}
+                </p>
+
+                <h3 className="mt-2 text-2xl font-bold text-gray-900">
+                  {offer.title}
+                </h3>
+
+                <div className="mt-4 grid gap-3 text-sm text-gray-600 sm:grid-cols-2">
+                  <div>
+                    <span className="font-semibold text-gray-900">Mileage:</span>{" "}
+                    {offer.mileage}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-900">
+                      Transmission:
+                    </span>{" "}
+                    {offer.transmission}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-900">Fuel:</span>{" "}
+                    {offer.fuelType}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-900">Status:</span>{" "}
+                    {offer.status}
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-3 rounded-2xl bg-gray-50 p-4 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Deposit</span>
+                    <span className="font-bold text-gray-900">
+                      {offer.depositAmount}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Monthly</span>
+                    <span className="font-bold text-blue-700">
+                      {offer.monthlyPayment}
                     </span>
                   </div>
                 </div>
-              </Link>
 
-              <div className="p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    {offer.title}
-                  </h3>
-
+                <div className="mt-6">
                   <Link
                     href={`/gallery/${offer.slug}`}
-                    className="shrink-0 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800"
+                    className="inline-flex w-full justify-center rounded-full bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
                   >
-                    View
+                    View vehicle
                   </Link>
-                </div>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-blue-700">
-                      Deposit
-                    </p>
-                    <p className="mt-2 text-lg font-bold text-blue-900">
-                      {offer.depositAmount}
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700">
-                      Monthly
-                    </p>
-                    <p className="mt-2 text-lg font-bold text-emerald-900">
-                      {offer.monthlyPayment}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-gray-500">
-                      Term
-                    </p>
-                    <p className="mt-2 font-semibold text-gray-900">{offer.term}</p>
-                  </div>
-
-                  <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-gray-500">
-                      Year Model
-                    </p>
-                    <p className="mt-2 font-semibold text-gray-900">
-                      {offer.yearModel}
-                    </p>
-                  </div>
                 </div>
               </div>
             </article>
