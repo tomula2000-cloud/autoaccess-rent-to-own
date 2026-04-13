@@ -13,6 +13,21 @@ type PageProps = {
   }>;
 };
 
+type ApplicationDocument = {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  documentType: string;
+  createdAt: Date;
+};
+
+type ApplicationStatusLog = {
+  id: string;
+  toStatus: string;
+  note: string | null;
+  createdAt: Date;
+};
+
 function formatStatus(status: string) {
   return status.replaceAll("_", " ");
 }
@@ -24,10 +39,7 @@ function formatIdentityType(value: string | null) {
   return value;
 }
 
-function getApprovalDisplay(
-  status: string,
-  approvalValidUntil: Date | null
-) {
+function getApprovalDisplay(status: string, approvalValidUntil: Date | null) {
   if (status !== "APPROVED_IN_PRINCIPLE") {
     return "Approval validity not active for current status.";
   }
@@ -95,6 +107,7 @@ This agreement forms the full agreement between the parties unless amended in wr
 
 11. ACKNOWLEDGEMENT
 The rentee confirms that they have read, understood, and accepted the agreement and the financial obligations recorded in this contract snapshot.`;
+
 export default async function AdminApplicationDetailPage({
   params,
   searchParams,
@@ -348,7 +361,9 @@ export default async function AdminApplicationDetailPage({
 
                 <div>
                   <p className="text-sm text-gray-500">Monthly Income</p>
-                  <p className="mt-1 font-semibold">{application.monthlyIncome}</p>
+                  <p className="mt-1 font-semibold">
+                    {application.monthlyIncome}
+                  </p>
                 </div>
 
                 <div>
@@ -408,7 +423,9 @@ export default async function AdminApplicationDetailPage({
 
                     <div>
                       <p className="text-sm text-gray-500">Mileage</p>
-                      <p className="mt-1 font-semibold">{selectedVehicle.mileage}</p>
+                      <p className="mt-1 font-semibold">
+                        {selectedVehicle.mileage}
+                      </p>
                     </div>
 
                     <div>
@@ -420,7 +437,9 @@ export default async function AdminApplicationDetailPage({
 
                     <div>
                       <p className="text-sm text-gray-500">Fuel Type</p>
-                      <p className="mt-1 font-semibold">{selectedVehicle.fuelType}</p>
+                      <p className="mt-1 font-semibold">
+                        {selectedVehicle.fuelType}
+                      </p>
                     </div>
 
                     <div>
@@ -827,7 +846,8 @@ export default async function AdminApplicationDetailPage({
 
                 <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
                   <div className="space-y-4">
-                    {(application.contractVehicleImage || selectedVehicle?.featuredImage) ? (
+                    {application.contractVehicleImage ||
+                    selectedVehicle?.featuredImage ? (
                       <div className="overflow-hidden rounded-2xl border border-indigo-100 bg-white">
                         <img
                           src={
@@ -1003,7 +1023,8 @@ export default async function AdminApplicationDetailPage({
 
                       <div className="mt-4 max-h-[480px] overflow-y-auto rounded-xl border border-gray-200 bg-gray-50 p-4">
                         <pre className="whitespace-pre-wrap text-sm leading-6 text-gray-800">
-                          {application.contractTerms || "No contract terms saved yet."}
+                          {application.contractTerms ||
+                            "No contract terms saved yet."}
                         </pre>
                       </div>
                     </div>
@@ -1041,30 +1062,33 @@ export default async function AdminApplicationDetailPage({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {application.documents.map((document, index) => (
-                    <div
-                      key={document.id}
-                      className="rounded-xl border border-gray-200 bg-gray-50 p-4"
-                    >
-                      <p className="font-semibold">
-                        File {index + 1}: {document.fileName}
-                      </p>
-                      <p className="mt-1 text-sm text-gray-600">
-                        Type: {formatStatus(document.documentType)}
-                      </p>
-                      <p className="mt-1 text-sm text-gray-500">
-                        Uploaded: {new Date(document.createdAt).toLocaleString()}
-                      </p>
-                      <a
-                        href={document.fileUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-3 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                  {application.documents.map(
+                    (document: ApplicationDocument, index: number) => (
+                      <div
+                        key={document.id}
+                        className="rounded-xl border border-gray-200 bg-gray-50 p-4"
                       >
-                        Open File
-                      </a>
-                    </div>
-                  ))}
+                        <p className="font-semibold">
+                          File {index + 1}: {document.fileName}
+                        </p>
+                        <p className="mt-1 text-sm text-gray-600">
+                          Type: {formatStatus(document.documentType)}
+                        </p>
+                        <p className="mt-1 text-sm text-gray-500">
+                          Uploaded:{" "}
+                          {new Date(document.createdAt).toLocaleString()}
+                        </p>
+                        <a
+                          href={document.fileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-3 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                        >
+                          Open File
+                        </a>
+                      </div>
+                    )
+                  )}
                 </div>
               )}
             </div>
@@ -1078,12 +1102,14 @@ export default async function AdminApplicationDetailPage({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {application.statusLogs.map((log) => (
+                  {application.statusLogs.map((log: ApplicationStatusLog) => (
                     <div
                       key={log.id}
                       className="rounded-xl border border-gray-200 bg-gray-50 p-4"
                     >
-                      <p className="font-semibold">{formatStatus(log.toStatus)}</p>
+                      <p className="font-semibold">
+                        {formatStatus(log.toStatus)}
+                      </p>
                       <p className="mt-1 text-sm text-gray-600">
                         {log.note || "Status updated."}
                       </p>
