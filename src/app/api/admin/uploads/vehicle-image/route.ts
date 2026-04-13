@@ -40,6 +40,18 @@ export async function POST(request: Request) {
       );
     }
 
+    const token = process.env.VEHICLE_IMAGES_READ_WRITE_TOKEN;
+
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Vehicle image Blob token is missing.",
+        },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("file");
 
@@ -80,12 +92,12 @@ export async function POST(request: Request) {
 
     const uniqueId = crypto.randomBytes(8).toString("hex");
     const fileName = `${Date.now()}-${safeBaseName}-${uniqueId}.${extension}`;
-
     const blobPath = `vehicles/${fileName}`;
 
     const blob = await put(blobPath, file, {
-      access: "private",
+      access: "public",
       addRandomSuffix: false,
+      token,
     });
 
     return NextResponse.json({
