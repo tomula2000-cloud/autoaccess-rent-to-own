@@ -11,6 +11,21 @@ type PageProps = {
   }>;
 };
 
+type AdminApplicationRow = {
+  id: string;
+  referenceNumber: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  identityType: string | null;
+  identityNumber: string | null;
+  employmentStatus: string;
+  monthlyIncome: string;
+  preferredVehicle: string;
+  status: string;
+  createdAt: Date;
+};
+
 const STATUS_OPTIONS = [
   "ALL",
   "APPLICATION_RECEIVED",
@@ -85,7 +100,7 @@ function getStatusBadgeClass(status: string) {
 }
 
 function getSummaryCount(
-  applications: Array<{ status: string }>,
+  applications: AdminApplicationRow[],
   statuses: string[]
 ) {
   return applications.filter((item) => statuses.includes(item.status)).length;
@@ -113,47 +128,50 @@ export default async function AdminPage({ searchParams }: PageProps) {
   const activeStatus = params.status || "ALL";
   const searchQuery = (params.q || "").trim();
 
-  const allApplications = await prisma.application.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-    select: {
-      id: true,
-      referenceNumber: true,
-      fullName: true,
-      email: true,
-      phone: true,
-      identityType: true,
-      identityNumber: true,
-      employmentStatus: true,
-      monthlyIncome: true,
-      preferredVehicle: true,
-      status: true,
-      createdAt: true,
-    },
-  });
+  const allApplications: AdminApplicationRow[] =
+    await prisma.application.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        referenceNumber: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        identityType: true,
+        identityNumber: true,
+        employmentStatus: true,
+        monthlyIncome: true,
+        preferredVehicle: true,
+        status: true,
+        createdAt: true,
+      },
+    });
 
-  const applications = allApplications.filter((application) => {
-    const matchesStatus =
-      activeStatus === "ALL" ? true : application.status === activeStatus;
+  const applications = allApplications.filter(
+    (application: AdminApplicationRow) => {
+      const matchesStatus =
+        activeStatus === "ALL" ? true : application.status === activeStatus;
 
-    const haystack = [
-      application.referenceNumber,
-      application.fullName,
-      application.email,
-      application.phone,
-      application.identityNumber || "",
-      application.preferredVehicle,
-    ]
-      .join(" ")
-      .toLowerCase();
+      const haystack = [
+        application.referenceNumber,
+        application.fullName,
+        application.email,
+        application.phone,
+        application.identityNumber || "",
+        application.preferredVehicle,
+      ]
+        .join(" ")
+        .toLowerCase();
 
-    const matchesSearch = searchQuery
-      ? haystack.includes(searchQuery.toLowerCase())
-      : true;
+      const matchesSearch = searchQuery
+        ? haystack.includes(searchQuery.toLowerCase())
+        : true;
 
-    return matchesStatus && matchesSearch;
-  });
+      return matchesStatus && matchesSearch;
+    }
+  );
 
   const totalCount = allApplications.length;
   const docsCount = getSummaryCount(allApplications, [
@@ -333,7 +351,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
                 </thead>
 
                 <tbody>
-                  {applications.map((application) => (
+                  {applications.map((application: AdminApplicationRow) => (
                     <tr
                       key={application.id}
                       className="border-t border-gray-200 align-top"
