@@ -3,6 +3,13 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
+type DocumentItem = {
+  id: string;
+  fileName: string;
+  documentType: string;
+  createdAt: Date | string;
+};
+
 function formatStatus(status: string) {
   return status.replaceAll("_", " ");
 }
@@ -72,7 +79,7 @@ export default async function PortalDocumentsPage({ searchParams }: PageProps) {
     application.employmentStatus === "BUSINESS_OWNER";
 
   const submittedTypes = new Set(
-    application.documents.map((doc) => doc.documentType)
+    application.documents.map((doc: DocumentItem) => doc.documentType)
   );
 
   const requiredDocs: RequiredDocItem[] = [
@@ -136,7 +143,7 @@ export default async function PortalDocumentsPage({ searchParams }: PageProps) {
   const documentsStageLockedStatuses = new Set([
     "APPROVED_IN_PRINCIPLE",
     "AWAITING_INVOICE",
-    "INVOICE_ISSUED",,
+    "INVOICE_ISSUED",
     "AWAITING_PAYMENT",
     "PAYMENT_UNDER_VERIFICATION",
     "PAYMENT_CONFIRMED",
@@ -1166,7 +1173,7 @@ export default async function PortalDocumentsPage({ searchParams }: PageProps) {
                           </p>
                         </div>
                         <div className="mt-3 flex flex-wrap gap-2">
-                          {application.documents.map((document) => (
+                          {application.documents.map((document: DocumentItem) => (
                             <span
                               key={document.id}
                               className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700"
