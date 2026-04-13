@@ -84,7 +84,7 @@ export async function POST(request: Request) {
       const uniqueName = `${application.id}/${Date.now()}-${crypto.randomUUID()}-${originalName}`;
 
       const blob = await put(uniqueName, file, {
-        access: "public",
+        access: "private",
         addRandomSuffix: false,
       });
 
