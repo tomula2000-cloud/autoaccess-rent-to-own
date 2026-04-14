@@ -3,13 +3,6 @@ import { PrismaClient } from "@prisma/client";
 
 const connectionString = process.env.DATABASE_URL;
 
-console.log(
-  "[PRISMA RUNTIME CHECK]",
-  connectionString
-    ? connectionString.replace(/:\/\/([^:]+):([^@]+)@/, "://$1:****@")
-    : "DATABASE_URL missing"
-);
-
 if (!connectionString) {
   throw new Error("DATABASE_URL is not set");
 }

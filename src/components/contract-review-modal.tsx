@@ -399,7 +399,7 @@ export default function ContractReviewModal({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group inline-flex w-full items-center justify-center gap-2.5 rounded-2xl border border-[#1b2345] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-6 py-4 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(27,35,69,0.55)] transition hover:from-[#2a3563] hover:to-[#3b4a82] hover:shadow-[0_16px_36px_-10px_rgba(27,35,69,0.7)]"
+        className="group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-6 py-4 text-sm font-bold text-white shadow-[0_14px_30px_-10px_rgba(213,151,88,0.55)] transition hover:from-[#c4863f] hover:to-[#d59758]"
       >
         <svg
           className="h-5 w-5 transition group-hover:scale-105"

@@ -263,7 +263,7 @@ export default async function DesktopPortalSelectVehicleView() {
               </div>
             </div>
 
-            <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+            <div className="grid gap-6 xl:grid-cols-[1.12fr_0.88fr]">
               <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
                 <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4 sm:px-6">
                   <div className="flex items-center justify-between gap-3">
@@ -281,7 +281,7 @@ export default async function DesktopPortalSelectVehicleView() {
                   </div>
                 </div>
 
-                <div className="grid gap-4 p-5 sm:p-6">
+                <div className="grid gap-3 p-4 sm:p-5">
                   {vehicles.length === 0 ? (
                     <div className="rounded-[20px] border-2 border-dashed border-[#d7d9e2] bg-gradient-to-br from-[#fafbff] to-white p-8 text-center">
                       <p className="text-base font-semibold text-[#1b2345]">
@@ -304,79 +304,85 @@ export default async function DesktopPortalSelectVehicleView() {
                           key={vehicle.id}
                           action="/api/portal/select-vehicle"
                           method="POST"
-                          className={`overflow-hidden rounded-[22px] border transition ${
+                          className={`overflow-hidden rounded-[20px] border transition ${
                             isSelected
                               ? "border-emerald-300 bg-emerald-50/40 shadow-[0_12px_28px_-14px_rgba(16,185,129,0.35)]"
-                              : "border-[#e1e4ee] bg-white hover:border-[#2f67de]/30 hover:shadow-[0_12px_28px_-14px_rgba(47,103,222,0.2)]"
+                              : "border-[#e1e4ee] bg-white hover:border-[#2f67de]/30 hover:shadow-[0_12px_28px_-14px_rgba(47,103,222,0.18)]"
                           }`}
                         >
                           <input type="hidden" name="vehicleId" value={vehicle.id} />
 
-                          <div className="grid gap-4 p-4 lg:grid-cols-[180px_1fr_auto] lg:items-center">
-                            <div className="overflow-hidden rounded-[18px] bg-[#f4f6fb]">
+                          <div className="grid gap-3 p-3 lg:grid-cols-[140px_1fr_auto] lg:items-center">
+                            <div className="overflow-hidden rounded-[16px] bg-[#f4f6fb]">
                               <img
                                 src={vehicle.featuredImage}
                                 alt={vehicle.title}
-                                className="h-[130px] w-full object-cover"
+                                className="h-[104px] w-full object-cover"
                               />
                             </div>
 
                             <div className="min-w-0">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="rounded-full border border-[#dbe6ff] bg-[#eef4ff] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#2f67de]">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="rounded-full border border-[#dbe6ff] bg-[#eef4ff] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[#2f67de]">
                                   {vehicle.yearModel}
                                 </span>
+                                <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-700">
+                                  {vehicle.transmission}
+                                </span>
+                                <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-700">
+                                  {vehicle.fuelType}
+                                </span>
                                 {isSelected ? (
-                                  <span className="rounded-full border border-emerald-200 bg-emerald-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">
+                                  <span className="rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-emerald-700">
                                     Selected
                                   </span>
                                 ) : null}
                               </div>
 
-                              <h3 className="mt-3 text-[1.15rem] font-semibold text-[#1b2345]">
+                              <h3 className="mt-2 line-clamp-2 text-[1rem] font-semibold leading-5 text-[#1b2345]">
                                 {vehicle.title}
                               </h3>
 
-                              <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                                <div className="rounded-xl border border-[#e7eaf2] bg-[#fafbff] px-3 py-3">
-                                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
+                              <div className="mt-2 grid grid-cols-3 gap-2">
+                                <div className="rounded-[12px] border border-[#e7eaf2] bg-[#fafbff] px-2.5 py-2">
+                                  <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                                     Deposit
                                   </p>
-                                  <p className="mt-1 text-sm font-semibold text-[#1b2345]">
+                                  <p className="mt-1 text-[11px] font-semibold leading-4 text-[#1b2345]">
                                     {vehicle.depositAmount}
                                   </p>
                                 </div>
 
-                                <div className="rounded-xl border border-[#e7eaf2] bg-[#fafbff] px-3 py-3">
-                                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
+                                <div className="rounded-[12px] border border-[#e7eaf2] bg-[#fafbff] px-2.5 py-2">
+                                  <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                                     Monthly
                                   </p>
-                                  <p className="mt-1 text-sm font-semibold text-[#1b2345]">
+                                  <p className="mt-1 text-[11px] font-semibold leading-4 text-[#1b2345]">
                                     {vehicle.monthlyPayment}
                                   </p>
                                 </div>
 
-                                <div className="rounded-xl border border-[#e7eaf2] bg-[#fafbff] px-3 py-3">
-                                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
+                                <div className="rounded-[12px] border border-[#e7eaf2] bg-[#fafbff] px-2.5 py-2">
+                                  <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                                     Required Now
                                   </p>
-                                  <p className="mt-1 text-sm font-semibold text-[#1b2345]">
+                                  <p className="mt-1 text-[11px] font-semibold leading-4 text-[#1b2345]">
                                     {formatCurrency(vehicleRequiredNow)}
                                   </p>
                                 </div>
                               </div>
                             </div>
 
-                            <div className="flex items-center">
+                            <div className="flex items-center lg:justify-end">
                               <button
                                 type="submit"
-                                className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition lg:w-auto ${
+                                className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-semibold transition lg:w-auto lg:min-w-[138px] ${
                                   isSelected
                                     ? "bg-emerald-600 text-white hover:bg-emerald-700"
                                     : "bg-gradient-to-r from-[#2f67de] to-[#3f78ea] text-white hover:from-[#2559c6] hover:to-[#3568d6]"
                                 }`}
                               >
-                                {isSelected ? "Selected Vehicle" : "Select Vehicle"}
+                                {isSelected ? "Selected" : "Select Vehicle"}
                               </button>
                             </div>
                           </div>
@@ -417,7 +423,7 @@ export default async function DesktopPortalSelectVehicleView() {
                             <img
                               src={selectedVehicle.featuredImage}
                               alt={selectedVehicle.title}
-                              className="h-[220px] w-full object-cover"
+                              className="h-[200px] w-full object-cover"
                             />
                           </div>
                           <div className="p-4">
@@ -427,14 +433,14 @@ export default async function DesktopPortalSelectVehicleView() {
                             <p className="mt-2 text-base font-semibold text-[#1b2345]">
                               {selectedVehicle.title}
                             </p>
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              <span className="rounded-full border border-[#dbe6ff] bg-[#eef4ff] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#2f67de]">
+                            <div className="mt-3 flex flex-wrap gap-1.5">
+                              <span className="rounded-full border border-[#dbe6ff] bg-[#eef4ff] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[#2f67de]">
                                 {selectedVehicle.yearModel}
                               </span>
-                              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">
+                              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-700">
                                 {selectedVehicle.transmission}
                               </span>
-                              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">
+                              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-700">
                                 {selectedVehicle.fuelType}
                               </span>
                             </div>

@@ -409,6 +409,13 @@ export default async function ClientPortalPage() {
       contractClientIdentityNumber: true,
       contractClientAddress: true,
       contractTerms: true,
+      clientBankName: true,
+      clientAccountHolder: true,
+      clientAccountNumber: true,
+      clientAccountType: true,
+      clientBranchCode: true,
+      clientBankSubmittedAt: true,
+      clientBankConfirmed: true,
       documents: {
         orderBy: {
           createdAt: "desc",
@@ -1286,14 +1293,98 @@ export default async function ClientPortalPage() {
                 <div className="overflow-hidden rounded-[24px] border border-[#f1dfd1] bg-gradient-to-br from-[#fffaf5] via-white to-[#fbf2ea] shadow-[0_8px_24px_-12px_rgba(213,151,88,0.15)]">
                   <div className="border-b border-[#f1dfd1] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4 sm:px-6"><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Next Milestone</p><h2 className="text-[1.05rem] font-semibold text-white sm:text-[1.15rem]">Awaiting Invoice Release</h2></div>
                   <div className="p-5 sm:p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#d59758] to-[#c37d43] text-white shadow-[0_10px_24px_-8px_rgba(213,151,88,0.45)]"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg></div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c37d43]">Pending Admin Action</p>
-                        <p className="mt-2 text-sm leading-6 text-[#39425d]">Your contract acceptance has been completed. Our team is now preparing your invoice. Once the invoice is released, further payment instructions and details will appear in your portal.</p>
-                        <p className="mt-3 text-sm leading-6 text-[#39425d]">No further action is required from you at this stage. Please continue checking your portal for the next update.</p>
+                    {application.clientBankSubmittedAt ? (
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-4 rounded-[18px] border border-[#dbe6ff] bg-[#eef4ff] p-4">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#2f67de] to-[#3f78ea] text-white">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#2f67de]">Banking Details Submitted</p>
+                            <p className="mt-2 text-sm leading-6 text-[#39425d]">Your banking details have been received and are under admin review. Your invoice will be issued once verified.</p>
+                          </div>
+                        </div>
+                        <div className="overflow-hidden rounded-[18px] border border-[#e7eaf2] bg-white">
+                          <div className="border-b border-[#eef0f7] px-5 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">Submitted Banking Details</p></div>
+                          <div className="divide-y divide-[#f0f2f8] p-2">
+                            <div className="flex items-center justify-between px-3 py-2.5"><span className="text-sm text-[#68708a]">Bank</span><span className="text-sm font-semibold text-[#1b2345]">{application.clientBankName}</span></div>
+                            <div className="flex items-center justify-between px-3 py-2.5"><span className="text-sm text-[#68708a]">Account Holder</span><span className="text-sm font-semibold text-[#1b2345]">{application.clientAccountHolder}</span></div>
+                            <div className="flex items-center justify-between px-3 py-2.5"><span className="text-sm text-[#68708a]">Account Number</span><span className="font-mono text-sm font-semibold text-[#1b2345]">{application.clientAccountNumber}</span></div>
+                            <div className="flex items-center justify-between px-3 py-2.5"><span className="text-sm text-[#68708a]">Account Type</span><span className="text-sm font-semibold text-[#1b2345]">{application.clientAccountType}</span></div>
+                            <div className="flex items-center justify-between px-3 py-2.5"><span className="text-sm text-[#68708a]">Branch Code</span><span className="font-mono text-sm font-semibold text-[#1b2345]">{application.clientBranchCode}</span></div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="space-y-5">
+                        <div className="flex items-start gap-4 rounded-[18px] border border-emerald-200 bg-emerald-50 p-4">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">Contract Accepted</p>
+                            <p className="mt-2 text-sm leading-6 text-[#39425d]">Your contract has been accepted. Please submit your banking details below so our team can verify and issue your invoice promptly.</p>
+                          </div>
+                        </div>
+                        <div className="overflow-hidden rounded-[18px] border border-[#e1e4ee] bg-white">
+                          <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4"><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Banking Details</p><h3 className="text-[1rem] font-semibold text-white">Submit Your Payment Account</h3></div>
+                          <form action="/api/portal/submit-banking" method="POST" className="space-y-5 p-5 sm:p-6">
+                            <div className="grid gap-5 sm:grid-cols-2">
+                              <div>
+                                <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-[#68708a]">Select Your Bank</label>
+                                <div className="relative">
+                                  <select name="clientBankName" required className="w-full appearance-none rounded-2xl border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10">
+                                    <option value="">-- Select your bank --</option>
+                                    <option value="ABSA Bank">ABSA Bank</option>
+                                    <option value="Capitec Bank">Capitec Bank</option>
+                                    <option value="First National Bank (FNB)">First National Bank (FNB)</option>
+                                    <option value="Nedbank">Nedbank</option>
+                                    <option value="Standard Bank">Standard Bank</option>
+                                    <option value="African Bank">African Bank</option>
+                                    <option value="Bidvest Bank">Bidvest Bank</option>
+                                    <option value="Discovery Bank">Discovery Bank</option>
+                                    <option value="Investec Bank">Investec Bank</option>
+                                    <option value="TymeBank">TymeBank</option>
+                                    <option value="Ubank">Ubank</option>
+                                    <option value="Other">Other</option>
+                                  </select>
+                                  <svg className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#68708a]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-[#68708a]">Account Type</label>
+                                <div className="relative">
+                                  <select name="clientAccountType" required className="w-full appearance-none rounded-2xl border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10">
+                                    <option value="">-- Select account type --</option>
+                                    <option value="Cheque Account">Cheque Account</option>
+                                    <option value="Savings Account">Savings Account</option>
+                                    <option value="Transmission Account">Transmission Account</option>
+                                  </select>
+                                  <svg className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#68708a]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-[#68708a]">Account Holder Name</label>
+                                <input type="text" name="clientAccountHolder" required placeholder="Full name as on bank account" className="w-full rounded-2xl border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10" />
+                              </div>
+                              <div>
+                                <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-[#68708a]">Account Number</label>
+                                <input type="text" name="clientAccountNumber" required placeholder="Enter account number" inputMode="numeric" className="w-full rounded-2xl border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10" />
+                              </div>
+                              <div className="sm:col-span-2">
+                                <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-[#68708a]">Branch Code</label>
+                                <input type="text" name="clientBranchCode" required placeholder="Enter branch code" inputMode="numeric" className="w-full rounded-2xl border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10" />
+                              </div>
+                            </div>
+                            <div className="rounded-[18px] border border-amber-200 bg-amber-50 p-4">
+                              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">Important Notice</p>
+                              <p className="mt-2 text-sm leading-6 text-amber-900">Payment must be made exclusively from the bank account submitted above. Any payment received from a different account will not be processed and may result in significant delays to your application.</p>
+                            </div>
+                            <button type="submit" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(47,103,222,0.45)] transition hover:from-[#2559c6] hover:to-[#3568d6]">Submit Banking Details</button>
+                          </form>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1346,6 +1437,58 @@ export default async function ClientPortalPage() {
                       </div>
                       <div className="rounded-[18px] border-l-4 border-[#2f67de] bg-gradient-to-r from-[#eef4ff] to-white p-4"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#2f67de]">Proof of Payment Guidance</p><p className="mt-2 text-sm leading-6 text-[#39425d]">Once payment has been made, keep your proof of payment ready for the verification stage. Upload or submission handling can be completed in the next build step if not yet enabled in this portal.</p></div>
                       <div className="rounded-[18px] border border-[#f1dfd1] bg-[#fbf2ea] px-4 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c37d43]">Current Status</p><p className="mt-1 text-sm font-semibold text-[#1b2345]">Awaiting your payment</p></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid gap-5 xl:grid-cols-2">
+                  <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+                    <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4 sm:px-6"><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Payment Details</p><h2 className="text-[1.05rem] font-semibold text-white sm:text-[1.15rem]">Auto Access Banking Information</h2></div>
+                    <div className="p-5 sm:p-6 space-y-4">
+                      <div className="overflow-hidden rounded-[18px] border border-[#e7eaf2] bg-white">
+                        <div className="divide-y divide-[#f0f2f8]">
+                          <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Bank</span><span className="text-sm font-semibold text-[#1b2345]">First National Bank (FNB)</span></div>
+                          <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Name</span><span className="text-sm font-semibold text-[#1b2345]">Auto Access (Pty) Ltd</span></div>
+                          <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Number</span><span className="font-mono text-sm font-bold text-[#1b2345]">XXXXXXXXXX</span></div>
+                          <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Branch Code</span><span className="font-mono text-sm font-bold text-[#1b2345]">250655</span></div>
+                          <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Type</span><span className="text-sm font-semibold text-[#1b2345]">Cheque Account</span></div>
+                          <div className="flex items-center justify-between bg-[#eef4ff] px-5 py-3"><span className="text-sm font-bold text-[#2f67de]">Payment Reference</span><span className="font-mono text-sm font-bold text-[#2f67de]">{application.referenceNumber}</span></div>
+                        </div>
+                      </div>
+                      {application.clientBankName ? (
+                        <div className="overflow-hidden rounded-[18px] border border-emerald-200 bg-emerald-50">
+                          <div className="border-b border-emerald-100 px-5 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">Your Payment Account on Record</p></div>
+                          <div className="divide-y divide-emerald-100">
+                            <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Bank</span><span className="text-sm font-semibold text-[#1b2345]">{application.clientBankName}</span></div>
+                            <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Holder</span><span className="text-sm font-semibold text-[#1b2345]">{application.clientAccountHolder}</span></div>
+                            <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Type</span><span className="text-sm font-semibold text-[#1b2345]">{application.clientAccountType}</span></div>
+                          </div>
+                          <div className="px-5 py-3"><p className="text-xs leading-5 text-amber-800">Payment must be made exclusively from this account. Payments from any other account will not be accepted.</p></div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+                    <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4 sm:px-6"><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Delivery & Handover</p><h2 className="text-[1.05rem] font-semibold text-white sm:text-[1.15rem]">Vehicle Delivery Process</h2></div>
+                    <div className="p-5 sm:p-6 space-y-4">
+                      <div className="rounded-[18px] border border-[#e7eaf2] bg-[#fafbff] p-4">
+                        <p className="text-sm leading-6 text-[#39425d]">Upon successful payment confirmation, your vehicle will be prepared for delivery. Please allow <span className="font-semibold text-[#1b2345]">3 to 5 working days</span> from payment confirmation for the following to be completed:</p>
+                        <div className="mt-4 space-y-2.5">
+                          {["Vehicle licensing and registration", "Roadworthy certificate and compliance", "Insurance activation and documentation", "Tracker installation and activation", "Final vehicle inspection and handover"].map((item) => (
+                            <div key={item} className="flex items-center gap-3">
+                              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#eef4ff]"><svg className="h-3.5 w-3.5 text-[#2f67de]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div>
+                              <span className="text-sm text-[#39425d]">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="rounded-[18px] border border-[#dbe6ff] bg-[#eef4ff] p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#2f67de]">Delivery Coordination</p>
+                        <p className="mt-2 text-sm leading-6 text-[#39425d]">Our team will contact you directly to confirm delivery arrangements and address details once your payment has been verified and all compliance requirements have been completed.</p>
+                      </div>
+                      <div className="rounded-[18px] border-l-4 border-[#d59758] bg-gradient-to-r from-[#fbf2ea] to-white p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c37d43]">Proof of Payment</p>
+                        <p className="mt-2 text-sm leading-6 text-[#39425d]">Keep your proof of payment (POP) ready. Use reference <span className="font-semibold text-[#1b2345]">{application.referenceNumber}</span> as your payment reference. It may be requested during the verification process.</p>
+                      </div>
                     </div>
                   </div>
                 </div>

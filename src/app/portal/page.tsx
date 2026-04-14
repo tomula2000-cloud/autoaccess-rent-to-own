@@ -19,8 +19,8 @@ export default async function ClientPortalPage() {
       </div>
 
       <div className="block md:hidden">
-        <MobilePortalDashboardView referenceNumber={referenceNumber} />
+        <MobilePortalDashboardView />
       </div>
     </>
   );
-}
+}export const dynamic = "force-dynamic";

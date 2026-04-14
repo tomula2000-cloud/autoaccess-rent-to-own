@@ -140,7 +140,7 @@ export async function POST(request: Request) {
 
     return NextResponse.redirect(
       new URL(
-        "/portal/documents?success=All+documents+confirmed+and+application+status+updated+to+Documents+Submitted.",
+        "/portal",
         request.url
       ),
       303

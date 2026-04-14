@@ -5,10 +5,14 @@ import Link from "next/link";
 import ApprovalCountdownCard from "@/components/approval-countdown-card";
 import PortalApplicationProgressCard from "@/components/portal-application-progress-card";
 import ContractReviewModal from "@/components/contract-review-modal";
-
-type MobilePortalDashboardViewProps = {
-  referenceNumber: string;
-};
+import PortalMobileShell from "@/components/portal-mobile/portal-mobile-shell";
+import PortalMobileTopbar from "@/components/portal-mobile/portal-mobile-topbar";
+import PortalMobileHero from "@/components/portal-mobile/portal-mobile-hero";
+import PortalMobileStatRow from "@/components/portal-mobile/portal-mobile-stat-row";
+import PortalMobileSectionCard from "@/components/portal-mobile/portal-mobile-section-card";
+import PortalMobileFooterBar from "@/components/portal-mobile/portal-mobile-footer-bar";
+import { portalMobileThemes } from "@/components/portal-mobile/portal-mobile-theme";
+import { getCompactCountdown } from "@/components/portal-mobile/portal-mobile-utils";
 
 type StatusLogItem = {
   id: string;
@@ -35,592 +39,128 @@ function parseMoney(value: string) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function getStatusExplanation(status: string) {
-  switch (status) {
-    case "APPLICATION_RECEIVED":
-      return {
-        title: "Application received",
-        meaning:
-          "We have received your application and created your profile in our system.",
-        nextStep:
-          "To proceed to next step with your application upload your documents.",
-      };
-
-    case "PRE_QUALIFICATION_REVIEW":
-      return {
-        title: "Under pre-qualification review",
-        meaning: "Your information is currently under early-stage assessment.",
-        nextStep:
-          "Please keep checking for updates while your application is under review.",
-      };
-
-    case "PRE_QUALIFIED":
-      return {
-        title: "Pre-qualified",
-        meaning:
-          "Your application has passed the initial review stage successfully.",
-        nextStep:
-          "To proceed to next step with your application upload your documents.",
-      };
-
-    case "AWAITING_DOCUMENTS":
-      return {
-        title: "Awaiting documents",
-        meaning:
-          "Your application requires supporting documents before it can continue.",
-        nextStep:
-          "To proceed to next step with your application upload your documents.",
-      };
-
-    case "DOCUMENTS_SUBMITTED":
-      return {
-        title: "Documents submitted",
-        meaning:
-          "Your uploaded files have been received and linked to your application.",
-        nextStep:
-          "Your submitted documents are now moving through the next review stage.",
-      };
-
-    case "DOCUMENTS_UNDER_REVIEW":
-      return {
-        title: "Documents under review",
-        meaning: "Your documents are currently being reviewed.",
-        nextStep:
-          "Please wait while we review your submitted documents and prepare the next stage.",
-      };
-
-    case "ADDITIONAL_DOCUMENTS_REQUIRED":
-      return {
-        title: "Additional documents required",
-        meaning: "More supporting information is needed before proceeding.",
-        nextStep:
-          "Additional documents are still required before your application can continue.",
-      };
-
-    case "APPROVED_IN_PRINCIPLE":
-      return {
-        title: "Approved in principle",
-        meaning:
-          "Your application has progressed positively and has been approved in principle.",
-        nextStep:
-          "Choose your vehicle option and prepare for the next completion steps before approval expires.",
-      };
-
-    case "CONTRACT_REQUESTED":
-      return {
-        title: "Contract requested",
-        meaning:
-          "Your contract request has been submitted and is awaiting admin review before issue.",
-        nextStep:
-          "Please keep checking your portal. Once the contract is issued, a strict 24-hour completion period will begin.",
-      };
-
-    case "CONTRACT_ISSUED":
-      return {
-        title: "Contract issued",
-        meaning:
-          "Your contract has been issued and your completion stage is now active.",
-        nextStep:
-          "Review the full contract, complete your digital acceptance, and fulfil any outstanding payment requirements within the active contract period.",
-      };
-
-    case "CONTRACT_EXPIRED":
-      return {
-        title: "Contract expired",
-        meaning:
-          "The issued contract expired before completion of the required payment or final process.",
-        nextStep:
-          "Please wait for further guidance from admin regarding your application outcome.",
-      };
-
-    case "CONTRACT_CANCELLED":
-      return {
-        title: "Contract cancelled",
-        meaning: "The contract stage has been cancelled on your application.",
-        nextStep:
-          "Please check your portal updates or contact support if you need clarification.",
-      };
-
-    case "AWAITING_INVOICE":
-      return {
-        title: "Awaiting invoice",
-        meaning:
-          "Your contract has been accepted and your application is now awaiting the release of your invoice by our team.",
-        nextStep:
-          "Please keep checking your portal. Once the invoice is issued, further payment instructions will be provided.",
-      };
-
-    case "INVOICE_ISSUED":
-      return {
-        title: "Invoice issued",
-        meaning:
-          "Your invoice has now been released and payment is required to proceed with the next completion stage.",
-        nextStep:
-          "Review your invoice guidance carefully, use the correct reference number, and prepare your payment using the instructions shown below.",
-      };
-
-    case "AWAITING_PAYMENT":
-      return {
-        title: "Awaiting payment",
-        meaning: "Payment is required before your application can continue.",
-        nextStep:
-          "Complete the required payment and keep proof ready if needed.",
-      };
-
-    case "PAYMENT_UNDER_VERIFICATION":
-      return {
-        title: "Payment under verification",
-        meaning:
-          "Your payment information has been received and is being verified.",
-        nextStep:
-          "No further action is usually needed right now. Please wait for confirmation.",
-      };
-
-    case "PAYMENT_CONFIRMED":
-      return {
-        title: "Payment confirmed",
-        meaning: "Your payment has been successfully confirmed.",
-        nextStep:
-          "Your application is progressing well. Keep checking for the next milestone.",
-      };
-
-    case "COMPLETED":
-      return {
-        title: "Completed",
-        meaning:
-          "Your application process has been completed successfully.",
-        nextStep:
-          "No further action is currently required unless our team contacts you.",
-      };
-
-    case "DECLINED":
-      return {
-        title: "Application update",
-        meaning:
-          "We are unable to proceed with your application at this stage.",
-        nextStep:
-          "Review any notes in your portal and contact the team if you need clarification.",
-      };
-
-    default:
-      return {
-        title: formatStatus(status),
-        meaning: "Your application has been updated.",
-        nextStep:
-          "Please continue checking your portal for the latest progress.",
-      };
-  }
+function formatCompactDateTime(value: Date | string | null | undefined) {
+  if (!value) return null;
+  return new Date(value).toLocaleString("en-ZA", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function getStatusLabel(status: string) {
   switch (status) {
-    case "APPROVED_IN_PRINCIPLE":
-      return "Approved";
-    case "CONTRACT_REQUESTED":
-      return "Contract Requested";
-    case "CONTRACT_ISSUED":
-      return "Contract Issued";
-    case "CONTRACT_EXPIRED":
-      return "Contract Expired";
-    case "CONTRACT_CANCELLED":
-      return "Contract Cancelled";
-    case "AWAITING_INVOICE":
-      return "Awaiting Invoice";
-    case "INVOICE_ISSUED":
-      return "Invoice Issued";
+    case "APPROVED_IN_PRINCIPLE": return "Approved";
+    case "CONTRACT_REQUESTED": return "Contract Requested";
+    case "CONTRACT_ISSUED": return "Contract Issued";
+    case "CONTRACT_EXPIRED": return "Contract Expired";
+    case "CONTRACT_CANCELLED": return "Contract Cancelled";
+    case "AWAITING_INVOICE": return "Awaiting Invoice";
+    case "INVOICE_ISSUED": return "Invoice Issued";
     case "PAYMENT_CONFIRMED":
-    case "COMPLETED":
-      return "Completed";
+    case "COMPLETED": return "Completed";
     case "DOCUMENTS_UNDER_REVIEW":
     case "PRE_QUALIFICATION_REVIEW":
-    case "PAYMENT_UNDER_VERIFICATION":
-      return "Pending Review";
+    case "PAYMENT_UNDER_VERIFICATION": return "Pending Review";
     case "AWAITING_DOCUMENTS":
-    case "ADDITIONAL_DOCUMENTS_REQUIRED":
-      return "Documents Needed";
-    case "AWAITING_PAYMENT":
-      return "Payment Needed";
-    default:
-      return formatStatus(status);
+    case "ADDITIONAL_DOCUMENTS_REQUIRED": return "Documents Needed";
+    case "AWAITING_PAYMENT": return "Payment Needed";
+    default: return formatStatus(status);
   }
 }
 
 function getProgressState(status: string) {
   switch (status) {
-    case "APPLICATION_RECEIVED":
-      return {
-        total: "18%",
-        gradient: "from-[#2f67de] to-[#4f86f7]",
-        glow: "shadow-[0_0_18px_rgba(47,103,222,0.45)]",
-      };
-    case "PRE_QUALIFICATION_REVIEW":
-      return {
-        total: "30%",
-        gradient: "from-[#2f67de] to-[#5f8ff2]",
-        glow: "shadow-[0_0_18px_rgba(47,103,222,0.45)]",
-      };
-    case "PRE_QUALIFIED":
-      return {
-        total: "42%",
-        gradient: "from-[#3f6fe0] to-[#d59758]",
-        glow: "shadow-[0_0_18px_rgba(213,151,88,0.35)]",
-      };
+    case "APPLICATION_RECEIVED": return 18;
+    case "PRE_QUALIFICATION_REVIEW": return 30;
+    case "PRE_QUALIFIED": return 42;
     case "AWAITING_DOCUMENTS":
-    case "ADDITIONAL_DOCUMENTS_REQUIRED":
-      return {
-        total: "55%",
-        gradient: "from-[#d59758] to-[#e4ad72]",
-        glow: "shadow-[0_0_18px_rgba(213,151,88,0.45)]",
-      };
-    case "DOCUMENTS_SUBMITTED":
-      return {
-        total: "65%",
-        gradient: "from-[#2f67de] to-[#6fb482]",
-        glow: "shadow-[0_0_18px_rgba(47,103,222,0.35)]",
-      };
-    case "DOCUMENTS_UNDER_REVIEW":
-      return {
-        total: "72%",
-        gradient: "from-[#2f67de] to-[#8aa8f7]",
-        glow: "shadow-[0_0_18px_rgba(47,103,222,0.45)]",
-      };
-    case "APPROVED_IN_PRINCIPLE":
-      return {
-        total: "82%",
-        gradient: "from-[#4b8f66] to-[#6fb482]",
-        glow: "shadow-[0_0_18px_rgba(111,180,130,0.45)]",
-      };
-    case "CONTRACT_REQUESTED":
-      return {
-        total: "86%",
-        gradient: "from-[#4b8f66] to-[#d59758]",
-        glow: "shadow-[0_0_18px_rgba(213,151,88,0.3)]",
-      };
+    case "ADDITIONAL_DOCUMENTS_REQUIRED": return 55;
+    case "DOCUMENTS_SUBMITTED": return 65;
+    case "DOCUMENTS_UNDER_REVIEW": return 72;
+    case "APPROVED_IN_PRINCIPLE": return 82;
+    case "CONTRACT_REQUESTED": return 86;
     case "CONTRACT_ISSUED":
     case "AWAITING_INVOICE":
     case "INVOICE_ISSUED":
-    case "AWAITING_PAYMENT":
-      return {
-        total: "90%",
-        gradient: "from-[#d59758] to-[#efbb85]",
-        glow: "shadow-[0_0_18px_rgba(213,151,88,0.45)]",
-      };
-    case "PAYMENT_UNDER_VERIFICATION":
-      return {
-        total: "94%",
-        gradient: "from-[#2f67de] to-[#6fb482]",
-        glow: "shadow-[0_0_18px_rgba(47,103,222,0.35)]",
-      };
+    case "AWAITING_PAYMENT": return 90;
+    case "PAYMENT_UNDER_VERIFICATION": return 94;
     case "PAYMENT_CONFIRMED":
-    case "COMPLETED":
-      return {
-        total: "100%",
-        gradient: "from-[#4b8f66] to-[#6fb482]",
-        glow: "shadow-[0_0_22px_rgba(111,180,130,0.55)]",
-      };
-    default:
-      return {
-        total: "28%",
-        gradient: "from-[#2f67de] to-[#4f86f7]",
-        glow: "shadow-[0_0_18px_rgba(47,103,222,0.45)]",
-      };
+    case "COMPLETED": return 100;
+    default: return 28;
   }
 }
 
-function getTimelineTone(status: string) {
+function getDashboardTheme(status: string) {
   switch (status) {
-    case "COMPLETED":
-    case "PAYMENT_CONFIRMED":
-    case "APPROVED_IN_PRINCIPLE":
-      return {
-        dot: "bg-[#6fb482]",
-        ring: "border-[#d4eddc]",
-      };
+    case "APPROVED_IN_PRINCIPLE": return portalMobileThemes.approved;
     case "CONTRACT_REQUESTED":
     case "CONTRACT_ISSUED":
-    case "AWAITING_DOCUMENTS":
-    case "ADDITIONAL_DOCUMENTS_REQUIRED":
-    case "AWAITING_PAYMENT":
     case "AWAITING_INVOICE":
     case "INVOICE_ISSUED":
-      return {
-        dot: "bg-[#d59758]",
-        ring: "border-[#f1dfd1]",
-      };
+    case "AWAITING_PAYMENT":
+    case "PAYMENT_UNDER_VERIFICATION": return portalMobileThemes.contract;
+    case "PAYMENT_CONFIRMED":
+    case "COMPLETED": return portalMobileThemes.success;
     case "DECLINED":
     case "CONTRACT_EXPIRED":
+    case "CONTRACT_CANCELLED": return portalMobileThemes.danger;
+    default: return portalMobileThemes.neutral;
+  }
+}
+
+function getHeroCopy(status: string) {
+  switch (status) {
+    case "APPLICATION_RECEIVED":
+      return { eyebrow: "Auto Access · Client Portal", title: "Application received", description: "Your profile has been created. Upload your documents to move to the next step." };
+    case "PRE_QUALIFICATION_REVIEW":
+      return { eyebrow: "Auto Access · Client Portal", title: "Under review", description: "Your information is under early-stage assessment. Keep checking for updates." };
+    case "PRE_QUALIFIED":
+      return { eyebrow: "Auto Access · Client Portal", title: "Pre-qualified", description: "Your application passed the initial review. Upload your documents to continue." };
+    case "AWAITING_DOCUMENTS":
+      return { eyebrow: "Auto Access · Document Stage", title: "Documents required", description: "Upload your supporting documents to keep your application moving." };
+    case "DOCUMENTS_SUBMITTED":
+      return { eyebrow: "Auto Access · Document Stage", title: "Documents submitted", description: "Your files have been received and linked to your application." };
+    case "DOCUMENTS_UNDER_REVIEW":
+      return { eyebrow: "Auto Access · Document Stage", title: "Documents under review", description: "Our team is reviewing your submitted files and preparing the next step." };
+    case "ADDITIONAL_DOCUMENTS_REQUIRED":
+      return { eyebrow: "Auto Access · Document Stage", title: "Additional documents needed", description: "More supporting documents are required before your application can continue." };
+    case "APPROVED_IN_PRINCIPLE":
+      return { eyebrow: "Auto Access · Client Portal", title: "Approval confirmed", description: "Your application has been approved in principle. Select your vehicle before your approval expires." };
+    case "CONTRACT_REQUESTED":
+      return { eyebrow: "Auto Access · Contract Stage", title: "Contract request submitted", description: "Your request has been received and is awaiting admin review before issue." };
+    case "CONTRACT_ISSUED":
+      return { eyebrow: "Auto Access · Contract Issued", title: "Your contract has been issued", description: "Review the full contract, complete your digital acceptance, and continue within the active window." };
+    case "AWAITING_INVOICE":
+      return { eyebrow: "Auto Access · Awaiting Invoice", title: "Contract accepted", description: "Your digital acceptance has been recorded. Keep checking your portal for invoice release." };
+    case "INVOICE_ISSUED":
+      return { eyebrow: "Auto Access · Invoice Stage", title: "Your invoice has been released", description: "Review the payment summary and instructions carefully, then prepare your payment." };
+    case "AWAITING_PAYMENT":
+      return { eyebrow: "Auto Access · Payment Stage", title: "Payment required", description: "Complete your payment using the correct reference number and keep proof of payment ready." };
+    case "PAYMENT_UNDER_VERIFICATION":
+      return { eyebrow: "Auto Access · Verification", title: "Payment under verification", description: "Your payment has been received and is currently being verified." };
+    case "PAYMENT_CONFIRMED":
+      return { eyebrow: "Auto Access · Completion", title: "Payment confirmed", description: "Your payment has been successfully confirmed and your application is progressing well." };
+    case "COMPLETED":
+      return { eyebrow: "Auto Access · Completion", title: "Application completed", description: "Your portal journey has been completed successfully. Welcome to Auto Access." };
+    case "DECLINED":
+      return { eyebrow: "Auto Access · Application Update", title: "Application update", description: "We are unable to proceed with your application at this stage. Please review any notes below." };
+    case "CONTRACT_EXPIRED":
+      return { eyebrow: "Auto Access · Contract Expired", title: "Contract window expired", description: "Your contract completion window has expired. Please contact our team for assistance." };
     case "CONTRACT_CANCELLED":
-      return {
-        dot: "bg-[#d35b5b]",
-        ring: "border-[#f1caca]",
-      };
+      return { eyebrow: "Auto Access · Cancelled", title: "Contract cancelled", description: "Your contract has been cancelled. Please contact our team if you have any questions." };
     default:
-      return {
-        dot: "bg-[#2f67de]",
-        ring: "border-[#d8e4ff]",
-      };
+      return { eyebrow: "Auto Access · Client Portal", title: "Track your application", description: "Monitor your status, review next steps and manage your journey from one premium portal view." };
   }
 }
 
 const LICENSING_AND_REGISTRATION_FEE = 1850;
 
-function MobilePortalHero({
-  application,
-  statusInfo,
-  statusLabel,
-  isApprovedInPrinciple,
-  isContractRequested,
-  isContractIssued,
-  isAwaitingInvoice,
-  isInvoiceIssued,
-}: {
-  application: {
-    referenceNumber: string;
-    status: string;
-  };
-  statusInfo: {
-    title: string;
-    meaning: string;
-    nextStep: string;
-  };
-  statusLabel: string;
-  isApprovedInPrinciple: boolean;
-  isContractRequested: boolean;
-  isContractIssued: boolean;
-  isAwaitingInvoice: boolean;
-  isInvoiceIssued: boolean;
-}) {
-  const isWarmStage =
-    isContractRequested ||
-    isContractIssued ||
-    isInvoiceIssued ||
-    application.status === "AWAITING_PAYMENT";
-
-  const isGreenStage = isApprovedInPrinciple || isAwaitingInvoice;
-
-  return (
-    <section
-      className={`relative overflow-hidden rounded-[28px] border shadow-[0_20px_50px_-18px_rgba(15,23,42,0.22)] ${
-        isGreenStage
-          ? "border-emerald-200/60 bg-gradient-to-br from-[#0a3b2a] via-[#0f5239] to-[#137a52]"
-          : isWarmStage
-          ? "border-[#f1dfd1] bg-gradient-to-br from-[#fffaf5] via-[#fffdfb] to-[#fbf2ea]"
-          : "border-white/10 bg-gradient-to-br from-[#0b1532] via-[#102046] to-[#1b3375]"
-      } p-5`}
-    >
-      <div className="absolute inset-0">
-        <div
-          className={`absolute -left-10 -top-10 h-40 w-40 rounded-full blur-3xl ${
-            isGreenStage
-              ? "bg-emerald-400/20"
-              : isWarmStage
-              ? "bg-[#f4c89a]/25"
-              : "bg-[#2f67de]/25"
-          }`}
-        />
-        <div
-          className={`absolute -right-8 bottom-0 h-32 w-32 rounded-full blur-3xl ${
-            isGreenStage ? "bg-green-300/15" : "bg-[#d59758]/15"
-          }`}
-        />
-        <div
-          className="absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
-      </div>
-
-      <div className="relative">
-        <div className="flex items-center gap-3">
-          <span
-            className={`inline-flex h-2 w-2 animate-pulse rounded-full ${
-              isGreenStage
-                ? "bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,0.9)]"
-                : isWarmStage
-                ? "bg-[#d59758] shadow-[0_0_12px_rgba(213,151,88,0.7)]"
-                : "bg-[#7ea8ff] shadow-[0_0_12px_rgba(126,168,255,0.9)]"
-            }`}
-          />
-          <p
-            className={`text-[10px] font-semibold uppercase tracking-[0.28em] ${
-              isGreenStage
-                ? "text-emerald-200/90"
-                : isWarmStage
-                ? "text-[#c37d43]"
-                : "text-blue-200/90"
-            }`}
-          >
-            Auto Access · Client Portal
-          </p>
-        </div>
-
-        <h1
-          className={`mt-4 text-[1.9rem] font-semibold leading-[1.02] tracking-tight ${
-            isGreenStage
-              ? "text-white"
-              : isWarmStage
-              ? "text-[#1b2345]"
-              : "text-white"
-          }`}
-        >
-          {isApprovedInPrinciple ? (
-            <>
-              Approval <span className="text-emerald-300">confirmed.</span>
-              <br />
-              Continue your journey.
-            </>
-          ) : isContractRequested ? (
-            <>
-              Contract request
-              <br />
-              <span className="text-[#d59758]">submitted successfully.</span>
-            </>
-          ) : isContractIssued ? (
-            <>
-              Contract issued.
-              <br />
-              <span className="text-[#d59758]">Completion stage active.</span>
-            </>
-          ) : isAwaitingInvoice ? (
-            <>
-              Contract accepted.
-              <br />
-              <span className="text-emerald-300">Awaiting invoice.</span>
-            </>
-          ) : isInvoiceIssued ? (
-            <>
-              Your invoice has
-              <br />
-              <span className="text-[#d59758]">been released.</span>
-            </>
-          ) : application.status === "AWAITING_PAYMENT" ? (
-            <>
-              Payment is now
-              <br />
-              <span className="text-[#d59758]">required to continue.</span>
-            </>
-          ) : application.status === "PAYMENT_UNDER_VERIFICATION" ? (
-            <>
-              Payment under
-              <br />
-              <span className="text-[#9cc0ff]">verification.</span>
-            </>
-          ) : application.status === "PAYMENT_CONFIRMED" ||
-            application.status === "COMPLETED" ? (
-            <>
-              Payment confirmed.
-              <br />
-              <span className="text-emerald-300">Progress secured.</span>
-            </>
-          ) : (
-            <>
-              Welcome back,
-              <br />
-              <span className="bg-gradient-to-r from-[#9cc0ff] via-white to-[#f4c89a] bg-clip-text text-transparent">
-                track your application.
-              </span>
-            </>
-          )}
-        </h1>
-
-        <p
-          className={`mt-4 text-[13px] leading-6 ${
-            isGreenStage
-              ? "text-emerald-50/80"
-              : isWarmStage
-              ? "text-[#4d546a]"
-              : "text-blue-50/75"
-          }`}
-        >
-          {statusInfo.meaning} {statusInfo.nextStep}
-        </p>
-
-        <div className="mt-5 flex flex-wrap items-center gap-2">
-          <span
-            className={`inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] ${
-              isGreenStage
-                ? "border border-emerald-300/40 bg-emerald-500/15 text-emerald-100"
-                : isWarmStage
-                ? "border border-[#f1dfd1] bg-white text-[#c37d43]"
-                : "border border-white/15 bg-white/5 text-white/90 backdrop-blur"
-            }`}
-          >
-            <span
-              className={`h-1.5 w-1.5 rounded-full ${
-                isGreenStage
-                  ? "bg-emerald-300"
-                  : isWarmStage
-                  ? "bg-[#d59758]"
-                  : "bg-[#7ea8ff]"
-              }`}
-            />
-            {statusLabel}
-          </span>
-
-          <span
-            className={`inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[10px] font-medium ${
-              isGreenStage
-                ? "border border-white/15 bg-white/5 text-emerald-50/90"
-                : isWarmStage
-                ? "border border-[#f1dfd1] bg-white text-[#4d546a]"
-                : "border border-white/15 bg-white/5 text-blue-50/85"
-            }`}
-          >
-            Ref <span className="font-mono">{application.referenceNumber}</span>
-          </span>
-        </div>
-
-        <div className="mt-5 grid grid-cols-1 gap-2">
-          {isApprovedInPrinciple ? (
-            <>
-              <Link
-                href="/portal/select-vehicle"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#0f5239] shadow-[0_14px_30px_-10px_rgba(255,255,255,0.35)]"
-              >
-                Choose Your Vehicle
-              </Link>
-              <Link
-                href="/gallery"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur"
-              >
-                View Full Gallery
-              </Link>
-            </>
-          ) : isContractIssued ? (
-            <a
-              href="#contract-review-section"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1b2345] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(27,35,69,0.32)]"
-            >
-              Review Contract
-            </a>
-          ) : isInvoiceIssued || application.status === "AWAITING_PAYMENT" ? (
-            <a
-              href="#invoice-payment-section"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1b2345] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(27,35,69,0.32)]"
-            >
-              Review Payment Stage
-            </a>
-          ) : (
-            <a
-              href="#portal-progress-section"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#1b2345] shadow-[0_14px_30px_-10px_rgba(255,255,255,0.2)]"
-            >
-              View Progress
-            </a>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export default async function MobilePortalDashboardView({
-  referenceNumber,
-}: MobilePortalDashboardViewProps) {
+export default async function MobilePortalDashboardView() {
   const cookieStore = await cookies();
+  const referenceNumber = cookieStore.get("autoaccess_portal_ref")?.value;
   const email = cookieStore.get("autoaccess_portal_email")?.value;
 
   if (!referenceNumber || !email) {
@@ -665,36 +205,26 @@ export default async function MobilePortalDashboardView({
       contractClientIdentityNumber: true,
       contractClientAddress: true,
       contractTerms: true,
+      clientBankName: true,
+      clientAccountHolder: true,
+      clientAccountNumber: true,
+      clientAccountType: true,
+      clientBranchCode: true,
+      clientBankSubmittedAt: true,
+      clientBankConfirmed: true,
       documents: {
         orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          fileName: true,
-          documentType: true,
-          createdAt: true,
-        },
+        select: { id: true, fileName: true, documentType: true, createdAt: true },
       },
       statusLogs: {
         orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          toStatus: true,
-          note: true,
-          createdAt: true,
-        },
+        select: { id: true, toStatus: true, note: true, createdAt: true },
       },
       selectedVehicle: {
         select: {
-          id: true,
-          title: true,
-          featuredImage: true,
-          depositAmount: true,
-          monthlyPayment: true,
-          yearModel: true,
-          mileage: true,
-          transmission: true,
-          fuelType: true,
-          slug: true,
+          id: true, title: true, featuredImage: true, depositAmount: true,
+          monthlyPayment: true, yearModel: true, mileage: true,
+          transmission: true, fuelType: true, slug: true,
         },
       },
     },
@@ -704,77 +234,47 @@ export default async function MobilePortalDashboardView({
     redirect("/portal-login");
   }
 
-  const statusInfo = getStatusExplanation(application.status);
   const statusLabel = getStatusLabel(application.status);
-  const progress = getProgressState(application.status);
-  const approvalValidUntilIso = application.approvalValidUntil
-    ? new Date(application.approvalValidUntil).toISOString()
-    : null;
-  const contractExpiresAtIso = application.contractExpiresAt
-    ? new Date(application.contractExpiresAt).toISOString()
-    : null;
+  const progressNumeric = getProgressState(application.status);
+  const theme = getDashboardTheme(application.status);
+  const heroCopy = getHeroCopy(application.status);
 
-  const showAnimatedActionCard =
-    application.status === "DOCUMENTS_SUBMITTED" ||
-    application.status === "DOCUMENTS_UNDER_REVIEW" ||
-    application.status === "ADDITIONAL_DOCUMENTS_REQUIRED";
-
+  const isApplicationReceived = application.status === "APPLICATION_RECEIVED";
+  const isPreQualified = application.status === "PRE_QUALIFIED";
+  const isAwaitingDocs = application.status === "AWAITING_DOCUMENTS";
+  const isAdditionalDocs = application.status === "ADDITIONAL_DOCUMENTS_REQUIRED";
+  const isDocsSubmitted = application.status === "DOCUMENTS_SUBMITTED";
+  const isDocsUnderReview = application.status === "DOCUMENTS_UNDER_REVIEW";
   const isApprovedInPrinciple = application.status === "APPROVED_IN_PRINCIPLE";
   const isContractRequested = application.status === "CONTRACT_REQUESTED";
   const isContractIssued = application.status === "CONTRACT_ISSUED";
   const isAwaitingInvoice = application.status === "AWAITING_INVOICE";
   const isInvoiceIssued = application.status === "INVOICE_ISSUED";
+  const isAwaitingPayment = application.status === "AWAITING_PAYMENT";
+  const isPaymentUnderVerification = application.status === "PAYMENT_UNDER_VERIFICATION";
+  const isPaymentConfirmed = application.status === "PAYMENT_CONFIRMED";
+  const isCompleted = application.status === "COMPLETED";
+  const isDeclined = application.status === "DECLINED";
+  const isContractExpired = application.status === "CONTRACT_EXPIRED";
+  const isContractCancelled = application.status === "CONTRACT_CANCELLED";
   const isContractAccepted = application.contractAccepted === true;
-
-  const progressNumeric = parseInt(progress.total.replace("%", ""), 10);
-
-  const journeyStages = [
-    { label: "Application", threshold: 18 },
-    { label: "Review", threshold: 35 },
-    { label: "Documents", threshold: 60 },
-    { label: "Approval", threshold: 82 },
-    { label: "Completion", threshold: 100 },
-  ];
 
   const selectedVehicle = application.selectedVehicle;
 
-  const contractDepositNum = application.contractDepositAmount
-    ? parseMoney(application.contractDepositAmount)
-    : 0;
-  const contractLicensingNum = application.contractLicensingFee
-    ? parseMoney(application.contractLicensingFee)
-    : LICENSING_AND_REGISTRATION_FEE;
-  const contractMonthlyNum = application.contractMonthlyPayment
-    ? parseMoney(application.contractMonthlyPayment)
-    : 0;
-  const contractTotalNowNum = application.contractTotalPayableNow
-    ? parseMoney(application.contractTotalPayableNow)
-    : contractDepositNum + contractLicensingNum;
+  const contractDepositNum = application.contractDepositAmount ? parseMoney(application.contractDepositAmount) : 0;
+  const contractLicensingNum = application.contractLicensingFee ? parseMoney(application.contractLicensingFee) : LICENSING_AND_REGISTRATION_FEE;
+  const contractMonthlyNum = application.contractMonthlyPayment ? parseMoney(application.contractMonthlyPayment) : 0;
+  const contractTotalNowNum = application.contractTotalPayableNow ? parseMoney(application.contractTotalPayableNow) : contractDepositNum + contractLicensingNum;
 
-  const selectedVehicleDeposit = selectedVehicle
-    ? parseMoney(selectedVehicle.depositAmount)
-    : 0;
-  const selectedVehicleMonthly = selectedVehicle
-    ? parseMoney(selectedVehicle.monthlyPayment)
-    : 0;
-  const totalRequiredNow = selectedVehicle
-    ? selectedVehicleDeposit + LICENSING_AND_REGISTRATION_FEE
-    : 0;
+  const selectedVehicleDeposit = selectedVehicle ? parseMoney(selectedVehicle.depositAmount) : 0;
+  const selectedVehicleMonthly = selectedVehicle ? parseMoney(selectedVehicle.monthlyPayment) : 0;
+  const totalRequiredNow = selectedVehicle ? selectedVehicleDeposit + LICENSING_AND_REGISTRATION_FEE : 0;
 
-  const displayVehicleTitle =
-    application.contractVehicleTitle || selectedVehicle?.title || "—";
-  const displayVehicleImage =
-    application.contractVehicleImage || selectedVehicle?.featuredImage || null;
-  const displayVehicleYear =
-    application.contractVehicleYearModel || selectedVehicle?.yearModel || null;
-  const displayVehicleTransmission =
-    application.contractVehicleTransmission ||
-    selectedVehicle?.transmission ||
-    null;
-  const displayVehicleFuelType =
-    application.contractVehicleFuelType || selectedVehicle?.fuelType || null;
-  const displayVehicleMileage =
-    application.contractVehicleMileage || selectedVehicle?.mileage || null;
+  const displayVehicleTitle = application.contractVehicleTitle || selectedVehicle?.title || "—";
+  const displayVehicleImage = application.contractVehicleImage || selectedVehicle?.featuredImage || null;
+  const displayVehicleYear = application.contractVehicleYearModel || selectedVehicle?.yearModel || null;
+  const displayVehicleTransmission = application.contractVehicleTransmission || selectedVehicle?.transmission || null;
+  const displayVehicleFuelType = application.contractVehicleFuelType || selectedVehicle?.fuelType || null;
 
   const contractDataForModal = {
     referenceNumber: application.referenceNumber,
@@ -799,520 +299,543 @@ export default async function MobilePortalDashboardView({
     contractIssuedAt: application.contractIssuedAt,
   };
 
+  const countdownText = (isContractIssued || isAwaitingInvoice || isInvoiceIssued || isAwaitingPayment || isPaymentUnderVerification)
+    ? getCompactCountdown(application.contractExpiresAt)
+    : getCompactCountdown(application.approvalValidUntil);
+
+  const needsDocuments = isApplicationReceived || isPreQualified || isAwaitingDocs || isAdditionalDocs;
+  const showAnimatedCard = isDocsSubmitted || isDocsUnderReview || isAdditionalDocs;
+  const acceptedAtText = formatCompactDateTime(application.contractAcceptedAt);
+  const contractIssuedAtText = formatCompactDateTime(application.contractIssuedAt);
+
   return (
-    <main className="min-h-screen bg-[#f5f7fb] px-4 py-6 text-black">
-      <div className="mx-auto max-w-md space-y-4">
-        <MobilePortalHero
-          application={application}
-          statusInfo={statusInfo}
-          statusLabel={statusLabel}
-          isApprovedInPrinciple={isApprovedInPrinciple}
-          isContractRequested={isContractRequested}
-          isContractIssued={isContractIssued}
-          isAwaitingInvoice={isAwaitingInvoice}
-          isInvoiceIssued={isInvoiceIssued}
-        />
+    <PortalMobileShell>
+      <PortalMobileTopbar rightHref="/portal/documents" rightLabel="Documents" />
 
-        {(application.status === "APPROVED_IN_PRINCIPLE" && approvalValidUntilIso) ? (
-          <ApprovalCountdownCard approvalValidUntil={approvalValidUntilIso} />
-        ) : null}
+      <PortalMobileHero
+        theme={theme}
+        eyebrow={heroCopy.eyebrow}
+        title={heroCopy.title}
+        description={heroCopy.description}
+        statusLabel={statusLabel}
+        referenceNumber={application.referenceNumber}
+        countdownText={countdownText}
+        selectionText={application.preferredVehicle || "No preferred vehicle"}
+      />
 
-        {(application.status === "CONTRACT_ISSUED" && contractExpiresAtIso) ? (
-          <ApprovalCountdownCard
-            approvalValidUntil={contractExpiresAtIso}
-            mode="contract"
-          />
-        ) : null}
+      <PortalMobileStatRow
+        items={[
+          { label: "Progress", value: `${progressNumeric}%`, tone: "blue" },
+          { label: "Documents", value: String(application.documents.length), tone: application.documents.length > 0 ? "green" : "default" },
+          { label: "Stage", value: statusLabel },
+        ]}
+      />
 
-        <section
-          id="portal-progress-section"
-          className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_10px_28px_-12px_rgba(15,23,42,0.10)]"
-        >
-          <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f4c89a]">
-              Application Progress
-            </p>
-            <h2 className="mt-1 text-[1.05rem] font-semibold text-white">
-              Your journey at a glance
-            </h2>
-          </div>
 
-          <div className="p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
-                  Current Stage
-                </p>
-                <p className="mt-1 text-sm font-semibold text-[#1b2345]">
-                  {statusInfo.title}
-                </p>
-              </div>
-              <div className="rounded-full border border-[#dbe6ff] bg-[#eef4ff] px-3 py-1.5 text-xs font-semibold text-[#2f67de]">
-                {progress.total}
-              </div>
-            </div>
-
-            <div className="h-3 overflow-hidden rounded-full bg-[#eef0f7]">
-              <div
-                className={`h-full rounded-full bg-gradient-to-r ${progress.gradient} ${progress.glow}`}
-                style={{ width: progress.total }}
-              />
-            </div>
-
-            <div className="mt-4 grid grid-cols-5 gap-2">
-              {journeyStages.map((stage) => {
-                const active = progressNumeric >= stage.threshold;
-                return (
-                  <div key={stage.label} className="text-center">
-                    <div
-                      className={`mx-auto h-2.5 w-2.5 rounded-full ${
-                        active ? "bg-[#2f67de]" : "bg-[#d7dce9]"
-                      }`}
-                    />
-                    <p
-                      className={`mt-2 text-[10px] leading-4 ${
-                        active ? "font-semibold text-[#1b2345]" : "text-[#8a93ab]"
-                      }`}
-                    >
-                      {stage.label}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-4 rounded-[18px] border-l-4 border-[#d59758] bg-gradient-to-r from-[#fbf2ea] to-white p-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c37d43]">
-                Next Step
+      {/* ── DOCUMENTS STAGE ── */}
+      {needsDocuments ? (
+        <PortalMobileSectionCard eyebrow="Action Required" title="Upload your documents">
+          <div className="space-y-2">
+            <div className="rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] px-3.5 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a]">
+                {isAdditionalDocs ? "Additional Documents Needed" : "Documents Required"}
               </p>
-              <p className="mt-2 text-sm leading-6 text-[#39425d]">
-                {statusInfo.nextStep}
+              <p className="mt-1 text-[12.5px] leading-5 text-[#39425d]">
+                {isAdditionalDocs
+                  ? "More supporting documents have been requested. Please upload them to continue."
+                  : "Upload your supporting documents to move your application into the review stage."}
               </p>
             </div>
+            {isAdditionalDocs ? (
+              <div className="rounded-[14px] border border-red-200 bg-red-50/70 px-3.5 py-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-red-700">Urgent</p>
+                <p className="mt-1 text-[12px] leading-5 text-red-900">Additional documents are still outstanding. Please upload them as soon as possible.</p>
+              </div>
+            ) : null}
+            <Link href="/portal/documents" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_-8px_rgba(47,103,222,0.4)]">
+              Upload Documents
+            </Link>
           </div>
-        </section>
+        </PortalMobileSectionCard>
+      ) : null}
 
-        {showAnimatedActionCard ? (
+      {/* ── DOCUMENTS REVIEW STAGE ── */}
+      {showAnimatedCard ? (
+        <PortalMobileSectionCard eyebrow="Document Stage" title="Document progress">
           <PortalApplicationProgressCard
-            status={
-              application.status as
-                | "DOCUMENTS_SUBMITTED"
-                | "DOCUMENTS_UNDER_REVIEW"
-                | "ADDITIONAL_DOCUMENTS_REQUIRED"
-            }
+            status={application.status as "DOCUMENTS_SUBMITTED" | "DOCUMENTS_UNDER_REVIEW" | "ADDITIONAL_DOCUMENTS_REQUIRED"}
           />
-        ) : null}
+        </PortalMobileSectionCard>
+      ) : null}
 
-        {(selectedVehicle || application.contractVehicleTitle) && (
-          <section className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_10px_28px_-12px_rgba(15,23,42,0.10)]">
-            <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f4c89a]">
-                Vehicle Summary
-              </p>
-              <h2 className="mt-1 text-[1.05rem] font-semibold text-white">
-                Selected vehicle details
-              </h2>
+      {/* ── APPROVED - SELECT VEHICLE ── */}
+      {isApprovedInPrinciple ? (
+        <PortalMobileSectionCard eyebrow="Action Required" title="Select your vehicle">
+          <div className="space-y-2">
+            <div className="rounded-[14px] border border-emerald-200 bg-emerald-50/70 px-3.5 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700">Approval Active</p>
+              <p className="mt-1 text-[12.5px] leading-5 text-[#39425d]">Your application has been approved in principle. Choose your vehicle before your approval window expires.</p>
             </div>
-
-            <div className="p-4">
-              {displayVehicleImage ? (
-                <div className="overflow-hidden rounded-[18px] border border-[#eef0f7]">
-                  <img
-                    src={displayVehicleImage}
-                    alt={displayVehicleTitle}
-                    className="h-48 w-full object-cover"
-                  />
-                </div>
-              ) : null}
-
-              <h3 className="mt-4 text-lg font-semibold tracking-tight text-[#1b2345]">
-                {displayVehicleTitle}
-              </h3>
-
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                {displayVehicleYear ? (
-                  <div className="rounded-[16px] border border-[#eef0f7] bg-[#fafbff] px-3 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
-                      Year
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-[#1b2345]">
-                      {displayVehicleYear}
-                    </p>
-                  </div>
-                ) : null}
-                {displayVehicleTransmission ? (
-                  <div className="rounded-[16px] border border-[#eef0f7] bg-[#fafbff] px-3 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
-                      Transmission
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-[#1b2345]">
-                      {displayVehicleTransmission}
-                    </p>
-                  </div>
-                ) : null}
-                {displayVehicleFuelType ? (
-                  <div className="rounded-[16px] border border-[#eef0f7] bg-[#fafbff] px-3 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
-                      Fuel Type
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-[#1b2345]">
-                      {displayVehicleFuelType}
-                    </p>
-                  </div>
-                ) : null}
-                {displayVehicleMileage ? (
-                  <div className="rounded-[16px] border border-[#eef0f7] bg-[#fafbff] px-3 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
-                      Mileage
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-[#1b2345]">
-                      {displayVehicleMileage}
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {isContractIssued && !isContractAccepted ? (
-          <section
-            id="contract-review-section"
-            className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_10px_28px_-12px_rgba(15,23,42,0.10)]"
-          >
-            <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f4c89a]">
-                Contract Review
-              </p>
-              <h2 className="mt-1 text-[1.05rem] font-semibold text-white">
-                Review and accept contract
-              </h2>
-            </div>
-
-            <div className="p-4 space-y-4">
-              <div className="rounded-[18px] border border-[#f1dfd1] bg-gradient-to-r from-[#fbf2ea] to-white p-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c37d43]">
-                  Contract Notice
-                </p>
-                <p className="mt-2 text-sm leading-6 text-[#39425d]">
-                  Your contract has been formally issued. A strict 24-hour completion
-                  window now applies.
-                </p>
-              </div>
-
-              <div>
-                <ContractReviewModal contract={contractDataForModal} />
-              </div>
-
-              <form action="/api/portal/accept-contract" method="POST" className="space-y-4">
-                <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e1e4ee] bg-[#fafbff] p-4">
-                  <input
-                    type="checkbox"
-                    name="acceptedTerms"
-                    value="yes"
-                    required
-                    className="mt-0.5 h-4 w-4 shrink-0 accent-[#d59758]"
-                  />
-                  <span className="text-sm leading-6 text-[#39425d]">
-                    I confirm that I have reviewed the full contract and understand
-                    the active completion period.
-                  </span>
-                </label>
-
-                <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e1e4ee] bg-[#fafbff] p-4">
-                  <input
-                    type="checkbox"
-                    name="confirmedDetails"
-                    value="yes"
-                    required
-                    className="mt-0.5 h-4 w-4 shrink-0 accent-[#d59758]"
-                  />
-                  <span className="text-sm leading-6 text-[#39425d]">
-                    I confirm that my details and selected vehicle information are correct.
-                  </span>
-                </label>
-
-                <div className="rounded-[16px] border border-[#e1e4ee] bg-white p-4">
-                  <label
-                    htmlFor="acceptedName"
-                    className="block text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]"
-                  >
-                    Digital Signature
-                  </label>
-                  <input
-                    type="text"
-                    id="acceptedName"
-                    name="acceptedName"
-                    required
-                    placeholder="Type your full legal name"
-                    className="mt-3 w-full rounded-[10px] border border-[#dbe0ed] bg-[#fafbff] px-4 py-3 text-sm font-medium text-[#1b2345] placeholder-[#a3aac0] outline-none transition focus:border-[#d59758] focus:ring-2 focus:ring-[#d59758]/20"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#c37d43] px-6 py-4 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(213,151,88,0.55)]"
-                >
-                  Accept Contract and Continue
-                </button>
-              </form>
-            </div>
-          </section>
-        ) : null}
-
-        {isContractIssued && isContractAccepted ? (
-          <section className="overflow-hidden rounded-[24px] border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-green-50 shadow-[0_10px_28px_-12px_rgba(16,185,129,0.15)]">
-            <div className="border-b border-emerald-100 bg-gradient-to-r from-[#0a3b2a] to-[#0f5239] px-4 py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-200">
-                Contract Acceptance
-              </p>
-              <h2 className="mt-1 text-[1.05rem] font-semibold text-white">
-                Digital acceptance recorded
-              </h2>
-            </div>
-
-            <div className="p-4">
-              <p className="text-sm leading-6 text-[#39425d]">
-                Your contract acceptance has been recorded successfully.
-              </p>
-              {application.contractAcceptedName ? (
-                <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                  Signed by{" "}
-                  <span className="font-mono normal-case tracking-normal text-[#1b2345]">
-                    {application.contractAcceptedName}
-                  </span>
-                </p>
-              ) : null}
-              {application.contractAcceptedAt ? (
-                <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                  Accepted on{" "}
-                  <span className="font-mono normal-case tracking-normal text-[#1b2345]">
-                    {new Date(application.contractAcceptedAt).toLocaleString()}
-                  </span>
-                </p>
-              ) : null}
-            </div>
-          </section>
-        ) : null}
-
-        {(isApprovedInPrinciple ||
-          isContractIssued ||
-          isInvoiceIssued ||
-          application.status === "AWAITING_PAYMENT" ||
-          isAwaitingInvoice) && (
-          <section
-            id="invoice-payment-section"
-            className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_10px_28px_-12px_rgba(15,23,42,0.10)]"
-          >
-            <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f4c89a]">
-                Completion Summary
-              </p>
-              <h2 className="mt-1 text-[1.05rem] font-semibold text-white">
-                Payment and readiness
-              </h2>
-            </div>
-
-            <div className="p-4">
-              <div className="space-y-3 rounded-[18px] border border-[#eef0f7] bg-[#fafbff] p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm text-[#68708a]">Deposit</span>
-                  <span className="text-sm font-semibold text-[#1b2345]">
-                    {formatCurrency(contractDepositNum || selectedVehicleDeposit)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm text-[#68708a]">Licensing & Registration</span>
-                  <span className="text-sm font-semibold text-[#1b2345]">
-                    {formatCurrency(
-                      contractLicensingNum || LICENSING_AND_REGISTRATION_FEE
-                    )}
-                  </span>
-                </div>
-
-                <div className="border-t border-[#e8edf7] pt-3 flex items-center justify-between gap-3">
-                  <span className="text-sm font-semibold text-[#1b2345]">
-                    Total Required Now
-                  </span>
-                  <span className="text-lg font-semibold text-[#2f67de]">
-                    {formatCurrency(contractTotalNowNum || totalRequiredNow)}
-                  </span>
-                </div>
-
-                <div className="border-t border-[#e8edf7] pt-3 flex items-center justify-between gap-3">
-                  <span className="text-sm text-[#68708a]">First Monthly Instalment</span>
-                  <span className="text-sm font-semibold text-[#1b2345]">
-                    {formatCurrency(contractMonthlyNum || selectedVehicleMonthly)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-[18px] border-l-4 border-[#d59758] bg-gradient-to-r from-[#fbf2ea] to-white p-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c37d43]">
-                  Readiness Reminder
-                </p>
-                <p className="mt-2 text-sm leading-6 text-[#39425d]">
-                  Always use your correct application reference and keep proof of
-                  payment ready for the verification stage.
-                </p>
-              </div>
-            </div>
-          </section>
-        )}
-
-        <section className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_10px_28px_-12px_rgba(15,23,42,0.10)]">
-          <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f4c89a]">
-              Account Overview
-            </p>
-            <h2 className="mt-1 text-[1.05rem] font-semibold text-white">
-              Portal information
-            </h2>
+            <Link href="/portal/select-vehicle" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-700 px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_-8px_rgba(16,185,129,0.4)]">
+              Select Your Vehicle
+            </Link>
           </div>
+        </PortalMobileSectionCard>
+      ) : null}
 
-          <div className="p-4 space-y-3">
-            <div className="rounded-[16px] border border-[#eef0f7] bg-[#fafbff] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
-                Applicant
-              </p>
-              <p className="mt-1 text-sm font-semibold text-[#1b2345]">
-                {application.fullName}
-              </p>
-            </div>
-
-            <div className="rounded-[16px] border border-[#eef0f7] bg-[#fafbff] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
-                Email
-              </p>
-              <p className="mt-1 text-sm font-semibold text-[#1b2345] break-all">
-                {application.email}
-              </p>
-            </div>
-
-            <div className="rounded-[16px] border border-[#eef0f7] bg-[#fafbff] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
-                Phone
-              </p>
-              <p className="mt-1 text-sm font-semibold text-[#1b2345]">
-                {application.phone}
-              </p>
-            </div>
-
-            <div className="rounded-[16px] border border-[#eef0f7] bg-[#fafbff] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
-                Reference Number
-              </p>
-              <p className="mt-1 font-mono text-sm font-semibold text-[#1b2345]">
-                {application.referenceNumber}
-              </p>
-            </div>
+      {/* ── CONTRACT REQUESTED ── */}
+      {isContractRequested ? (
+        <PortalMobileSectionCard eyebrow="Contract Stage" title="Contract request submitted">
+          <div className="rounded-[14px] border border-[#f1dfd1] bg-[#fbf2ea] px-3.5 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#c37d43]">Awaiting Admin Issue</p>
+            <p className="mt-1.5 text-[12.5px] leading-5 text-[#39425d]">Your contract request has been received. The 24-hour completion window will begin once the contract is issued.</p>
           </div>
-        </section>
-
-        <section className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_10px_28px_-12px_rgba(15,23,42,0.10)]">
-          <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f4c89a]">
-              Status Timeline
-            </p>
-            <h2 className="mt-1 text-[1.05rem] font-semibold text-white">
-              Progress journey
-            </h2>
-          </div>
-
-          <div className="p-4">
-            {application.statusLogs.length === 0 ? (
-              <div className="rounded-[18px] border-2 border-dashed border-[#d7d9e2] bg-[#fafbff] p-6 text-center text-sm text-[#68708a]">
-                No progress updates yet.
+          {selectedVehicle ? (
+            <div className="mt-2 rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] divide-y divide-[#eef0f8]">
+              <div className="px-3.5 py-2.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Selected Vehicle</p>
+                <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{selectedVehicle.title}</p>
               </div>
-            ) : (
-              <div className="relative space-y-5">
-                <div className="absolute left-[15px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-[#dbe6ff] via-[#e4e8f3] to-transparent" />
+              <div className="grid grid-cols-2 divide-x divide-[#eef0f8]">
+                <div className="px-3.5 py-2.5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Deposit</p>
+                  <p className="mt-1 text-[12px] font-semibold text-[#1b2345]">{formatCurrency(selectedVehicleDeposit)}</p>
+                </div>
+                <div className="px-3.5 py-2.5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Monthly</p>
+                  <p className="mt-1 text-[12px] font-semibold text-[#1b2345]">{formatCurrency(selectedVehicleMonthly)}</p>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </PortalMobileSectionCard>
+      ) : null}
 
-                {application.statusLogs.map((log: StatusLogItem, index: number) => {
-                  const tone = getTimelineTone(log.toStatus);
-                  const isLatest = index === 0;
-
-                  return (
-                    <div key={log.id} className="relative flex gap-4">
-                      <div className="relative z-10 flex w-8 shrink-0 justify-center">
-                        <div
-                          className={`relative flex h-8 w-8 items-center justify-center rounded-full border-4 bg-white ${tone.ring} ${
-                            isLatest ? "ring-4 ring-[#2f67de]/10" : ""
-                          }`}
-                        >
-                          <div
-                            className={`h-2.5 w-2.5 rounded-full ${tone.dot} ${
-                              isLatest ? "animate-pulse" : ""
-                            }`}
-                          />
-                        </div>
-                      </div>
-
-                      <div
-                        className={`min-w-0 flex-1 rounded-[18px] border p-4 ${
-                          isLatest
-                            ? "border-[#dbe6ff] bg-gradient-to-br from-[#eef4ff] via-white to-white shadow-[0_8px_20px_-10px_rgba(47,103,222,0.25)]"
-                            : "border-[#e3e6ef] bg-[#fafbfe]"
-                        }`}
-                      >
-                        <div className="flex flex-col gap-2">
-                          <p className="break-words text-sm font-semibold text-[#1b2345]">
-                            {formatStatus(log.toStatus)}
-                          </p>
-                          <p className="break-words text-xs text-[#68708a]">
-                            {new Date(log.createdAt).toLocaleString()}
-                          </p>
-                        </div>
-                        <p className="mt-3 break-words text-sm leading-6 text-[#4d546a]">
-                          {log.note || "No additional note provided."}
-                        </p>
-                      </div>
+      {/* ── CONTRACT ISSUED ── */}
+      {isContractIssued ? (
+        <PortalMobileSectionCard eyebrow="Contract Stage" title="Review and sign your contract">
+          <div className="space-y-2">
+            {!isContractAccepted ? (
+              <>
+                <div className="rounded-[14px] border border-[#f1dfd1] bg-[#fbf2ea] px-3.5 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#c37d43]">Action Required</p>
+                  <p className="mt-1.5 text-[12.5px] leading-5 text-[#39425d]">Review the full contract carefully, complete your digital acceptance, and fulfil any outstanding payment requirements within the active 24-hour window.</p>
+                </div>
+                <div className="rounded-[14px] border border-[#e7eaf2] bg-[#fafbff] p-3">
+                  {displayVehicleImage ? (
+                    <div className="overflow-hidden rounded-[12px] bg-[#f4f6fb]">
+                      <img src={displayVehicleImage} alt={displayVehicleTitle} className="h-[110px] w-full object-cover" />
                     </div>
-                  );
-                })}
+                  ) : null}
+                  <div className="mt-2.5 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a]">Contract Vehicle</p>
+                      <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{displayVehicleTitle}</p>
+                    </div>
+                    {contractIssuedAtText ? (
+                      <span className="shrink-0 rounded-full border border-[#f1dfd1] bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[#c37d43]">{contractIssuedAtText}</span>
+                    ) : null}
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    <div className="rounded-[12px] border border-[#eef0f7] bg-white px-3 py-2">
+                      <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Required Now</p>
+                      <p className="mt-1 text-[11px] font-semibold text-[#1b2345]">{formatCurrency(contractTotalNowNum)}</p>
+                    </div>
+                    <div className="rounded-[12px] border border-[#eef0f7] bg-white px-3 py-2">
+                      <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Monthly</p>
+                      <p className="mt-1 text-[11px] font-semibold text-[#1b2345]">{formatCurrency(contractMonthlyNum)}</p>
+                    </div>
+                  </div>
+                </div>
+                <ContractReviewModal contract={contractDataForModal} />
+                <button className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#dbe6ff] bg-[#eef4ff] px-5 py-3 text-sm font-semibold text-[#2f67de]">
+                  Download Contract (PDF)
+                </button>
+                <div className="rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1b2345]">Digital Contract Acceptance</p>
+                  <p className="mt-1 text-[12px] leading-5 text-[#68708a]">Review the full contract above then complete your digital acceptance below.</p>
+                  <form action="/api/portal/accept-contract" method="POST" className="mt-3 space-y-3">
+                    <div>
+                      <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a]">Full Legal Name</label>
+                      <input
+                        type="text"
+                        name="acceptedName"
+                        required
+                        placeholder="Type your full legal name exactly"
+                        className="w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-[13px] text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
+                      />
+                    </div>
+                    <label className="flex items-start gap-3 rounded-[12px] border border-[#e8ecf5] bg-white p-3">
+                      <input type="checkbox" name="acceptedTerms" value="yes" required className="mt-0.5 h-4 w-4 accent-[#2f67de]" />
+                      <span className="text-[12px] leading-5 text-[#39425d]">I have read and agree to the full terms and conditions of this Vehicle Rental Agreement.</span>
+                    </label>
+                    <label className="flex items-start gap-3 rounded-[12px] border border-[#e8ecf5] bg-white p-3">
+                      <input type="checkbox" name="confirmedDetails" value="yes" required className="mt-0.5 h-4 w-4 accent-[#2f67de]" />
+                      <span className="text-[12px] leading-5 text-[#39425d]">I confirm that all my personal and financial details in this contract are correct.</span>
+                    </label>
+                    <button
+                      type="submit"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-5 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_-8px_rgba(213,151,88,0.5)]"
+                    >
+                      Confirm & Accept Contract
+                    </button>
+                  </form>
+                </div>
+              </>
+            ) : (
+              <div className="rounded-[14px] border border-emerald-200 bg-emerald-50/70 px-3.5 py-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700">Contract Accepted</p>
+                    {application.contractAcceptedName ? (
+                      <p className="mt-1 text-[12.5px] font-semibold text-[#1b2345]">{application.contractAcceptedName}</p>
+                    ) : null}
+                    <p className="mt-1 text-[12px] leading-5 text-[#39425d]">Your digital contract acceptance has been recorded.</p>
+                  </div>
+                  {acceptedAtText ? (
+                    <span className="shrink-0 rounded-full border border-emerald-200 bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-emerald-700">{acceptedAtText}</span>
+                  ) : null}
+                </div>
               </div>
             )}
           </div>
-        </section>
+        </PortalMobileSectionCard>
+      ) : null}
 
-        <div className="flex flex-col items-center justify-between gap-4 rounded-[20px] border border-[#e1e4ee] bg-gradient-to-r from-[#fafbff] to-white px-5 py-4">
-          <div className="flex items-center gap-3 text-center">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#eef4ff] text-[#2f67de]">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0110 0v4" />
-              </svg>
+      {/* ── AWAITING INVOICE ── */}
+      {isAwaitingInvoice ? (
+        <PortalMobileSectionCard eyebrow="Invoice Stage" title="Awaiting invoice release">
+          <div className="space-y-2">
+            <div className="rounded-[14px] border border-emerald-200 bg-emerald-50/70 px-3.5 py-3">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700">Contract Accepted</p>
+              </div>
+              <p className="mt-1.5 text-[12px] leading-5 text-[#39425d]">Your digital acceptance has been recorded. Please submit your banking details below so our team can verify and issue your invoice promptly.</p>
             </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#68708a]">
-                Secure Session
-              </p>
-              <p className="text-sm font-semibold text-[#1b2345]">
-                Auto Access · Encrypted Portal
-              </p>
+
+            {application.clientBankSubmittedAt ? (
+              <div className="rounded-[14px] border border-[#dbe6ff] bg-[#eef4ff] px-3.5 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-[#2f67de]" />
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2f67de]">Banking Details Submitted</p>
+                </div>
+                <p className="mt-1.5 text-[12px] leading-5 text-[#39425d]">Your banking details have been received and are under review. Your invoice will be issued once verified.</p>
+                <div className="mt-2 divide-y divide-[#eef0f8] rounded-[12px] border border-[#e8ecf5] bg-white">
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <p className="text-[11px] text-[#68708a]">Bank</p>
+                    <p className="text-[11px] font-semibold text-[#1b2345]">{application.clientBankName}</p>
+                  </div>
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <p className="text-[11px] text-[#68708a]">Account Holder</p>
+                    <p className="text-[11px] font-semibold text-[#1b2345]">{application.clientAccountHolder}</p>
+                  </div>
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <p className="text-[11px] text-[#68708a]">Account Type</p>
+                    <p className="text-[11px] font-semibold text-[#1b2345]">{application.clientAccountType}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] p-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1b2345]">Banking Details Required</p>
+                <p className="mt-1 text-[12px] leading-5 text-[#68708a]">Please select your bank and provide your account details. Payment must be made from this account only.</p>
+                <form action="/api/portal/submit-banking" method="POST" className="mt-3 space-y-3">
+                  <div>
+                    <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Select Your Bank</label>
+                    <div className="relative">
+                      <select name="clientBankName" required className="w-full appearance-none rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-[13px] text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10">
+                        <option value="">-- Select your bank --</option>
+                        <option value="ABSA Bank">ABSA Bank</option>
+                        <option value="Capitec Bank">Capitec Bank</option>
+                        <option value="First National Bank (FNB)">First National Bank (FNB)</option>
+                        <option value="Nedbank">Nedbank</option>
+                        <option value="Standard Bank">Standard Bank</option>
+                        <option value="African Bank">African Bank</option>
+                        <option value="Bidvest Bank">Bidvest Bank</option>
+                        <option value="Discovery Bank">Discovery Bank</option>
+                        <option value="Investec Bank">Investec Bank</option>
+                        <option value="TymeBank">TymeBank</option>
+                        <option value="Ubank">Ubank</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <svg className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#68708a]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Account Holder Name</label>
+                    <input type="text" name="clientAccountHolder" required placeholder="Full name as on bank account" className="w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-[13px] text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10" />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Account Number</label>
+                    <input type="text" name="clientAccountNumber" required placeholder="Enter account number" inputMode="numeric" className="w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-[13px] text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10" />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Account Type</label>
+                    <div className="relative">
+                      <select name="clientAccountType" required className="w-full appearance-none rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-[13px] text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10">
+                        <option value="">-- Select account type --</option>
+                        <option value="Cheque Account">Cheque Account</option>
+                        <option value="Savings Account">Savings Account</option>
+                        <option value="Transmission Account">Transmission Account</option>
+                      </select>
+                      <svg className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#68708a]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Branch Code</label>
+                    <input type="text" name="clientBranchCode" required placeholder="Enter branch code" inputMode="numeric" className="w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-[13px] text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10" />
+                  </div>
+                  <div className="rounded-[12px] border border-amber-200 bg-amber-50/70 px-3.5 py-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-700">Important Notice</p>
+                    <p className="mt-1 text-[12px] leading-5 text-amber-900">Payment must be made exclusively from the bank account submitted above. Any payment received from a different account will not be processed and may result in delays to your application.</p>
+                  </div>
+                  <button type="submit" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-5 py-3.5 text-sm font-semibold text-white shadow-[0_10px_24px_-8px_rgba(47,103,222,0.4)]">
+                    Submit Banking Details
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </PortalMobileSectionCard>
+      ) : null}
+
+      {/* ── INVOICE ISSUED ── */}
+      {isInvoiceIssued || isAwaitingPayment ? (
+        <PortalMobileSectionCard eyebrow="Invoice & Payment" title="Your invoice">
+          <div className="space-y-2">
+            <div className="rounded-[14px] border border-[#dbe6ff] bg-[#eef4ff] px-3.5 py-3">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2f67de]">Invoice Reference</p>
+                <span className="rounded-full border border-[#dbe6ff] bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[#2f67de]">{application.referenceNumber}</span>
+              </div>
+            </div>
+            <div className="rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] divide-y divide-[#eef0f8]">
+              <div className="px-3.5 py-2.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Vehicle</p>
+                <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{displayVehicleTitle}</p>
+              </div>
+              <div className="grid grid-cols-2 divide-x divide-[#eef0f8]">
+                <div className="px-3.5 py-2.5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Deposit</p>
+                  <p className="mt-1 text-[12px] font-semibold text-[#1b2345]">{formatCurrency(contractDepositNum)}</p>
+                </div>
+                <div className="px-3.5 py-2.5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Licensing</p>
+                  <p className="mt-1 text-[12px] font-semibold text-[#1b2345]">{formatCurrency(contractLicensingNum)}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 divide-x divide-[#eef0f8]">
+                <div className="px-3.5 py-2.5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Monthly</p>
+                  <p className="mt-1 text-[12px] font-semibold text-[#1b2345]">{formatCurrency(contractMonthlyNum)}</p>
+                </div>
+                <div className="px-3.5 py-2.5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#2f67de]">Total Due Now</p>
+                  <p className="mt-1 text-[12px] font-semibold text-[#1b2345]">{formatCurrency(contractTotalNowNum)}</p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-[14px] border-l-4 border-[#d59758] bg-gradient-to-r from-[#fbf2ea] to-white px-3.5 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#c37d43]">Payment Instructions</p>
+              <p className="mt-1.5 text-[12px] leading-5 text-[#39425d]">Use reference number <span className="font-semibold text-[#1b2345]">{application.referenceNumber}</span> when making payment. Keep your proof of payment ready.</p>
+            </div>
+            {/* Auto Access banking details */}
+            <div className="rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] p-3.5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1b2345]">Auto Access Payment Details</p>
+              <p className="mt-1 text-[11px] leading-5 text-[#68708a]">Make payment to the account below using your reference number as the payment reference.</p>
+              <div className="mt-2 divide-y divide-[#eef0f8] rounded-[12px] border border-[#e8ecf5] bg-white">
+                <div className="flex items-center justify-between px-3 py-2.5">
+                  <p className="text-[11px] text-[#68708a]">Bank</p>
+                  <p className="text-[11px] font-semibold text-[#1b2345]">First National Bank (FNB)</p>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2.5">
+                  <p className="text-[11px] text-[#68708a]">Account Name</p>
+                  <p className="text-[11px] font-semibold text-[#1b2345]">Auto Access (Pty) Ltd</p>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2.5">
+                  <p className="text-[11px] text-[#68708a]">Account Number</p>
+                  <p className="font-mono text-[11px] font-bold text-[#1b2345]">XXXXXXXXXX</p>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2.5">
+                  <p className="text-[11px] text-[#68708a]">Branch Code</p>
+                  <p className="font-mono text-[11px] font-bold text-[#1b2345]">250655</p>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2.5">
+                  <p className="text-[11px] text-[#68708a]">Account Type</p>
+                  <p className="text-[11px] font-semibold text-[#1b2345]">Cheque Account</p>
+                </div>
+                <div className="flex items-center justify-between bg-[#eef4ff] px-3 py-2.5">
+                  <p className="text-[11px] font-bold text-[#2f67de]">Reference</p>
+                  <p className="font-mono text-[11px] font-bold text-[#2f67de]">{application.referenceNumber}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Download Invoice */}
+            <button className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#dbe6ff] bg-[#eef4ff] px-5 py-3 text-sm font-semibold text-[#2f67de]">
+              Download Invoice (PDF)
+            </button>
+
+            {/* I Have Made Payment */}
+            <div className="rounded-[14px] border border-emerald-200 bg-emerald-50/70 p-3.5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700">Payment Confirmation</p>
+              <p className="mt-1 text-[12px] leading-5 text-[#39425d]">Once you have completed your payment, click the button below to notify our team. Keep your proof of payment ready for verification.</p>
+              <button className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-700 px-5 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_-8px_rgba(16,185,129,0.4)]">
+                I Have Made Payment
+              </button>
+            </div>
+
+            {/* Delivery details popup */}
+            <details className="group rounded-[14px] border border-[#e1e4ee] bg-[#fafbff]">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 marker:content-none">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#1b2345] to-[#2a3563] text-[#f4c89a]">
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 00-.84-.99L16 11l-2.7-3.6a1 1 0 00-.8-.4H5.24a2 2 0 00-1.8 1.1l-.8 1.63A6 6 0 002 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
+                  </div>
+                  <p className="text-[13px] font-semibold text-[#1b2345]">View Delivery Details</p>
+                </div>
+                <svg className="h-4 w-4 shrink-0 text-[#68708a] transition group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+              </summary>
+              <div className="border-t border-[#e7eaf2] p-4 space-y-3">
+                <div className="rounded-[12px] border border-[#e8ecf5] bg-white p-3.5">
+                  <p className="text-[12px] leading-5 text-[#39425d]">Upon successful payment confirmation, please allow <span className="font-semibold text-[#1b2345]">3 to 5 working days</span> for the following to be completed before delivery:</p>
+                  <div className="mt-3 space-y-2">
+                    {["Vehicle licensing and registration", "Roadworthy certificate and compliance", "Insurance activation and documentation", "Tracker installation and activation", "Final vehicle inspection and handover"].map((item) => (
+                      <div key={item} className="flex items-center gap-2.5">
+                        <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#eef4ff]">
+                          <svg className="h-3 w-3 text-[#2f67de]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                        </div>
+                        <p className="text-[12px] text-[#39425d]">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-[12px] border border-[#dbe6ff] bg-[#eef4ff] px-3.5 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#2f67de]">Delivery Coordination</p>
+                  <p className="mt-1 text-[12px] leading-5 text-[#39425d]">Our team will contact you directly to confirm delivery arrangements once your payment has been verified and all compliance requirements completed.</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </PortalMobileSectionCard>
+      ) : null}
+
+      {/* ── PAYMENT VERIFICATION ── */}
+      {isPaymentUnderVerification ? (
+        <PortalMobileSectionCard eyebrow="Payment Stage" title="Payment under verification">
+          <div className="rounded-[14px] border border-[#dbe6ff] bg-[#eef4ff] px-3.5 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2f67de]">Verifying Payment</p>
+            <p className="mt-1.5 text-[12.5px] leading-5 text-[#39425d]">Your payment information has been received and is currently being verified. No further action is required at this stage.</p>
+          </div>
+        </PortalMobileSectionCard>
+      ) : null}
+
+      {/* ── PAYMENT CONFIRMED / COMPLETED ── */}
+      {isPaymentConfirmed || isCompleted ? (
+        <PortalMobileSectionCard eyebrow="Completion" title="Application completed">
+          <div className="space-y-2">
+            <div className="rounded-[14px] border border-emerald-200 bg-emerald-50/70 px-3.5 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700">{isCompleted ? "Completed" : "Payment Confirmed"}</p>
+              <p className="mt-1.5 text-[12.5px] leading-5 text-[#39425d]">{isCompleted ? "Your application process has been completed successfully. Welcome to Auto Access." : "Your payment has been successfully confirmed and your application is progressing to the final stage."}</p>
+            </div>
+            {displayVehicleTitle !== "—" ? (
+              <div className="rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] px-3.5 py-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Your Vehicle</p>
+                <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{displayVehicleTitle}</p>
+              </div>
+            ) : null}
+          </div>
+        </PortalMobileSectionCard>
+      ) : null}
+
+      {/* ── DECLINED / EXPIRED / CANCELLED ── */}
+      {isDeclined || isContractExpired || isContractCancelled ? (
+        <PortalMobileSectionCard eyebrow="Application Update" title="Status update">
+          <div className="rounded-[14px] border border-red-200 bg-red-50/70 px-3.5 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-red-700">
+              {isDeclined ? "Application Declined" : isContractExpired ? "Contract Expired" : "Contract Cancelled"}
+            </p>
+            <p className="mt-1.5 text-[12.5px] leading-5 text-red-900">
+              {isDeclined ? "We are unable to proceed with your application at this stage. Please review any notes in your portal or contact our team for clarification."
+                : isContractExpired ? "Your contract completion window has expired. Please contact our team for further assistance."
+                : "Your contract has been cancelled. Please contact our team if you have any questions."}
+            </p>
+          </div>
+        </PortalMobileSectionCard>
+      ) : null}
+
+      {/* ── Applicant Summary ── */}
+      <PortalMobileSectionCard eyebrow="Applicant" title="Profile and files">
+        <div className="space-y-2">
+          <div className="rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] divide-y divide-[#eef0f8]">
+            <div className="flex items-center justify-between gap-3 px-3.5 py-2.5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Name</p>
+              <p className="text-right text-[12.5px] font-semibold text-[#1b2345]">{application.fullName}</p>
+            </div>
+            <div className="flex items-center justify-between gap-3 px-3.5 py-2.5">
+              <p className="shrink-0 text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Email</p>
+              <p className="min-w-0 break-words text-right text-[12px] font-semibold text-[#1b2345]">{application.email}</p>
+            </div>
+            <div className="flex items-center justify-between gap-3 px-3.5 py-2.5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Phone</p>
+              <p className="text-right text-[12px] font-semibold text-[#1b2345]">{application.phone}</p>
+            </div>
+            <div className="flex items-center justify-between gap-3 px-3.5 py-2.5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Documents</p>
+              <p className="text-right text-[12px] font-semibold text-[#1b2345]">{application.documents.length}</p>
             </div>
           </div>
-
-          <form action="/api/portal-logout" method="post" className="w-full">
-            <button
-              type="submit"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#1d2240] bg-[#1d2240] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#2a3563]"
-            >
-              Logout
-            </button>
-          </form>
+          <Link href="/portal/documents" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-5 py-3 text-sm font-semibold text-white">
+            Manage Documents
+          </Link>
         </div>
-      </div>
-    </main>
+      </PortalMobileSectionCard>
+
+      {/* ── Status Timeline ── */}
+      <PortalMobileSectionCard eyebrow="Status Timeline" title="Progress journey" badge={`${application.statusLogs.length} updates`}>
+        {application.statusLogs.length === 0 ? (
+          <div className="rounded-[18px] border-2 border-dashed border-[#d7d9e2] bg-[#fafbff] p-6 text-center text-sm text-[#68708a]">
+            No progress updates yet.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {application.statusLogs.slice(0, 2).map((log: StatusLogItem, index: number) => (
+              <div key={log.id} className={`rounded-[14px] border px-3.5 py-3 ${index === 0 ? "border-[#dbe6ff] bg-gradient-to-br from-[#eef4ff] via-white to-white" : "border-[#e3e6ef] bg-[#fafbfe]"}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-[12.5px] font-semibold text-[#1b2345]">{formatStatus(log.toStatus)}</p>
+                    <p className="mt-0.5 text-[11px] text-[#68708a]">{formatCompactDateTime(log.createdAt)}</p>
+                  </div>
+                  <span className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] ${index === 0 ? "border border-[#2f67de]/30 bg-[#2f67de] text-white" : "border border-[#dbe6ff] bg-[#eef4ff] text-[#2f67de]"}`}>
+                    {index === 0 ? "Latest" : "Update"}
+                  </span>
+                </div>
+                {log.note ? <p className="mt-2 text-[12px] leading-5 text-[#4d546a]">{log.note}</p> : null}
+              </div>
+            ))}
+            {application.statusLogs.length > 2 ? (
+              <details className="group rounded-[14px] border border-[#e1e4ee] bg-[#fafbff]">
+                <summary className="flex cursor-pointer list-none items-center justify-center gap-2 px-4 py-3 text-[12px] font-semibold text-[#1b2345] marker:content-none">
+                  View {application.statusLogs.length - 2} more update{application.statusLogs.length - 2 > 1 ? "s" : ""}
+                  <svg className="h-4 w-4 transition group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                </summary>
+                <div className="space-y-2 border-t border-[#e7eaf2] p-3">
+                  {application.statusLogs.slice(2).map((log: StatusLogItem) => (
+                    <div key={log.id} className="rounded-[12px] border border-[#e3e6ef] bg-white px-3.5 py-3">
+                      <p className="text-[12.5px] font-semibold text-[#1b2345]">{formatStatus(log.toStatus)}</p>
+                      <p className="mt-0.5 text-[11px] text-[#68708a]">{formatCompactDateTime(log.createdAt)}</p>
+                      {log.note ? <p className="mt-2 text-[12px] leading-5 text-[#4d546a]">{log.note}</p> : null}
+                    </div>
+                  ))}
+                </div>
+              </details>
+            ) : null}
+          </div>
+        )}
+      </PortalMobileSectionCard>
+
+      <PortalMobileFooterBar href="/portal" label="Stay in Portal" />
+    </PortalMobileShell>
   );
 }

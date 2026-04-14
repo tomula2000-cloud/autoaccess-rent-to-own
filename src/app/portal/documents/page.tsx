@@ -26,4 +26,4 @@ export default async function PortalDocumentsPage({ searchParams }: PageProps) {
       </div>
     </>
   );
-}
+}export const dynamic = "force-dynamic";

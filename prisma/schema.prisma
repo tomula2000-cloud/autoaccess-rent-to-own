@@ -6,6 +6,129 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id                String        @id @default(cuid())
+  fullName          String
+  email             String        @unique
+  phone             String?
+  role              UserRole      @default(CLIENT)
+  passwordHash      String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  applications      Application[]
+  documents         Document[]
+  statusLogsUpdated StatusLog[]   @relation("StatusUpdatedBy")
+}
+
+model Application {
+  id                           String            @id @default(cuid())
+  applicantId                  String
+  referenceNumber              String            @unique
+  fullName                     String
+  email                        String
+  phone                        String
+  monthlyIncome                String
+  employmentStatus             String
+  preferredVehicle             String
+  selectedVehicleId            String?
+  notes                        String?
+  status                       ApplicationStatus @default(APPLICATION_RECEIVED)
+  identityType                 String?
+  identityNumber               String?
+  salaryDate                   String?
+  physicalAddress              String?
+  termsAccepted                Boolean           @default(false)
+  approvalValidUntil           DateTime?
+  reapplyAllowedAt             DateTime?
+  contractRequestedAt          DateTime?
+  contractIssuedAt             DateTime?
+  contractExpiresAt            DateTime?
+  contractCancelledAt          DateTime?
+  contractAccepted             Boolean           @default(false)
+  contractAcceptedAt           DateTime?
+  contractAcceptedName         String?
+  contractVehicleTitle         String?
+  contractVehicleImage         String?
+  contractVehicleYearModel     String?
+  contractVehicleMileage       String?
+  contractVehicleTransmission  String?
+  contractVehicleFuelType      String?
+  contractDepositAmount        String?
+  contractLicensingFee         String?
+  contractMonthlyPayment       String?
+  contractTotalPayableNow      String?
+  contractTerm                 String?
+  contractClientFullName       String?
+  contractClientEmail          String?
+  contractClientPhone          String?
+  contractClientIdentityType   String?
+  contractClientIdentityNumber String?
+  contractClientAddress        String?
+  contractTerms                String?
+  clientBankName               String?
+  clientAccountHolder          String?
+  clientAccountNumber          String?
+  clientAccountType            String?
+  clientBranchCode             String?
+  clientBankSubmittedAt        DateTime?
+  clientBankConfirmed          Boolean           @default(false)
+  createdAt                    DateTime          @default(now())
+  updatedAt                    DateTime          @updatedAt
+  applicant                    User              @relation(fields: [applicantId], references: [id])
+  selectedVehicle              VehicleOffer?     @relation("SelectedVehicle", fields: [selectedVehicleId], references: [id])
+  documents                    Document[]
+  statusLogs                   StatusLog[]
+}
+
+model StatusLog {
+  id            String             @id @default(cuid())
+  applicationId String
+  fromStatus    ApplicationStatus?
+  toStatus      ApplicationStatus
+  note          String?
+  updatedById   String
+  createdAt     DateTime           @default(now())
+  application   Application        @relation(fields: [applicationId], references: [id])
+  updatedBy     User               @relation("StatusUpdatedBy", fields: [updatedById], references: [id])
+}
+
+model Document {
+  id            String      @id @default(cuid())
+  applicationId String
+  uploadedById  String
+  fileName      String
+  fileUrl       String
+  documentType  String
+  createdAt     DateTime    @default(now())
+  application   Application @relation(fields: [applicationId], references: [id])
+  uploadedBy    User        @relation(fields: [uploadedById], references: [id])
+}
+
+model VehicleOffer {
+  id                   String             @id @default(cuid())
+  title                String
+  slug                 String             @unique
+  featuredImage        String
+  galleryImage1        String?
+  galleryImage2        String?
+  galleryImage3        String?
+  galleryImage4        String?
+  rentToOwnLabel       String             @default("Available for Rent to Own")
+  depositAmount        String
+  monthlyPayment       String
+  term                 String             @default("54 Months")
+  yearModel            String
+  mileage              String
+  transmission         String
+  fuelType             String
+  status               VehicleOfferStatus @default(AVAILABLE)
+  featured             Boolean            @default(false)
+  sortOrder            Int                @default(0)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  selectedApplications Application[]      @relation("SelectedVehicle")
+}
+
 enum UserRole {
   CLIENT
   ADMIN
@@ -37,127 +160,4 @@ enum VehicleOfferStatus {
   AVAILABLE
   UNDER_OFFER
   SOLD
-}
-
-model User {
-  id           String   @id @default(cuid())
-  fullName     String
-  email        String   @unique
-  phone        String?
-  role         UserRole @default(CLIENT)
-  passwordHash String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  applications      Application[]
-  documents         Document[]
-  statusLogsUpdated StatusLog[] @relation("StatusUpdatedBy")
-}
-
-model Application {
-  id                           String            @id @default(cuid())
-  applicantId                  String
-  referenceNumber              String            @unique
-  fullName                     String
-  email                        String
-  phone                        String
-  monthlyIncome                String
-  employmentStatus             String
-  preferredVehicle             String
-  selectedVehicleId            String?
-  notes                        String?
-  status                       ApplicationStatus @default(APPLICATION_RECEIVED)
-  identityType                 String?
-  identityNumber               String?
-  salaryDate                   String?
-  physicalAddress              String?
-  termsAccepted                Boolean           @default(false)
-  approvalValidUntil           DateTime?
-  reapplyAllowedAt             DateTime?
-  contractRequestedAt          DateTime?
-  contractIssuedAt             DateTime?
-  contractExpiresAt            DateTime?
-  contractCancelledAt          DateTime?
-  contractAccepted             Boolean           @default(false)
-  contractAcceptedAt           DateTime?
-  contractAcceptedName         String?
-
-  contractVehicleTitle         String?
-  contractVehicleImage         String?
-  contractVehicleYearModel     String?
-  contractVehicleMileage       String?
-  contractVehicleTransmission  String?
-  contractVehicleFuelType      String?
-  contractDepositAmount        String?
-  contractLicensingFee         String?
-  contractMonthlyPayment       String?
-  contractTotalPayableNow      String?
-  contractTerm                 String?
-  contractClientFullName       String?
-  contractClientEmail          String?
-  contractClientPhone          String?
-  contractClientIdentityType   String?
-  contractClientIdentityNumber String?
-  contractClientAddress        String?
-  contractTerms                String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  applicant       User          @relation(fields: [applicantId], references: [id])
-  selectedVehicle VehicleOffer? @relation("SelectedVehicle", fields: [selectedVehicleId], references: [id])
-  statusLogs      StatusLog[]
-  documents       Document[]
-}
-
-model StatusLog {
-  id            String             @id @default(cuid())
-  applicationId String
-  fromStatus    ApplicationStatus?
-  toStatus      ApplicationStatus
-  note          String?
-  updatedById   String
-  createdAt     DateTime           @default(now())
-
-  application Application @relation(fields: [applicationId], references: [id])
-  updatedBy   User        @relation("StatusUpdatedBy", fields: [updatedById], references: [id])
-}
-
-model Document {
-  id            String   @id @default(cuid())
-  applicationId String
-  uploadedById  String
-  fileName      String
-  fileUrl       String
-  documentType  String
-  createdAt     DateTime @default(now())
-
-  application Application @relation(fields: [applicationId], references: [id])
-  uploadedBy  User        @relation(fields: [uploadedById], references: [id])
-}
-
-model VehicleOffer {
-  id                   String             @id @default(cuid())
-  title                String
-  slug                 String             @unique
-  featuredImage        String
-  galleryImage1        String?
-  galleryImage2        String?
-  galleryImage3        String?
-  galleryImage4        String?
-  rentToOwnLabel       String             @default("Available for Rent to Own")
-  depositAmount        String
-  monthlyPayment       String
-  term                 String             @default("54 Months")
-  yearModel            String
-  mileage              String
-  transmission         String
-  fuelType             String
-  status               VehicleOfferStatus @default(AVAILABLE)
-  featured             Boolean            @default(false)
-  sortOrder            Int                @default(0)
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-
-  selectedApplications Application[] @relation("SelectedVehicle")
 }
