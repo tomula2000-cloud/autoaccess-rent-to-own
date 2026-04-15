@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendStatusUpdateEmail } from "@/lib/email";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../../../auth";
 import { prisma } from "@/lib/prisma";
@@ -142,6 +143,9 @@ export async function POST(
       where: { id },
       select: {
         id: true,
+        email: true,
+        fullName: true,
+        referenceNumber: true,
         status: true,
         approvalValidUntil: true,
         reapplyAllowedAt: true,
@@ -303,6 +307,18 @@ export async function POST(
         },
       }),
     ]);
+
+    try {
+      await sendStatusUpdateEmail({
+        to: existingApplication.email,
+        fullName: existingApplication.fullName,
+        referenceNumber: existingApplication.referenceNumber,
+        status: newStatus,
+        note: note || null,
+      });
+    } catch (emailError) {
+      console.error("Status email failed (non-blocking):", emailError);
+    }
 
     return NextResponse.json({
       success: true,
