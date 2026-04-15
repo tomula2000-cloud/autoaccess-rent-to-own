@@ -54,7 +54,7 @@ export default function WhatsAppFloat() {
         </div>
       ) : null}
 
-      
+      <a
         href={WHATSAPP_LINK}
         target="_blank"
         rel="noreferrer"
