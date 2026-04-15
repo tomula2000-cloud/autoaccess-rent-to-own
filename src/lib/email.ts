@@ -396,7 +396,7 @@ export async function sendApplicationReceivedEmail({
   const portalUrl = getPortalUrl();
 
   return resend.emails.send({
-    from: "Auto Access <noreply@send.autoaccess.co.za>",
+    from: "Auto Access <noreply@autoaccess.co.za>",
     replyTo: "support@autoaccess.co.za",
     to,
     subject: "Your Auto Access application has been received",
@@ -437,7 +437,7 @@ export async function sendStatusUpdateEmail({
   const template = getStatusTemplate(status, note);
 
   return resend.emails.send({
-    from: "Auto Access <noreply@send.autoaccess.co.za>",
+    from: "Auto Access <noreply@autoaccess.co.za>",
     replyTo: "support@autoaccess.co.za",
     to,
     subject: template.subject,
