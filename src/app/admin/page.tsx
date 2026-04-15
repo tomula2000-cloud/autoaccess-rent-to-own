@@ -5,10 +5,7 @@ import { authOptions } from "../../../auth";
 import { prisma } from "@/lib/prisma";
 
 type PageProps = {
-  searchParams?: Promise<{
-    status?: string;
-    q?: string;
-  }>;
+  searchParams?: Promise<{ status?: string; q?: string }>;
 };
 
 type AdminApplicationRow = {
@@ -58,69 +55,38 @@ function formatIdentityType(value: string | null) {
   return value;
 }
 
-function getStatusBadgeClass(status: string) {
+function getStatusBadge(status: string) {
   switch (status) {
-    case "APPLICATION_RECEIVED":
-      return "border-blue-200 bg-blue-50 text-blue-800";
-    case "PRE_QUALIFICATION_REVIEW":
-      return "border-indigo-200 bg-indigo-50 text-indigo-800";
-    case "PRE_QUALIFIED":
-      return "border-sky-200 bg-sky-50 text-sky-800";
-    case "AWAITING_DOCUMENTS":
-      return "border-amber-200 bg-amber-50 text-amber-800";
-    case "DOCUMENTS_SUBMITTED":
-      return "border-cyan-200 bg-cyan-50 text-cyan-800";
-    case "DOCUMENTS_UNDER_REVIEW":
-      return "border-violet-200 bg-violet-50 text-violet-800";
-    case "ADDITIONAL_DOCUMENTS_REQUIRED":
-      return "border-orange-200 bg-orange-50 text-orange-800";
-    case "APPROVED_IN_PRINCIPLE":
-      return "border-emerald-200 bg-emerald-50 text-emerald-800";
-    case "CONTRACT_REQUESTED":
-      return "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-800";
-    case "CONTRACT_ISSUED":
-      return "border-purple-200 bg-purple-50 text-purple-800";
-    case "AWAITING_INVOICE":
-      return "border-violet-200 bg-violet-50 text-violet-800";
-    case "INVOICE_ISSUED":
-      return "border-purple-200 bg-purple-50 text-purple-800";
-    case "AWAITING_PAYMENT":
-      return "border-yellow-200 bg-yellow-50 text-yellow-800";
-    case "PAYMENT_UNDER_VERIFICATION":
-      return "border-teal-200 bg-teal-50 text-teal-800";
-    case "PAYMENT_CONFIRMED":
-      return "border-green-200 bg-green-50 text-green-800";
-    case "COMPLETED":
-      return "border-lime-200 bg-lime-50 text-lime-800";
-    case "DECLINED":
-      return "border-red-200 bg-red-50 text-red-800";
-    default:
-      return "border-gray-200 bg-gray-50 text-gray-800";
+    case "APPLICATION_RECEIVED": return "border-blue-400/30 bg-blue-500/10 text-blue-300";
+    case "PRE_QUALIFICATION_REVIEW": return "border-indigo-400/30 bg-indigo-500/10 text-indigo-300";
+    case "PRE_QUALIFIED": return "border-sky-400/30 bg-sky-500/10 text-sky-300";
+    case "AWAITING_DOCUMENTS": return "border-amber-400/30 bg-amber-500/10 text-amber-300";
+    case "DOCUMENTS_SUBMITTED": return "border-cyan-400/30 bg-cyan-500/10 text-cyan-300";
+    case "DOCUMENTS_UNDER_REVIEW": return "border-violet-400/30 bg-violet-500/10 text-violet-300";
+    case "ADDITIONAL_DOCUMENTS_REQUIRED": return "border-orange-400/30 bg-orange-500/10 text-orange-300";
+    case "APPROVED_IN_PRINCIPLE": return "border-emerald-400/30 bg-emerald-500/10 text-emerald-300";
+    case "CONTRACT_REQUESTED": return "border-fuchsia-400/30 bg-fuchsia-500/10 text-fuchsia-300";
+    case "CONTRACT_ISSUED": return "border-purple-400/30 bg-purple-500/10 text-purple-300";
+    case "AWAITING_INVOICE": return "border-violet-400/30 bg-violet-500/10 text-violet-300";
+    case "INVOICE_ISSUED": return "border-purple-400/30 bg-purple-500/10 text-purple-300";
+    case "AWAITING_PAYMENT": return "border-yellow-400/30 bg-yellow-500/10 text-yellow-300";
+    case "PAYMENT_UNDER_VERIFICATION": return "border-teal-400/30 bg-teal-500/10 text-teal-300";
+    case "PAYMENT_CONFIRMED": return "border-green-400/30 bg-green-500/10 text-green-300";
+    case "COMPLETED": return "border-lime-400/30 bg-lime-500/10 text-lime-300";
+    case "DECLINED": return "border-red-400/30 bg-red-500/10 text-red-300";
+    default: return "border-white/20 bg-white/5 text-white/60";
   }
 }
 
-function getSummaryCount(
-  applications: AdminApplicationRow[],
-  statuses: string[]
-) {
+function getSummaryCount(applications: AdminApplicationRow[], statuses: string[]) {
   return applications.filter((item) => statuses.includes(item.status)).length;
 }
 
 export default async function AdminPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
-  const sessionUser = session?.user as
-    | {
-        email?: string;
-        role?: string;
-        loginType?: string;
-      }
-    | undefined;
+  const sessionUser = session?.user as { email?: string; role?: string; loginType?: string } | undefined;
 
-  if (
-    !sessionUser?.email ||
-    sessionUser.role !== "ADMIN" ||
-    sessionUser.loginType !== "ADMIN"
-  ) {
+  if (!sessionUser?.email || sessionUser.role !== "ADMIN" || sessionUser.loginType !== "ADMIN") {
     redirect("/admin-login");
   }
 
@@ -128,292 +94,183 @@ export default async function AdminPage({ searchParams }: PageProps) {
   const activeStatus = params.status || "ALL";
   const searchQuery = (params.q || "").trim();
 
-  const allApplications: AdminApplicationRow[] =
-    await prisma.application.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-      select: {
-        id: true,
-        referenceNumber: true,
-        fullName: true,
-        email: true,
-        phone: true,
-        identityType: true,
-        identityNumber: true,
-        employmentStatus: true,
-        monthlyIncome: true,
-        preferredVehicle: true,
-        status: true,
-        createdAt: true,
-      },
-    });
+  const allApplications: AdminApplicationRow[] = await prisma.application.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true, referenceNumber: true, fullName: true, email: true, phone: true,
+      identityType: true, identityNumber: true, employmentStatus: true,
+      monthlyIncome: true, preferredVehicle: true, status: true, createdAt: true,
+    },
+  });
 
-  const applications = allApplications.filter(
-    (application: AdminApplicationRow) => {
-      const matchesStatus =
-        activeStatus === "ALL" ? true : application.status === activeStatus;
-
-      const haystack = [
-        application.referenceNumber,
-        application.fullName,
-        application.email,
-        application.phone,
-        application.identityNumber || "",
-        application.preferredVehicle,
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      const matchesSearch = searchQuery
-        ? haystack.includes(searchQuery.toLowerCase())
-        : true;
-
-      return matchesStatus && matchesSearch;
-    }
-  );
+  const applications = allApplications.filter((application: AdminApplicationRow) => {
+    const matchesStatus = activeStatus === "ALL" ? true : application.status === activeStatus;
+    const haystack = [application.referenceNumber, application.fullName, application.email, application.phone, application.identityNumber || "", application.preferredVehicle].join(" ").toLowerCase();
+    const matchesSearch = searchQuery ? haystack.includes(searchQuery.toLowerCase()) : true;
+    return matchesStatus && matchesSearch;
+  });
 
   const totalCount = allApplications.length;
-  const docsCount = getSummaryCount(allApplications, [
-    "AWAITING_DOCUMENTS",
-    "ADDITIONAL_DOCUMENTS_REQUIRED",
-  ]);
-  const reviewCount = getSummaryCount(allApplications, [
-    "PRE_QUALIFICATION_REVIEW",
-    "DOCUMENTS_UNDER_REVIEW",
-    "PAYMENT_UNDER_VERIFICATION",
-  ]);
-  const completedCount = getSummaryCount(allApplications, [
-    "COMPLETED",
-    "PAYMENT_CONFIRMED",
-  ]);
+  const docsCount = getSummaryCount(allApplications, ["AWAITING_DOCUMENTS", "ADDITIONAL_DOCUMENTS_REQUIRED"]);
+  const reviewCount = getSummaryCount(allApplications, ["PRE_QUALIFICATION_REVIEW", "DOCUMENTS_UNDER_REVIEW", "PAYMENT_UNDER_VERIFICATION"]);
+  const approvedCount = getSummaryCount(allApplications, ["APPROVED_IN_PRINCIPLE", "CONTRACT_REQUESTED", "CONTRACT_ISSUED"]);
+  const completedCount = getSummaryCount(allApplications, ["COMPLETED", "PAYMENT_CONFIRMED"]);
+  const declinedCount = getSummaryCount(allApplications, ["DECLINED"]);
 
   return (
-    <main className="min-h-screen bg-white px-6 py-16 text-black">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-orange-500">
-              Auto Access Admin
-            </p>
+    <main className="min-h-screen bg-[#f4f6fb] px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1400px]">
 
-            <h1 className="mb-4 text-4xl font-bold md:text-5xl">
-              Submitted Applications
-            </h1>
-
-            <p className="max-w-3xl text-lg text-gray-600">
-              Review applications, monitor progress stages, and manage client
-              records from one professional dashboard.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-4">
-              <Link
-                href="/admin/vehicles"
-                className="inline-flex rounded-xl border border-gray-300 bg-white px-5 py-3 font-semibold text-gray-800 hover:bg-gray-50"
-              >
+        {/* ── Top Header ── */}
+        <div className="mb-6 overflow-hidden rounded-[28px] bg-gradient-to-r from-[#0b1532] via-[#102046] to-[#1b3375] shadow-[0_24px_60px_-20px_rgba(11,21,50,0.55)]">
+          <div className="flex flex-col gap-4 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#f4c89a]">Auto Access · Admin Dashboard</p>
+              <h1 className="mt-1.5 text-2xl font-bold text-white sm:text-3xl">Applications</h1>
+              <p className="mt-1 text-[13px] text-white/50">Monitor and manage all client applications from one command centre.</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href="/admin/vehicles" className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-semibold text-white/80 transition hover:bg-white/20">
                 Manage Vehicles
               </Link>
-
-              <Link
-                href="/admin/vehicles/new"
-                className="inline-flex rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
-              >
+              <Link href="/admin/vehicles/new" className="rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-4 py-2 text-[12px] font-bold text-white shadow-[0_8px_20px_-6px_rgba(213,151,88,0.5)]">
                 Add Vehicle
               </Link>
+              <form action="/api/auth/signout" method="post">
+                <button type="submit" className="rounded-full border border-red-400/30 bg-red-500/10 px-4 py-2 text-[12px] font-semibold text-red-300 transition hover:bg-red-500/20">
+                  Logout
+                </button>
+              </form>
             </div>
           </div>
-
-          <form action="/api/auth/signout" method="post">
-            <button
-              type="submit"
-              className="rounded-lg border border-gray-300 px-4 py-2 font-semibold text-gray-700 hover:bg-gray-50"
-            >
-              Logout
-            </button>
-          </form>
         </div>
 
-        <div className="mb-6 grid gap-4 md:grid-cols-4">
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
-            <p className="text-sm text-gray-500">Total Applications</p>
-            <p className="mt-2 text-3xl font-bold">{totalCount}</p>
-          </div>
-
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
-            <p className="text-sm text-amber-700">Needs Documents</p>
-            <p className="mt-2 text-3xl font-bold text-amber-900">
-              {docsCount}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-5">
-            <p className="text-sm text-indigo-700">Under Review</p>
-            <p className="mt-2 text-3xl font-bold text-indigo-900">
-              {reviewCount}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-green-200 bg-green-50 p-5">
-            <p className="text-sm text-green-700">Confirmed / Completed</p>
-            <p className="mt-2 text-3xl font-bold text-green-900">
-              {completedCount}
-            </p>
-          </div>
+        {/* ── Stat Cards ── */}
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            { label: "Total", value: totalCount, color: "border-[#dbe6ff] bg-[#eef4ff]", text: "text-[#1b2345]", sub: "text-[#2f67de]" },
+            { label: "Needs Docs", value: docsCount, color: "border-amber-200 bg-amber-50", text: "text-amber-900", sub: "text-amber-700" },
+            { label: "Under Review", value: reviewCount, color: "border-violet-200 bg-violet-50", text: "text-violet-900", sub: "text-violet-700" },
+            { label: "Approved", value: approvedCount, color: "border-emerald-200 bg-emerald-50", text: "text-emerald-900", sub: "text-emerald-700" },
+            { label: "Completed", value: completedCount, color: "border-green-200 bg-green-50", text: "text-green-900", sub: "text-green-700" },
+            { label: "Declined", value: declinedCount, color: "border-red-200 bg-red-50", text: "text-red-900", sub: "text-red-700" },
+          ].map((stat) => (
+            <div key={stat.label} className={`rounded-[20px] border ${stat.color} p-4`}>
+              <p className={`text-[10px] font-bold uppercase tracking-[0.16em] ${stat.sub}`}>{stat.label}</p>
+              <p className={`mt-1.5 text-3xl font-bold ${stat.text}`}>{stat.value}</p>
+            </div>
+          ))}
         </div>
 
-        <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <form className="grid gap-4 lg:grid-cols-[1fr_auto]">
-            <input
-              type="text"
-              name="q"
-              defaultValue={searchQuery}
-              placeholder="Search by reference, full name, email, phone, ID number, or vehicle"
-              className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-blue-600"
-            />
-
-            <input type="hidden" name="status" value={activeStatus} />
-
-            <button
-              type="submit"
-              className="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
-            >
-              Search
-            </button>
-          </form>
-
-          <div className="mt-5 flex flex-wrap gap-3">
-            {STATUS_OPTIONS.map((status) => {
-              const isActive = activeStatus === status;
-              const href = `/admin?status=${encodeURIComponent(status)}${
-                searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""
-              }`;
-
-              return (
-                <Link
-                  key={status}
-                  href={href}
-                  className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                    isActive
-                      ? "border-blue-600 bg-blue-600 text-white"
-                      : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  {status === "ALL" ? "All" : formatStatus(status)}
-                </Link>
-              );
-            })}
+        {/* ── Search and Filter ── */}
+        <div className="mb-5 overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+          <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Search & Filter</p>
+            <h2 className="text-[1rem] font-semibold text-white">Find Applications</h2>
+          </div>
+          <div className="p-5">
+            <form className="grid gap-3 sm:grid-cols-[1fr_auto]">
+              <input
+                type="text"
+                name="q"
+                defaultValue={searchQuery}
+                placeholder="Search by reference, name, email, phone, ID or vehicle..."
+                className="w-full rounded-[14px] border border-[#dde1ee] bg-[#fafbff] px-4 py-3 text-sm text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
+              />
+              <input type="hidden" name="status" value={activeStatus} />
+              <button type="submit" className="rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_-6px_rgba(47,103,222,0.4)]">
+                Search
+              </button>
+            </form>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {STATUS_OPTIONS.map((status) => {
+                const isActive = activeStatus === status;
+                const href = `/admin?status=${encodeURIComponent(status)}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""}`;
+                return (
+                  <Link
+                    key={status}
+                    href={href}
+                    className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition ${
+                      isActive
+                        ? "border-[#2f67de] bg-[#2f67de] text-white"
+                        : "border-[#e1e4ee] bg-[#fafbff] text-[#68708a] hover:border-[#dbe6ff] hover:text-[#2f67de]"
+                    }`}
+                  >
+                    {status === "ALL" ? "All" : formatStatus(status)}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <p className="text-sm text-gray-600">
-            Showing <span className="font-semibold">{applications.length}</span>{" "}
-            application{applications.length === 1 ? "" : "s"}
-            {activeStatus !== "ALL" ? (
-              <>
-                {" "}
-                for status{" "}
-                <span className="font-semibold">
-                  {formatStatus(activeStatus)}
-                </span>
-              </>
-            ) : null}
-            {searchQuery ? (
-              <>
-                {" "}
-                matching <span className="font-semibold">"{searchQuery}"</span>
-              </>
-            ) : null}
-          </p>
+        {/* ── Results count ── */}
+        <div className="mb-3 flex items-center gap-2 px-1">
+          <span className="text-[12px] font-semibold text-[#68708a]">
+            Showing <span className="text-[#1b2345]">{applications.length}</span> application{applications.length === 1 ? "" : "s"}
+            {activeStatus !== "ALL" ? <> · <span className="text-[#1b2345]">{formatStatus(activeStatus)}</span></> : null}
+            {searchQuery ? <> matching <span className="text-[#1b2345]">"{searchQuery}"</span></> : null}
+          </span>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        {/* ── Applications Table ── */}
+        <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+          <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Application Records</p>
+            <h2 className="text-[1rem] font-semibold text-white">All Submitted Applications</h2>
+          </div>
+
           {applications.length === 0 ? (
-            <div className="p-6 text-sm text-gray-600">
-              No applications found for the current filter.
+            <div className="p-10 text-center">
+              <p className="text-[13px] font-semibold text-[#1b2345]">No applications found</p>
+              <p className="mt-1 text-[12px] text-[#68708a]">Try adjusting your search or filter criteria.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-left text-sm">
-                <thead className="bg-gray-50 text-gray-700">
-                  <tr>
-                    <th className="px-6 py-4 font-semibold">Reference</th>
-                    <th className="px-6 py-4 font-semibold">Full Name</th>
-                    <th className="px-6 py-4 font-semibold">Phone</th>
-                    <th className="px-6 py-4 font-semibold">Identity</th>
-                    <th className="px-6 py-4 font-semibold">Employment</th>
-                    <th className="px-6 py-4 font-semibold">Income</th>
-                    <th className="px-6 py-4 font-semibold">Vehicle</th>
-                    <th className="px-6 py-4 font-semibold">Status</th>
-                    <th className="px-6 py-4 font-semibold">Created</th>
-                    <th className="px-6 py-4 font-semibold">Action</th>
+                <thead>
+                  <tr className="border-b border-[#eef0f7] bg-[#fafbff]">
+                    {["Reference", "Applicant", "Phone", "Identity", "Employment", "Income", "Vehicle", "Status", "Date", "Action"].map((h) => (
+                      <th key={h} className="px-5 py-3.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a]">{h}</th>
+                    ))}
                   </tr>
                 </thead>
-
                 <tbody>
-                  {applications.map((application: AdminApplicationRow) => (
+                  {applications.map((application: AdminApplicationRow, index: number) => (
                     <tr
                       key={application.id}
-                      className="border-t border-gray-200 align-top"
+                      className={`border-t border-[#eef0f7] align-top transition hover:bg-[#fafbff] ${index % 2 === 0 ? "bg-white" : "bg-[#fdfdff]"}`}
                     >
-                      <td className="px-6 py-4 font-semibold whitespace-nowrap">
-                        {application.referenceNumber}
+                      <td className="px-5 py-4">
+                        <span className="font-mono text-[12px] font-bold text-[#2f67de]">{application.referenceNumber}</span>
                       </td>
-
-                      <td className="px-6 py-4">
-                        <div className="font-semibold">
-                          {application.fullName}
-                        </div>
-                        <div className="mt-1 text-xs text-gray-500">
-                          {application.email}
-                        </div>
+                      <td className="px-5 py-4">
+                        <p className="text-[13px] font-semibold text-[#1b2345]">{application.fullName}</p>
+                        <p className="mt-0.5 text-[11px] text-[#68708a]">{application.email}</p>
                       </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {application.phone}
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.phone}</td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <p className="text-[12px] font-medium text-[#39425d]">{formatIdentityType(application.identityType)}</p>
+                        <p className="mt-0.5 text-[11px] text-[#68708a]">{application.identityNumber || "—"}</p>
                       </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-medium">
-                          {formatIdentityType(application.identityType)}
-                        </div>
-                        <div className="mt-1 text-xs text-gray-500">
-                          {application.identityNumber || "—"}
-                        </div>
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {application.employmentStatus}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {application.monthlyIncome}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {application.preferredVehicle}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getStatusBadgeClass(
-                            application.status
-                          )}`}
-                        >
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.employmentStatus}</td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">R {application.monthlyIncome}</td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.preferredVehicle}</td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <span className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${getStatusBadge(application.status)}`}>
                           {formatStatus(application.status)}
                         </span>
                       </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {new Date(application.createdAt).toLocaleString()}
+                      <td className="whitespace-nowrap px-5 py-4 text-[11px] text-[#68708a]">
+                        {new Date(application.createdAt).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })}
                       </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-5 py-4">
                         <Link
                           href={`/admin/${application.id}`}
-                          className="inline-flex rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-2 text-[11px] font-bold text-white transition hover:from-[#2a3563] hover:to-[#3b4a82]"
                         >
                           View
+                          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
                         </Link>
                       </td>
                     </tr>

@@ -5,46 +5,27 @@ type AdminHeaderProps = {
   description?: string;
 };
 
-export default function AdminHeader({
-  title,
-  description,
-}: AdminHeaderProps) {
+export default function AdminHeader({ title, description }: AdminHeaderProps) {
   return (
-    <div className="mb-8 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+    <div className="mb-8 overflow-hidden rounded-[28px] border border-white/10 bg-gradient-to-r from-[#0b1532] via-[#102046] to-[#1b3375] shadow-[0_24px_60px_-20px_rgba(11,21,50,0.55)]">
+      <div className="flex flex-col gap-5 px-6 py-6 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-orange-500">
+          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#f4c89a]">
             Auto Access Admin
           </p>
-
-          <h1 className="mt-3 text-4xl font-bold md:text-5xl">{title}</h1>
-
+          <h1 className="mt-2 text-2xl font-bold text-white md:text-3xl">{title}</h1>
           {description ? (
-            <p className="mt-4 max-w-3xl text-lg leading-8 text-gray-600">
-              {description}
-            </p>
+            <p className="mt-2 max-w-2xl text-[13px] leading-6 text-white/60">{description}</p>
           ) : null}
         </div>
-
-        <nav className="flex flex-wrap gap-3">
-          <Link
-            href="/admin"
-            className="rounded-xl border border-gray-300 bg-white px-4 py-3 font-semibold text-gray-800 hover:bg-gray-50"
-          >
+        <nav className="flex flex-wrap gap-2">
+          <Link href="/admin" className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-semibold text-white/80 transition hover:bg-white/20">
             Dashboard
           </Link>
-
-          <Link
-            href="/admin/vehicles"
-            className="rounded-xl border border-gray-300 bg-white px-4 py-3 font-semibold text-gray-800 hover:bg-gray-50"
-          >
+          <Link href="/admin/vehicles" className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-semibold text-white/80 transition hover:bg-white/20">
             Vehicles
           </Link>
-
-          <Link
-            href="/admin/vehicles/new"
-            className="rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
-          >
+          <Link href="/admin/vehicles/new" className="rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-4 py-2 text-[12px] font-bold text-white shadow-[0_8px_20px_-6px_rgba(213,151,88,0.5)] transition hover:from-[#c4863f] hover:to-[#d59758]">
             Add Vehicle
           </Link>
         </nav>
