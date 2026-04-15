@@ -10,6 +10,8 @@ import PortalMobileSectionCard from "@/components/portal-mobile/portal-mobile-se
 import PortalMobileFooterBar from "@/components/portal-mobile/portal-mobile-footer-bar";
 import { portalMobileThemes } from "@/components/portal-mobile/portal-mobile-theme";
 import { getCompactCountdown } from "@/components/portal-mobile/portal-mobile-utils";
+import VehicleSelectScroll from "@/components/portal-select-vehicle/vehicle-select-scroll";
+import ChangeVehicleButton from "@/components/portal-select-vehicle/change-vehicle-button";
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-ZA", {
@@ -285,6 +287,7 @@ export default async function MobilePortalSelectVehicleView() {
 
       {/* ── Vehicle Options ── */}
       <PortalMobileSectionCard
+        id="vehicle-list"
         eyebrow="Approved Inventory"
         title="Vehicle options"
         badge={`${vehicles.length} eligible`}
@@ -346,8 +349,10 @@ export default async function MobilePortalSelectVehicleView() {
         </div>
       </PortalMobileSectionCard>
 
+      <VehicleSelectScroll selectedId={application.selectedVehicleId ?? null} />
       {/* ── Financial Summary ── */}
       <PortalMobileSectionCard
+        id="financial-summary"
         eyebrow="Financial Summary"
         title="Selected vehicle totals"
       >
@@ -453,6 +458,7 @@ export default async function MobilePortalSelectVehicleView() {
                 monthlyPayment={formatCurrency(monthlyPayment)}
                 disabled={!selectedVehicleStillEligible}
               />
+              <ChangeVehicleButton />
             </>
           ) : (
             <div className="rounded-[14px] border-2 border-dashed border-[#d7d9e2] bg-[#fafbff] p-6 text-center">

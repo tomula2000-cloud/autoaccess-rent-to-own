@@ -1,3 +1,4 @@
+import WhatsAppFloat from "@/components/whatsapp-float";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -61,6 +62,7 @@ export default function AppShell({ children }: AppShellProps) {
       </header>
 
       {children}
+      <WhatsAppFloat />
     </div>
   );
 }
