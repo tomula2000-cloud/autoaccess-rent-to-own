@@ -546,7 +546,7 @@ function SharedApplicationFormContent({
       </div>
 
       {showSubmitNotice ? (
-        <div className="absolute inset-0 z-20 flex items-center justify-center p-4">
+        <div className="absolute inset-0 z-20 flex items-center justify-center p-3 sm:p-4">
           <div
             ref={submitNoticeRef}
             tabIndex={-1}
@@ -560,7 +560,7 @@ function SharedApplicationFormContent({
               Please confirm before proceeding
             </h3>
 
-            <div className="mt-5 rounded-2xl border border-gray-200 bg-gray-50 p-5">
+            <div className="mt-2.5 sm:mt-5 rounded-[16px] border border-gray-200 bg-gray-50 p-3 sm:p-5">
               <p className="text-sm leading-7 text-gray-700">
                 Auto Access may consider applications from clients with adverse
                 credit history, blacklisting, debt review, or previous
@@ -605,11 +605,11 @@ function SharedApplicationFormContent({
       ) : null}
 
       {submitState === "processing" ? (
-        <div className="absolute inset-0 z-20 flex items-center justify-center p-4">
+        <div className="absolute inset-0 z-20 flex items-center justify-center p-3 sm:p-4">
           <div
             ref={overlayCardRef}
             tabIndex={-1}
-            className="w-full max-w-md rounded-[30px] border border-white bg-white p-8 text-center shadow-[0_25px_70px_rgba(15,23,42,0.18)] outline-none"
+            className="w-full max-w-md rounded-[24px] sm:rounded-[30px] border border-white bg-white p-5 sm:p-8 text-center shadow-[0_25px_70px_rgba(15,23,42,0.18)] outline-none"
           >
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
               Auto Access Rent To Own
@@ -617,7 +617,7 @@ function SharedApplicationFormContent({
 
             <div className="mx-auto mt-5 h-14 w-14 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
 
-            <h3 className="mt-5 text-2xl font-bold text-gray-900">
+            <h3 className="mt-4 text-xl sm:text-2xl font-bold text-gray-900">
               Processing your application
             </h3>
 
@@ -629,11 +629,11 @@ function SharedApplicationFormContent({
       ) : null}
 
       {submitState === "success" ? (
-        <div className="absolute inset-0 z-20 flex items-center justify-center p-4">
+        <div className="absolute inset-0 z-20 flex items-center justify-center p-3 sm:p-4">
           <div
             ref={overlayCardRef}
             tabIndex={-1}
-            className="w-full max-w-xl rounded-[30px] border border-white bg-white p-8 shadow-[0_25px_70px_rgba(15,23,42,0.18)] outline-none"
+            className="w-full max-w-xl rounded-[24px] sm:rounded-[30px] border border-white bg-white p-5 sm:p-8 shadow-[0_25px_70px_rgba(15,23,42,0.18)] outline-none"
           >
             <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-orange-500">
               Auto Access Rent To Own
@@ -654,7 +654,7 @@ function SharedApplicationFormContent({
               </svg>
             </div>
 
-            <h3 className="mt-5 text-center text-3xl font-bold text-gray-900">
+            <h3 className="mt-3 sm:mt-5 text-center text-xl sm:text-3xl font-bold text-gray-900">
               You are pre-approved
             </h3>
 
@@ -663,7 +663,7 @@ function SharedApplicationFormContent({
               for the next review stage.
             </p>
 
-            <div className="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5 text-center">
+            <div className="mt-3 sm:mt-6 rounded-[16px] border border-blue-200 bg-blue-50 p-3 sm:p-5 text-center">
               <p className="text-xs font-bold uppercase tracking-[0.24em] text-blue-700">
                 Reference Number
               </p>
@@ -672,7 +672,7 @@ function SharedApplicationFormContent({
               </p>
             </div>
 
-            <div className="mt-5 rounded-2xl border border-gray-200 bg-gray-50 p-5">
+            <div className="mt-2.5 sm:mt-5 rounded-[16px] border border-gray-200 bg-gray-50 p-3 sm:p-5">
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-500">
                 Next Step
               </p>
@@ -682,7 +682,7 @@ function SharedApplicationFormContent({
               </p>
             </div>
 
-            <div className="mt-6 flex justify-center">
+            <div className="mt-4 sm:mt-6 flex justify-center">
               <Link
                 href="/portal-login"
                 className="inline-flex rounded-full bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
