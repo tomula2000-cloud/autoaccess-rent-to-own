@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../../auth";
-import { download } from "@vercel/blob";
 
 export async function GET(request: Request) {
   try {
@@ -19,18 +18,27 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "No URL provided" }, { status: 400 });
     }
 
-    const { body, contentType } = await download(url, {
-      token: process.env.BLOB_READ_WRITE_TOKEN,
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
+      },
     });
+
+    if (!response.ok) {
+      return NextResponse.json({ error: "Failed to fetch document" }, { status: 500 });
+    }
+
+    const contentType = response.headers.get("content-type") || "application/octet-stream";
+    const body = response.body;
 
     return new NextResponse(body, {
       headers: {
-        "Content-Type": contentType || "application/octet-stream",
+        "Content-Type": contentType,
         "Cache-Control": "private, no-cache",
       },
     });
   } catch (error) {
-    console.error("Document download error:", error);
+    console.error("Document proxy error:", error);
     return NextResponse.json({ error: "Failed to fetch document" }, { status: 500 });
   }
 }
