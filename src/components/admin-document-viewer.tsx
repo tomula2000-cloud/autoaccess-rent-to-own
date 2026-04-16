@@ -37,14 +37,9 @@ export default function AdminDocumentViewer({ documents }: { documents: Document
     setLoadingId(doc.id);
     setErrorId(null);
     try {
-      const res = await fetch(`/api/admin/documents?url=${encodeURIComponent(doc.fileUrl)}`);
-      const data = await res.json();
-      if (data.downloadUrl) {
-        setPreviewUrl(data.downloadUrl);
-        setPreviewId(doc.id);
-      } else {
-        setErrorId(doc.id);
-      }
+      const proxyUrl = `/api/admin/documents?url=${encodeURIComponent(doc.fileUrl)}`;
+      setPreviewUrl(proxyUrl);
+      setPreviewId(doc.id);
     } catch {
       setErrorId(doc.id);
     } finally {
