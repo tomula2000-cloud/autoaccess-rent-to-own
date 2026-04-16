@@ -321,152 +321,70 @@ export default async function AdminApplicationDetailPage({
 
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="space-y-6">
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="mb-5 text-2xl font-bold">Applicant Information</h2>
-
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div>
-                  <p className="text-sm text-gray-500">Full Name</p>
-                  <p className="mt-1 font-semibold">{application.fullName}</p>
+            <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+              <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Applicant Profile</p>
+                <h2 className="text-[1.05rem] font-semibold text-white">Applicant Information</h2>
+              </div>
+              <div className="grid gap-0 divide-y divide-[#eef0f7] sm:grid-cols-2 sm:divide-y-0">
+                {[
+                  { label: "Full Name", value: application.fullName },
+                  { label: "Email", value: application.email },
+                  { label: "Phone", value: application.phone },
+                  { label: "Identity Type", value: formatIdentityType(application.identityType) },
+                  { label: "ID / Passport Number", value: application.identityNumber || "Not provided" },
+                  { label: "Employment Status", value: application.employmentStatus },
+                  { label: "Monthly Income", value: application.monthlyIncome },
+                  { label: "Salary Date", value: application.salaryDate || "Not provided" },
+                ].map((item) => (
+                  <div key={item.label} className="px-5 py-3.5 border-b border-[#eef0f7]">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">{item.label}</p>
+                    <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{item.value}</p>
+                  </div>
+                ))}
+                <div className="col-span-2 border-b border-[#eef0f7] px-5 py-3.5 sm:col-span-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Preferred Vehicle</p>
+                  <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{application.preferredVehicle}</p>
                 </div>
-
-                <div>
-                  <p className="text-sm text-gray-500">Email</p>
-                  <p className="mt-1 font-semibold">{application.email}</p>
+                <div className="col-span-2 border-b border-[#eef0f7] px-5 py-3.5 sm:col-span-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Physical Address</p>
+                  <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{application.physicalAddress || "Not provided"}</p>
                 </div>
-
-                <div>
-                  <p className="text-sm text-gray-500">Phone</p>
-                  <p className="mt-1 font-semibold">{application.phone}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-500">Identity Type</p>
-                  <p className="mt-1 font-semibold">
-                    {formatIdentityType(application.identityType)}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-500">ID / Passport Number</p>
-                  <p className="mt-1 font-semibold">
-                    {application.identityNumber || "Not provided"}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-500">Employment Status</p>
-                  <p className="mt-1 font-semibold">
-                    {application.employmentStatus}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-500">Monthly Income</p>
-                  <p className="mt-1 font-semibold">
-                    {application.monthlyIncome}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-500">Salary Date</p>
-                  <p className="mt-1 font-semibold">
-                    {application.salaryDate || "Not provided"}
-                  </p>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <p className="text-sm text-gray-500">Preferred Vehicle</p>
-                  <p className="mt-1 font-semibold">
-                    {application.preferredVehicle}
-                  </p>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <p className="text-sm text-gray-500">Physical Address</p>
-                  <p className="mt-1 font-semibold">
-                    {application.physicalAddress || "Not provided"}
-                  </p>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <p className="text-sm text-gray-500">Additional Notes</p>
-                  <p className="mt-1 font-semibold">
-                    {application.notes || "No additional notes provided."}
-                  </p>
+                <div className="col-span-2 px-5 py-3.5 sm:col-span-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Additional Notes</p>
+                  <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{application.notes || "No additional notes provided."}</p>
                 </div>
               </div>
             </div>
 
             {selectedVehicle ? (
-              <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 shadow-sm">
-                <h2 className="mb-5 text-2xl font-bold text-blue-950">
-                  Selected Vehicle Reference
-                </h2>
-
-                <div className="overflow-hidden rounded-2xl border border-blue-100 bg-white">
-                  <img
-                    src={selectedVehicle.featuredImage}
-                    alt={selectedVehicle.title}
-                    className="h-64 w-full object-cover"
-                  />
-                  <div className="grid gap-5 p-5 sm:grid-cols-2">
-                    <div>
-                      <p className="text-sm text-gray-500">Vehicle Title</p>
-                      <p className="mt-1 font-semibold">{selectedVehicle.title}</p>
+              <div className="overflow-hidden rounded-[24px] border border-[#dbe6ff] bg-gradient-to-br from-[#eef4ff] to-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+                <div className="border-b border-[#dbe6ff] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Selected Vehicle</p>
+                  <h2 className="text-[1.05rem] font-semibold text-white">Vehicle Reference</h2>
+                </div>
+                <div className="overflow-hidden">
+                  <img src={selectedVehicle.featuredImage} alt={selectedVehicle.title} className="h-56 w-full object-cover" />
+                </div>
+                <div className="divide-y divide-[#eef0f7]">
+                  {[
+                    { label: "Vehicle Title", value: selectedVehicle.title },
+                    { label: "Year Model", value: selectedVehicle.yearModel },
+                    { label: "Mileage", value: selectedVehicle.mileage },
+                    { label: "Transmission", value: selectedVehicle.transmission },
+                    { label: "Fuel Type", value: selectedVehicle.fuelType },
+                    { label: "Term", value: selectedVehicle.term },
+                    { label: "Deposit", value: selectedVehicle.depositAmount },
+                    { label: "Monthly Payment", value: selectedVehicle.monthlyPayment },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center justify-between px-5 py-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">{item.label}</p>
+                      <p className="text-[13px] font-semibold text-[#1b2345]">{item.value}</p>
                     </div>
-
-                    <div>
-                      <p className="text-sm text-gray-500">Year Model</p>
-                      <p className="mt-1 font-semibold">
-                        {selectedVehicle.yearModel}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-sm text-gray-500">Mileage</p>
-                      <p className="mt-1 font-semibold">
-                        {selectedVehicle.mileage}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-sm text-gray-500">Transmission</p>
-                      <p className="mt-1 font-semibold">
-                        {selectedVehicle.transmission}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-sm text-gray-500">Fuel Type</p>
-                      <p className="mt-1 font-semibold">
-                        {selectedVehicle.fuelType}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-sm text-gray-500">Term</p>
-                      <p className="mt-1 font-semibold">{selectedVehicle.term}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-sm text-gray-500">Deposit</p>
-                      <p className="mt-1 font-semibold">
-                        {selectedVehicle.depositAmount}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-sm text-gray-500">Monthly Payment</p>
-                      <p className="mt-1 font-semibold">
-                        {selectedVehicle.monthlyPayment}
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             ) : null}
-
             {showContractPreparation ? (
               <div className="rounded-2xl border border-purple-200 bg-purple-50 p-6 shadow-sm">
                 <h2 className="mb-2 text-2xl font-bold text-purple-950">
@@ -485,14 +403,14 @@ export default async function AdminApplicationDetailPage({
                   method="POST"
                   className="space-y-6"
                 >
-                  <div className="rounded-2xl border border-purple-100 bg-white p-5">
-                    <h3 className="text-lg font-bold text-gray-900">
+                  <div className="rounded-[18px] border border-[#e8ecf5] bg-[#fafbff] p-5">
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1b2345]">
                       Contract Client Snapshot
                     </h3>
 
                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Client Full Name
                         </label>
                         <input
@@ -502,13 +420,13 @@ export default async function AdminApplicationDetailPage({
                             application.contractClientFullName ||
                             application.fullName
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                           required
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Client Email
                         </label>
                         <input
@@ -517,12 +435,12 @@ export default async function AdminApplicationDetailPage({
                           defaultValue={
                             application.contractClientEmail || application.email
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Client Phone
                         </label>
                         <input
@@ -531,12 +449,12 @@ export default async function AdminApplicationDetailPage({
                           defaultValue={
                             application.contractClientPhone || application.phone
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Identity Type
                         </label>
                         <input
@@ -546,12 +464,12 @@ export default async function AdminApplicationDetailPage({
                             application.contractClientIdentityType ||
                             formatIdentityType(application.identityType)
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Identity Number
                         </label>
                         <input
@@ -562,13 +480,13 @@ export default async function AdminApplicationDetailPage({
                             application.identityNumber ||
                             ""
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                           required
                         />
                       </div>
 
                       <div className="sm:col-span-2">
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Contract Address
                         </label>
                         <textarea
@@ -579,20 +497,20 @@ export default async function AdminApplicationDetailPage({
                             application.physicalAddress ||
                             ""
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-purple-100 bg-white p-5">
-                    <h3 className="text-lg font-bold text-gray-900">
+                  <div className="rounded-[18px] border border-[#e8ecf5] bg-[#fafbff] p-5">
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1b2345]">
                       Contract Vehicle Snapshot
                     </h3>
 
                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
                       <div className="sm:col-span-2">
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Vehicle Title
                         </label>
                         <input
@@ -603,13 +521,13 @@ export default async function AdminApplicationDetailPage({
                             selectedVehicle?.title ||
                             application.preferredVehicle
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                           required
                         />
                       </div>
 
                       <div className="sm:col-span-2">
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Vehicle Image URL
                         </label>
                         <input
@@ -620,12 +538,12 @@ export default async function AdminApplicationDetailPage({
                             selectedVehicle?.featuredImage ||
                             ""
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Year Model
                         </label>
                         <input
@@ -636,12 +554,12 @@ export default async function AdminApplicationDetailPage({
                             selectedVehicle?.yearModel ||
                             ""
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Mileage
                         </label>
                         <input
@@ -652,12 +570,12 @@ export default async function AdminApplicationDetailPage({
                             selectedVehicle?.mileage ||
                             ""
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Transmission
                         </label>
                         <input
@@ -668,12 +586,12 @@ export default async function AdminApplicationDetailPage({
                             selectedVehicle?.transmission ||
                             ""
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Fuel Type
                         </label>
                         <input
@@ -684,20 +602,20 @@ export default async function AdminApplicationDetailPage({
                             selectedVehicle?.fuelType ||
                             ""
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-purple-100 bg-white p-5">
-                    <h3 className="text-lg font-bold text-gray-900">
+                  <div className="rounded-[18px] border border-[#e8ecf5] bg-[#fafbff] p-5">
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1b2345]">
                       Contract Financial Snapshot
                     </h3>
 
                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Deposit Amount
                         </label>
                         <input
@@ -708,13 +626,13 @@ export default async function AdminApplicationDetailPage({
                             fallbackDepositAmount
                           }
                           placeholder="e.g. 8500"
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                           required
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Licensing Fee
                         </label>
                         <input
@@ -725,13 +643,13 @@ export default async function AdminApplicationDetailPage({
                             fallbackLicensingFee
                           }
                           placeholder="e.g. 1850"
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                           required
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Monthly Payment
                         </label>
                         <input
@@ -742,13 +660,13 @@ export default async function AdminApplicationDetailPage({
                             fallbackMonthlyPayment
                           }
                           placeholder="e.g. 2760"
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                           required
                         />
                       </div>
 
                       <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
                           Contract Term
                         </label>
                         <input
@@ -759,7 +677,7 @@ export default async function AdminApplicationDetailPage({
                             selectedVehicle?.term ||
                             "54 Months"
                           }
-                          className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+                          className="w-full w-full rounded-[12px] border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
                         />
                       </div>
                     </div>
@@ -801,8 +719,8 @@ export default async function AdminApplicationDetailPage({
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-purple-100 bg-white p-5">
-                    <h3 className="text-lg font-bold text-gray-900">
+                  <div className="rounded-[18px] border border-[#e8ecf5] bg-[#fafbff] p-5">
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1b2345]">
                       Contract Terms Snapshot
                     </h3>
 
@@ -868,7 +786,7 @@ export default async function AdminApplicationDetailPage({
                     ) : null}
 
                     <div className="rounded-2xl border border-indigo-100 bg-white p-5">
-                      <h3 className="text-lg font-bold text-gray-900">
+                      <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1b2345]">
                         Vehicle Snapshot
                       </h3>
 
@@ -919,7 +837,7 @@ export default async function AdminApplicationDetailPage({
                     </div>
 
                     <div className="rounded-2xl border border-indigo-100 bg-white p-5">
-                      <h3 className="text-lg font-bold text-gray-900">
+                      <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1b2345]">
                         Client Snapshot
                       </h3>
 
@@ -975,7 +893,7 @@ export default async function AdminApplicationDetailPage({
 
                   <div className="space-y-4">
                     <div className="rounded-2xl border border-indigo-100 bg-white p-5">
-                      <h3 className="text-lg font-bold text-gray-900">
+                      <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1b2345]">
                         Financial Snapshot
                       </h3>
 
@@ -1019,7 +937,7 @@ export default async function AdminApplicationDetailPage({
                     </div>
 
                     <div className="rounded-2xl border border-indigo-100 bg-white p-5">
-                      <h3 className="text-lg font-bold text-gray-900">
+                      <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1b2345]">
                         Contract Terms Preview
                       </h3>
 
@@ -1037,12 +955,17 @@ export default async function AdminApplicationDetailPage({
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="mb-5 text-2xl font-bold">Update Status</h2>
-              <AdminStatusForm
-                applicationId={application.id}
-                currentStatus={application.status}
-              />
+            <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+              <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Application Management</p>
+                <h2 className="text-[1.05rem] font-semibold text-white">Update Status</h2>
+              </div>
+              <div className="p-5">
+                <AdminStatusForm
+                  applicationId={application.id}
+                  currentStatus={application.status}
+                />
+              </div>
             </div>
 
             <AdminApprovalValidityForm
