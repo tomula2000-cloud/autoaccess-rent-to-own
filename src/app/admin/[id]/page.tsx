@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import AdminDocumentViewer from "@/components/admin-document-viewer";
 import { prisma } from "@/lib/prisma";
 import AdminStatusForm from "@/components/admin-status-form";
 import AdminApprovalValidityForm from "@/components/admin-approval-validity-form";
@@ -1053,44 +1054,14 @@ export default async function AdminApplicationDetailPage({
               }
             />
 
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="mb-5 text-2xl font-bold">Uploaded Documents</h2>
-
-              {application.documents.length === 0 ? (
-                <div className="rounded-xl bg-gray-50 p-4 text-sm text-gray-600">
-                  No documents uploaded yet.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {application.documents.map(
-                    (document: ApplicationDocument, index: number) => (
-                      <div
-                        key={document.id}
-                        className="rounded-xl border border-gray-200 bg-gray-50 p-4"
-                      >
-                        <p className="font-semibold">
-                          File {index + 1}: {document.fileName}
-                        </p>
-                        <p className="mt-1 text-sm text-gray-600">
-                          Type: {formatStatus(document.documentType)}
-                        </p>
-                        <p className="mt-1 text-sm text-gray-500">
-                          Uploaded:{" "}
-                          {new Date(document.createdAt).toLocaleString()}
-                        </p>
-                        <a
-                          href={document.fileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="mt-3 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-                        >
-                          Open File
-                        </a>
-                      </div>
-                    )
-                  )}
-                </div>
-              )}
+            <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+              <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Client Documents</p>
+                <h2 className="text-[1.05rem] font-semibold text-white">Uploaded Supporting Files</h2>
+              </div>
+              <div className="p-5">
+                <AdminDocumentViewer documents={application.documents} />
+              </div>
             </div>
 
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
