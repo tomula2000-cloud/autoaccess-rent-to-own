@@ -7,7 +7,7 @@ type AppShellProps = {
 };
 
 const PHONE_LINK = "tel:0870126734";
-const WHATSAPP_LINK = "https://wa.me/27870126734";
+const WHATSAPP_LINK = "https://wa.me/27610490061";
 
 export default function AppShell({ children }: AppShellProps) {
   return (

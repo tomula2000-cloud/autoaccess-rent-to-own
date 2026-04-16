@@ -465,7 +465,7 @@ export default async function PortalLoginPage({ searchParams }: PageProps) {
                   </p>
                   <div className="mt-5 flex gap-2">
                     <a
-                      href="https://wa.me/27870126734"
+                      href="https://wa.me/27610490061"
                       target="_blank"
                       rel="noreferrer"
                       aria-label="WhatsApp"
@@ -506,7 +506,7 @@ export default async function PortalLoginPage({ searchParams }: PageProps) {
                     <a href="mailto:info@autoaccess.co.za" className="block transition hover:text-white">
                       Email Support
                     </a>
-                    <a href="https://wa.me/27870126734" target="_blank" rel="noreferrer" className="block transition hover:text-white">
+                    <a href="https://wa.me/27610490061" target="_blank" rel="noreferrer" className="block transition hover:text-white">
                       WhatsApp Us
                     </a>
                     <span className="block">Mon – Fri, 08:00 – 17:00</span>

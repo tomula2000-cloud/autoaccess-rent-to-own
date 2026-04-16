@@ -1254,7 +1254,7 @@ function HomePageContent() {
                     South Africa&apos;s trusted rent-to-own vehicle platform. Vehicle access for every South African.
                   </p>
                   <div className="mt-5 flex gap-2">
-                    <a href="https://wa.me/27870126734" target="_blank" rel="noreferrer" aria-label="WhatsApp"
+                    <a href="https://wa.me/27610490061" target="_blank" rel="noreferrer" aria-label="WhatsApp"
                       className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition hover:border-emerald-400/40 hover:bg-emerald-500/10 hover:text-emerald-300">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-4 w-4 fill-current">
                         <path d="M19.11 17.21c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.59.14-.17.27-.68.87-.83 1.05-.15.18-.3.2-.57.07-.27-.14-1.13-.42-2.15-1.33-.79-.7-1.33-1.57-1.48-1.84-.15-.27-.02-.41.11-.54.12-.12.27-.3.41-.45.14-.15.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.59-1.43-.81-1.96-.21-.5-.43-.43-.59-.44h-.5c-.18 0-.45.07-.68.34-.23.27-.89.87-.89 2.12 0 1.25.91 2.45 1.03 2.62.12.16 1.78 2.72 4.31 3.82.6.26 1.08.42 1.45.54.61.19 1.17.16 1.61.1.49-.07 1.58-.65 1.8-1.28.22-.63.22-1.17.15-1.28-.06-.11-.24-.18-.5-.32Z" />
@@ -1321,7 +1321,7 @@ function HomePageContent() {
                       </svg>
                       087 012 6734
                     </a>
-                    <a href="https://wa.me/27870126734" target="_blank" rel="noreferrer"
+                    <a href="https://wa.me/27610490061" target="_blank" rel="noreferrer"
                       className="flex items-center gap-2.5 text-[13px] text-blue-50/55 transition hover:text-white">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-3.5 w-3.5 shrink-0 fill-[#f4c89a]">
                         <path d="M19.11 17.21c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.59.14-.17.27-.68.87-.83 1.05-.15.18-.3.2-.57.07-.27-.14-1.13-.42-2.15-1.33-.79-.7-1.33-1.57-1.48-1.84-.15-.27-.02-.41.11-.54.12-.12.27-.3.41-.45.14-.15.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.59-1.43-.81-1.96-.21-.5-.43-.43-.59-.44h-.5c-.18 0-.45.07-.68.34-.23.27-.89.87-.89 2.12 0 1.25.91 2.45 1.03 2.62.12.16 1.78 2.72 4.31 3.82.6.26 1.08.42 1.45.54.61.19 1.17.16 1.61.1.49-.07 1.58-.65 1.8-1.28.22-.63.22-1.17.15-1.28-.06-.11-.24-.18-.5-.32Z" />

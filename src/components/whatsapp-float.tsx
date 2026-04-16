@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 const WHATSAPP_LINK =
-  "https://wa.me/27870126734?text=Hi%20Auto%20Access%2C%20I%20have%20a%20question%20about%20my%20application.";
+  "https://wa.me/27610490061?text=Hi%20Auto%20Access%2C%20I%20have%20a%20question%20about%20my%20application.";
 
 export default function WhatsAppFloat() {
   const [visible, setVisible] = useState(false);

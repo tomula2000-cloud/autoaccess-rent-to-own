@@ -5,7 +5,7 @@ type AppShellProps = {
   children: ReactNode;
 };
 
-const WHATSAPP_LINK = "https://wa.me/27870126734";
+const WHATSAPP_LINK = "https://wa.me/27610490061";
 const FACEBOOK_LINK = "#";
 const PHONE_LINK = "tel:0870126734";
 
