@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import AdminDocumentViewer from "@/components/admin-document-viewer";
+import AdminDocumentActions from "@/components/admin-document-actions";
 import { prisma } from "@/lib/prisma";
 import AdminStatusForm from "@/components/admin-status-form";
 import AdminApprovalValidityForm from "@/components/admin-approval-validity-form";
@@ -1063,6 +1064,11 @@ export default async function AdminApplicationDetailPage({
                 <AdminDocumentViewer documents={application.documents} />
               </div>
             </div>
+            <AdminDocumentActions
+              applicationId={application.id}
+              status={application.status}
+              fullName={application.fullName}
+            />
 
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <h2 className="mb-5 text-2xl font-bold">Status History</h2>

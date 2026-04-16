@@ -384,6 +384,92 @@ function getStatusTemplate(status: string, note?: string | null) {
   }
 }
 
+export async function sendDocumentReminderEmail({
+  to,
+  fullName,
+  referenceNumber,
+}: {
+  to: string;
+  fullName: string;
+  referenceNumber: string;
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not set.");
+  }
+
+  const portalUrl = getPortalUrl();
+
+  return resend.emails.send({
+    from: "Auto Access <noreply@autoaccess.co.za>",
+    replyTo: "support@autoaccess.co.za",
+    to,
+    subject: "Action required — your Auto Access application is waiting for documents",
+    html: `
+    <div style="font-family: Arial, sans-serif; background:#f8fafc; padding:40px 20px; color:#111827;">
+      <div style="max-width:680px; margin:0 auto; background:#ffffff; border:1px solid #e5e7eb; border-radius:24px; padding:40px;">
+        <p style="margin:0 0 12px; font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:#f97316; font-weight:700;">
+          Auto Access Rent To Own
+        </p>
+        <h1 style="margin:0 0 12px; font-size:28px; line-height:1.2; color:#111827;">
+          Your documents are still outstanding
+        </h1>
+        <p style="margin:0 0 24px; font-size:16px; line-height:1.8; color:#4b5563;">
+          Hello ${fullName}, your Auto Access rent-to-own application has been received but your supporting documents have not yet been uploaded. Your application cannot proceed to the review stage until all documents are received.
+        </p>
+
+        <div style="margin:24px 0; border:1px solid #bfdbfe; background:#eff6ff; border-radius:18px; padding:22px; text-align:center;">
+          <p style="margin:0 0 8px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#1d4ed8; font-weight:700;">Reference Number</p>
+          <p style="margin:0; font-size:28px; font-weight:800; color:#1e3a8a;">${referenceNumber}</p>
+        </div>
+
+        <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:20px;">
+          <p style="margin:0 0 12px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#f97316; font-weight:700;">Required Documents</p>
+          <ul style="margin:0; padding-left:20px; font-size:15px; line-height:2; color:#4b5563;">
+            <li>South African ID or Passport</li>
+            <li>3 months bank statements</li>
+            <li>Proof of income (payslip or bank statements)</li>
+            <li>Proof of residence (not older than 3 months)</li>
+            <li>Valid driver's licence</li>
+          </ul>
+        </div>
+
+        <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:20px;">
+          <p style="margin:0 0 12px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#f97316; font-weight:700;">3 Ways to Submit Your Documents</p>
+          <p style="margin:0 0 8px; font-size:15px; line-height:1.8; color:#4b5563;">
+            <strong style="color:#111827;">Option 1 — Client Portal (Recommended):</strong><br/>
+            Log into your secure portal and upload directly.
+          </p>
+          <p style="margin:0 0 8px; font-size:15px; line-height:1.8; color:#4b5563;">
+            <strong style="color:#111827;">Option 2 — Email:</strong><br/>
+            Send your documents to <a href="mailto:docs@autoaccess.co.za" style="color:#2563eb;">docs@autoaccess.co.za</a> with your reference number <strong>${referenceNumber}</strong> in the subject line.
+          </p>
+          <p style="margin:0; font-size:15px; line-height:1.8; color:#4b5563;">
+            <strong style="color:#111827;">Option 3 — WhatsApp:</strong><br/>
+            Send your documents via WhatsApp to <a href="https://wa.me/27610490061" style="color:#2563eb;">+27 61 049 0061</a> with your reference number.
+          </p>
+        </div>
+
+        <div style="margin-top:32px; text-align:center;">
+          <a href="${portalUrl}" style="display:inline-block; background:#2563eb; color:#ffffff; text-decoration:none; font-weight:700; padding:14px 32px; border-radius:12px; font-size:15px;">
+            Go to Client Portal
+          </a>
+        </div>
+
+        <p style="margin:32px 0 0; font-size:14px; line-height:1.8; color:#6b7280;">
+          Need help? Call us on <strong>087 012 6734</strong> or WhatsApp <strong>+27 61 049 0061</strong><br/>
+          Monday to Friday, 8am to 5pm.
+        </p>
+
+        <div style="margin-top:24px; border-top:1px solid #e5e7eb; padding-top:20px; text-align:center;">
+          <p style="margin:0; font-size:12px; color:#9ca3af;">Auto Access (Pty) Ltd · autoaccess.co.za</p>
+          <p style="margin:4px 0 0; font-size:11px; color:#d1d5db; font-style:italic;">Driven by progress. Built on trust.</p>
+        </div>
+      </div>
+    </div>
+    `,
+  });
+}
+
 export async function sendApplicationReceivedEmail({
   to,
   fullName,
