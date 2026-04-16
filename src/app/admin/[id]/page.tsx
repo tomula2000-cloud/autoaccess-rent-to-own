@@ -254,6 +254,13 @@ export default async function AdminApplicationDetailPage({
           contract preparation controls before issuing the contract.
         </p>
 
+        <div className="mb-5 flex items-center gap-3">
+          <a href="/admin" className="inline-flex items-center gap-2 rounded-full border border-[#e1e4ee] bg-white px-4 py-2 text-[12px] font-semibold text-[#68708a] shadow-sm transition hover:border-[#dbe6ff] hover:text-[#2f67de]">
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back to Dashboard
+          </a>
+        </div>
+
         {resolvedSearchParams.success ? (
           <div className="mb-6 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-medium text-green-800">
             {resolvedSearchParams.success}
