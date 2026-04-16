@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AdminBulkReminder from "@/components/admin-bulk-reminder";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth";
@@ -116,6 +117,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
   const approvedCount = getSummaryCount(allApplications, ["APPROVED_IN_PRINCIPLE", "CONTRACT_REQUESTED", "CONTRACT_ISSUED"]);
   const completedCount = getSummaryCount(allApplications, ["COMPLETED", "PAYMENT_CONFIRMED"]);
   const declinedCount = getSummaryCount(allApplications, ["DECLINED"]);
+  const pendingDocsCount = getSummaryCount(allApplications, [
+    "APPLICATION_RECEIVED",
+    "PRE_QUALIFIED",
+    "AWAITING_DOCUMENTS",
+    "ADDITIONAL_DOCUMENTS_REQUIRED",
+  ]);
 
   return (
     <main className="min-h-screen bg-[#f4f6fb] px-4 py-8 sm:px-6 lg:px-8">
@@ -160,6 +167,11 @@ export default async function AdminPage({ searchParams }: PageProps) {
               <p className={`mt-1.5 text-3xl font-bold ${stat.text}`}>{stat.value}</p>
             </div>
           ))}
+        </div>
+
+        {/* ── Bulk Reminder ── */}
+        <div className="mb-6">
+          <AdminBulkReminder pendingCount={pendingDocsCount} />
         </div>
 
         {/* ── Search and Filter ── */}
