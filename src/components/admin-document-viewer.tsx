@@ -106,6 +106,7 @@ export default function AdminDocumentViewer({ documents }: { documents: Document
               </button>
               {previewId === doc.id && previewUrl ? (
                 
+                  <a
                   href={previewUrl}
                   download={doc.fileName}
                   className="inline-flex items-center gap-1.5 rounded-full border border-[#e1e4ee] bg-white px-4 py-2 text-[11px] font-bold text-[#68708a] transition hover:border-[#dbe6ff] hover:text-[#2f67de]"
