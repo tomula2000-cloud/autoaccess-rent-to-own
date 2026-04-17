@@ -1,4 +1,5 @@
 "use client";
+import type { ReactNode } from "react";
 
 import Link from "next/link";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -180,7 +181,7 @@ function MobileHomeFallback() {
   );
 }
 
-function MobileHomeContent() {
+function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: ReactNode }) {
   const searchParams = useSearchParams();
   const prefilledVehicle = useMemo(
     () => searchParams.get("vehicle") ?? "",
@@ -992,47 +993,8 @@ function MobileHomeContent() {
           </div>
         </section>
 
-        <section className="section-reveal mt-4 overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_24px_60px_-20px_rgba(15,23,42,0.18)]">
-          <div className="h-[150px] bg-gradient-to-br from-[#2f67de] to-[#4f86f7] relative overflow-hidden">
-            <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-white" />
-              Popular Choices
-            </div>
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)] bg-[size:20px_20px]" />
-            <div className="relative flex h-full items-center justify-center text-white">
-              <svg width="120" height="56" viewBox="0 0 120 56" fill="none">
-                <path d="M18 36h84l6-13.5H97L86 12H38l-9 10.5H24L18 36Z" stroke="currentColor" strokeWidth="2.6" />
-                <circle cx="34" cy="40" r="8" stroke="currentColor" strokeWidth="2.6" />
-                <circle cx="87" cy="40" r="8" stroke="currentColor" strokeWidth="2.6" />
-              </svg>
-            </div>
-          </div>
-
-          <div className="p-5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">
-              Vehicle Access
-            </p>
-            <h2 className="mt-2 text-[1.2rem] font-semibold text-[#1b2345]">
-              Affordable options designed for your budget
-            </h2>
-            <div className="mt-4 flex items-baseline gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">
-                From
-              </span>
-              <span className="text-[2rem] font-semibold tabular-nums text-[#1b2345]">
-                R4,999
-              </span>
-              <span className="text-sm text-[#68708a]">/ month</span>
-            </div>
-
-            <Link
-              href="/gallery"
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-6 py-4 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(47,103,222,0.45)]"
-            >
-              View Vehicle Gallery
-              <IconArrow />
-            </Link>
-          </div>
+        <section className="section-reveal mt-4">
+          {featuredVehiclesSlot}
         </section>
 
         <footer className="section mt-4 overflow-hidden rounded-[24px] bg-gradient-to-br from-[#0b1532] to-[#060e24] px-5 py-7">
@@ -1083,10 +1045,10 @@ function MobileHomeContent() {
   );
 }
 
-export default function MobileHomeView() {
+export default function MobileHomeView({ featuredVehiclesSlot }: { featuredVehiclesSlot?: ReactNode }) {
   return (
     <Suspense fallback={<MobileHomeFallback />}>
-      <MobileHomeContent />
+      <MobileHomeContent featuredVehiclesSlot={featuredVehiclesSlot} />
     </Suspense>
   );
 }

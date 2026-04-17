@@ -1,6 +1,7 @@
 import DesktopHomeView from "@/components/home/desktop-home-view";
 import MobileHomeView from "@/components/home/mobile-home-view";
 import HomeFeaturedVehicles from "@/components/home/home-featured-vehicles";
+import HomeFeaturedVehiclesMobileWrapper from "@/components/home/home-featured-vehicles-mobile-wrapper";
 
 export default function HomePage() {
   return (
@@ -9,7 +10,7 @@ export default function HomePage() {
         <DesktopHomeView featuredVehiclesSlot={<HomeFeaturedVehicles />} />
       </div>
       <div className="block md:hidden">
-        <MobileHomeView />
+        <MobileHomeView featuredVehiclesSlot={<HomeFeaturedVehiclesMobileWrapper />} />
       </div>
     </>
   );
