@@ -1,4 +1,5 @@
 "use client";
+import type { ReactNode } from "react";
 
 import Link from "next/link";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -186,7 +187,7 @@ function HomePageFallback() {
 // ─────────────────────────────────────────────────────────────────────────────
 //  INNER COMPONENT (contains useSearchParams)
 // ─────────────────────────────────────────────────────────────────────────────
-function HomePageContent() {
+function HomePageContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: ReactNode }) {
   // ── Search params — UNCHANGED ──
   const searchParams = useSearchParams();
   const prefilledVehicle = useMemo(
@@ -914,64 +915,7 @@ function HomePageContent() {
               </div>
 
               <div className="p-6 sm:p-8">
-                <div className="grid gap-5 md:grid-cols-3">
-                  {[
-                    {
-                      tag: "Blacklisted",
-                      headline: "Your name is on a credit bureau",
-                      body: "Being blacklisted does not automatically disqualify you from accessing a vehicle. We evaluate your current affordability and situation, not only your credit history.",
-                      grad: "from-[#d59758] to-[#e4ad72]",
-                      chipBg: "border-[#f1dfd1] bg-[#fbf2ea] text-[#c37d43]",
-                      hoverBorder: "hover:border-[#d59758]/30 hover:shadow-[0_12px_30px_-12px_rgba(213,151,88,0.2)]",
-                      orb: "from-[#d59758]/10",
-                      linkColor: "text-[#c37d43]",
-                    },
-                    {
-                      tag: "Debt Review",
-                      headline: "Currently under debt review",
-                      body: "We understand that debt review is a responsible step toward financial recovery. We consider applications from clients navigating this process on a case-by-case basis.",
-                      grad: "from-[#2f67de] to-[#4f86f7]",
-                      chipBg: "border-[#dbe6ff] bg-[#eef4ff] text-[#2f67de]",
-                      hoverBorder: "hover:border-[#2f67de]/30 hover:shadow-[0_12px_30px_-12px_rgba(47,103,222,0.2)]",
-                      orb: "from-[#2f67de]/10",
-                      linkColor: "text-[#2f67de]",
-                    },
-                    {
-                      tag: "Low Credit Score",
-                      headline: "Your credit score is below average",
-                      body: "A low score is not a permanent verdict. We look at your full financial picture — your income, affordability, and commitment — to assess your application fairly.",
-                      grad: "from-emerald-500 to-emerald-600",
-                      chipBg: "border-emerald-200 bg-emerald-50 text-emerald-700",
-                      hoverBorder: "hover:border-emerald-300 hover:shadow-[0_12px_30px_-12px_rgba(16,185,129,0.2)]",
-                      orb: "from-emerald-400/10",
-                      linkColor: "text-emerald-700",
-                    },
-                  ].map(({ tag, headline, body, grad, chipBg, hoverBorder, orb, linkColor }) => (
-                    <div
-                      key={tag}
-                      className={`group relative overflow-hidden rounded-[22px] border border-[#e1e4ee] bg-white p-6 shadow-[0_6px_18px_-8px_rgba(15,23,42,0.1)] transition hover:-translate-y-1 ${hoverBorder}`}
-                    >
-                      <div className={`absolute right-0 top-0 h-32 w-32 rounded-full bg-gradient-to-br ${orb} to-transparent blur-2xl`} />
-                      <div className="relative">
-                        <div className="flex items-center gap-3">
-                          <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${grad} text-white shadow-[0_8px_18px_-6px_rgba(47,103,222,0.5)]`}>
-                            <IconCheck />
-                          </div>
-                          <span className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${chipBg}`}>
-                            {tag}
-                          </span>
-                        </div>
-                        <h3 className="mt-5 text-[1.2rem] font-semibold leading-tight tracking-tight text-[#1b2345]">
-                          {headline}
-                        </h3>
-                        <p className="mt-3 text-[13.5px] leading-[1.7] text-[#39425d]">{body}</p>
-                        <a href="#application-form" className={`mt-5 inline-flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.18em] ${linkColor} transition hover:opacity-80`}>
-                          Apply Now <IconArrow />
-                        </a>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {featuredVehiclesSlot}
               </div>
             </div>
           </section>
@@ -1059,7 +1003,6 @@ function HomePageContent() {
 
           {/* ════════════════════════════════════════════════════
               § 6  VEHICLE SHOWCASE
-          ════════════════════════════════════════════════════ */}
           <section className="section-reveal mt-6 overflow-hidden rounded-[30px] border border-[#e1e4ee] bg-white/95 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.18)] backdrop-blur md:p-2">
             <div className="overflow-hidden rounded-[26px] bg-white">
               <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-6 py-5 sm:px-8">
@@ -1073,7 +1016,7 @@ function HomePageContent() {
                         Vehicle Selection
                       </p>
                       <h2 className="text-[1.15rem] font-semibold text-white sm:text-[1.3rem]">
-                        Sample monthly rates
+                        Featured vehicles
                       </h2>
                     </div>
                   </div>
@@ -1084,67 +1027,13 @@ function HomePageContent() {
                   </Link>
                 </div>
               </div>
-
               <div className="p-6 sm:p-8">
-                <div className="grid gap-5 md:grid-cols-3">
-                  {[
-                    { tag: "Most Popular", cat: "Sedan",          name: "Mid-Range Sedan",    price: "R 2,850", grad: "from-[#2f67de] to-[#4f86f7]", orb: "from-[#2f67de]/10", hover: "hover:border-[#2f67de]/30" },
-                    { tag: "SUV",          cat: "SUV / Crossover", name: "Compact SUV",       price: "R 3,990", grad: "from-[#d59758] to-[#e4ad72]", orb: "from-[#d59758]/10", hover: "hover:border-[#d59758]/30" },
-                    { tag: "Bakkie",       cat: "Bakkie / Pickup", name: "Double Cab Bakkie", price: "R 4,750", grad: "from-emerald-500 to-emerald-600", orb: "from-emerald-400/10", hover: "hover:border-emerald-300" },
-                  ].map(({ tag, cat, name, price, grad, orb, hover }) => (
-                    <div
-                      key={name}
-                      className={`group relative overflow-hidden rounded-[22px] border border-[#e1e4ee] bg-white shadow-[0_6px_18px_-8px_rgba(15,23,42,0.1)] transition hover:-translate-y-1 ${hover} hover:shadow-[0_24px_50px_-18px_rgba(47,103,222,0.25)]`}
-                    >
-                      {/* Vehicle illustrated header */}
-                      <div className={`relative flex h-40 items-center justify-center bg-gradient-to-br ${grad}`}>
-                        <div className="absolute inset-0">
-                          <div
-                            className="absolute inset-0 opacity-[0.12]"
-                            style={{
-                              backgroundImage:
-                                "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
-                              backgroundSize: "20px 20px",
-                            }}
-                          />
-                          <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/15 blur-2xl" />
-                        </div>
-                        <svg className="relative w-32 opacity-90" viewBox="0 0 200 80" fill="none">
-                          <rect x="20" y="30" width="160" height="30" rx="8" fill="white" fillOpacity="0.95" />
-                          <ellipse cx="55" cy="62" rx="14" ry="14" fill="white" />
-                          <ellipse cx="145" cy="62" rx="14" ry="14" fill="white" />
-                          <path d="M40 30 L70 10 L130 10 L160 30" stroke="white" strokeWidth="3" fill="rgba(255,255,255,0.2)" />
-                        </svg>
-                        <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white backdrop-blur">
-                          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-                          {tag}
-                        </div>
-                      </div>
-
-                      <div className="relative p-5">
-                        <div className={`absolute right-0 top-0 h-24 w-24 rounded-full bg-gradient-to-br ${orb} to-transparent blur-2xl`} />
-                        <div className="relative">
-                          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#68708a]">{cat}</p>
-                          <p className="mt-1 text-[1.1rem] font-semibold text-[#1b2345]">{name}</p>
-                          <div className="mt-3 flex items-baseline gap-1.5">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">from</span>
-                            <span className="text-[1.6rem] font-semibold tabular-nums text-[#1b2345]">{price}</span>
-                            <span className="text-[11px] text-[#68708a]">/ month</span>
-                          </div>
-                          <a href="#application-form"
-                            className="group/cta mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-5 py-2.5 text-xs font-semibold text-white shadow-[0_12px_26px_-10px_rgba(47,103,222,0.55)] transition hover:from-[#2559c6] hover:to-[#3568d6]">
-                            Enquire About This Vehicle
-                            <span className="transition group-hover/cta:translate-x-0.5"><IconArrow /></span>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {featuredVehiclesSlot}
               </div>
             </div>
           </section>
-
+            </div>
+          </section>
           {/* ════════════════════════════════════════════════════
               § 7  TRUST & COMPLIANCE
           ════════════════════════════════════════════════════ */}
@@ -1362,10 +1251,10 @@ function HomePageContent() {
 // ─────────────────────────────────────────────────────────────────────────────
 //  EXPORTED WRAPPER (Suspense boundary for useSearchParams)
 // ─────────────────────────────────────────────────────────────────────────────
-export default function HomePage() {
+export default function HomePage({ featuredVehiclesSlot }: { featuredVehiclesSlot?: ReactNode }) {
   return (
     <Suspense fallback={<HomePageFallback />}>
-      <HomePageContent />
+      <HomePageContent featuredVehiclesSlot={featuredVehiclesSlot} />
     </Suspense>
   );
 }

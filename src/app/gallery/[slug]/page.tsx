@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import SiteHeader from "@/components/site-header";
 
 type PageProps = {
   params: Promise<{
@@ -76,7 +75,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-gray-50 text-black">
-      <SiteHeader />
+      
 
       <section className="px-6 py-16">
         <div className="mx-auto max-w-7xl">
