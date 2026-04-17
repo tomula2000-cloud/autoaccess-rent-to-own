@@ -1,5 +1,6 @@
 import WhatsAppFloat from "@/components/whatsapp-float";
 import PortalHeaderChip from "@/components/portal-header-chip";
+import { DesktopNav, MobileMenu } from "@/components/portal-nav-aware";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -32,34 +33,13 @@ export default function AppShell({ children }: AppShellProps) {
           <Link href="/" className="flex shrink-0 items-center gap-3">
             <p className="text-[17px] font-semibold text-white">Auto<span className="text-[#d59758]">Access</span></p>
           </Link>
-          <nav className="hidden items-center gap-6 md:flex">
-            <Link href="/" className="text-[13px] font-medium text-blue-50/60 transition hover:text-white">Home</Link>
-            <Link href="/gallery" className="text-[13px] font-medium text-blue-50/60 transition hover:text-white">Showroom</Link>
-            <Link href="/apply" className="text-[13px] font-medium text-blue-50/60 transition hover:text-white">Apply</Link>
-            <Link href="/portal-login" className="text-[13px] font-medium text-blue-50/60 transition hover:text-white">Client Portal</Link>
-          </nav>
+          <DesktopNav />
           <div className="hidden items-center gap-2.5 md:flex">
             <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-[12px] font-semibold text-emerald-400">WhatsApp</a>
             <a href={PHONE_LINK} className="call-btn rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-4 py-2 text-[12px] font-bold uppercase tracking-[0.12em] text-white">Call Us</a>
             <PortalHeaderChip />
           </div>
-          <details className="relative ml-auto md:hidden">
-            <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white">
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
-            </summary>
-            <div className="absolute right-0 top-12 z-50 w-64 overflow-hidden rounded-[18px] border border-white/10 bg-gradient-to-b from-[#0d1a3d] to-[#0b1532] p-3 shadow-[0_16px_40px_rgba(11,21,50,0.5)]">
-              <nav className="grid gap-1">
-                <Link href="/" className="rounded-[12px] px-4 py-3 text-[14px] font-medium text-blue-50/70 transition hover:bg-white/5 hover:text-white">Home</Link>
-                <Link href="/gallery" className="rounded-[12px] px-4 py-3 text-[14px] font-medium text-blue-50/70 transition hover:bg-white/5 hover:text-white">Showroom</Link>
-                <Link href="/apply" className="rounded-[12px] px-4 py-3 text-[14px] font-medium text-blue-50/70 transition hover:bg-white/5 hover:text-white">Apply Now</Link>
-              </nav>
-              <div className="my-3 h-px bg-white/10" />
-              <div className="mb-2">
-                <PortalHeaderChip /></div>
-              <a href={PHONE_LINK} className="call-btn mb-2 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-4 py-3 text-[12px] font-bold uppercase tracking-[0.12em] text-white">Call Us</a>
-              <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-[12px] font-semibold text-emerald-400">WhatsApp Us</a>
-            </div>
-          </details>
+          <MobileMenu whatsappLink={WHATSAPP_LINK} phoneLink={PHONE_LINK} />
         </div>
       </header>
 
