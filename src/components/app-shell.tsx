@@ -52,9 +52,10 @@ export default function AppShell({ children }: AppShellProps) {
                 <Link href="/" className="rounded-[12px] px-4 py-3 text-[14px] font-medium text-blue-50/70 transition hover:bg-white/5 hover:text-white">Home</Link>
                 <Link href="/gallery" className="rounded-[12px] px-4 py-3 text-[14px] font-medium text-blue-50/70 transition hover:bg-white/5 hover:text-white">Showroom</Link>
                 <Link href="/apply" className="rounded-[12px] px-4 py-3 text-[14px] font-medium text-blue-50/70 transition hover:bg-white/5 hover:text-white">Apply Now</Link>
-                <Link href="/portal-login" className="rounded-[12px] px-4 py-3 text-[14px] font-medium text-blue-50/70 transition hover:bg-white/5 hover:text-white">Client Portal</Link>
               </nav>
               <div className="my-3 h-px bg-white/10" />
+              <div className="mb-2">
+                <PortalHeaderChip /></div>
               <a href={PHONE_LINK} className="call-btn mb-2 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-4 py-3 text-[12px] font-bold uppercase tracking-[0.12em] text-white">Call Us</a>
               <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-[12px] font-semibold text-emerald-400">WhatsApp Us</a>
             </div>
