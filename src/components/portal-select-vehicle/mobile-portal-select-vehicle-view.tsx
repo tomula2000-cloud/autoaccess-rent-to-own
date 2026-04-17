@@ -192,7 +192,7 @@ export default async function MobilePortalSelectVehicleView() {
   }
 
   const allVehicles = await prisma.vehicleOffer.findMany({
-    where: { status: "AVAILABLE" as never },
+    where: { status: "AVAILABLE" as never, NOT: { featuredImage: { contains: "unsplash" } } },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
     select: {
       id: true,
