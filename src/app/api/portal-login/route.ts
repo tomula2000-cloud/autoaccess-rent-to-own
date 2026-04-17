@@ -31,7 +31,7 @@ function setPortalCookies(
     sameSite: "lax" as const,
     secure: isProduction,
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 60 * 60 * 24,
   };
 
   response.cookies.set(

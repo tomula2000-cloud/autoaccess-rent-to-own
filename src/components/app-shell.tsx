@@ -1,4 +1,5 @@
 import WhatsAppFloat from "@/components/whatsapp-float";
+import PortalHeaderChip from "@/components/portal-header-chip";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -40,7 +41,7 @@ export default function AppShell({ children }: AppShellProps) {
           <div className="hidden items-center gap-2.5 md:flex">
             <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-[12px] font-semibold text-emerald-400">WhatsApp</a>
             <a href={PHONE_LINK} className="call-btn rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-4 py-2 text-[12px] font-bold uppercase tracking-[0.12em] text-white">Call Us</a>
-            <Link href="/portal-login" className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-[12px] font-semibold text-white transition hover:bg-white/10">Portal Login</Link>
+            <PortalHeaderChip />
           </div>
           <details className="relative ml-auto md:hidden">
             <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white">

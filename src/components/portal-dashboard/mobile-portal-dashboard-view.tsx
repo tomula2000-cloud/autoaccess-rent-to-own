@@ -13,6 +13,7 @@ import PortalMobileSectionCard from "@/components/portal-mobile/portal-mobile-se
 import PortalMobileFooterBar from "@/components/portal-mobile/portal-mobile-footer-bar";
 import { portalMobileThemes } from "@/components/portal-mobile/portal-mobile-theme";
 import { getCompactCountdown } from "@/components/portal-mobile/portal-mobile-utils";
+import PortalStatusPoller from "@/components/portal-status-poller";
 
 type StatusLogItem = {
   id: string;
@@ -310,6 +311,7 @@ export default async function MobilePortalDashboardView() {
 
   return (
     <PortalMobileShell>
+      <PortalStatusPoller currentStatus={application.status} referenceNumber={application.referenceNumber} />
       <PortalMobileTopbar rightHref="/portal/documents" rightLabel="Documents" />
 
       <PortalMobileHero
