@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AppShell from "@/components/app-shell";
+import { DM_Sans } from "next/font/google";
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  display: "swap",
+  variable: "--font-dm-sans",
+});
 
 export const metadata: Metadata = {
   title: "Auto Access Rent To Own",
@@ -13,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="bg-gray-50 text-black">
+    <html lang="en" className={dmSans.variable}>
+      <body className={`${dmSans.className} bg-gray-50 text-black`}>
         <AppShell>{children}</AppShell>
       </body>
     </html>

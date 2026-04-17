@@ -36,6 +36,7 @@ export default function HomeFeaturedVehiclesMobile({ vehicles }: { vehicles: Veh
             src={vehicle.featuredImage}
             alt={vehicle.title}
             className="h-full w-full object-cover"
+          sizes="(max-width: 768px) 100vw, 400px"
           />
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
           <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white backdrop-blur">
@@ -69,12 +70,14 @@ export default function HomeFeaturedVehiclesMobile({ vehicles }: { vehicles: Veh
         <>
           {/* Arrows */}
           <button
+            aria-label="Previous vehicle"
             onClick={() => setCurrent((current - 1 + vehicles.length) % vehicles.length)}
             className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg backdrop-blur"
           >
             <svg className="h-5 w-5 text-[#1b2345]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
           <button
+            aria-label="Next vehicle"
             onClick={() => setCurrent((current + 1) % vehicles.length)}
             className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg backdrop-blur"
           >

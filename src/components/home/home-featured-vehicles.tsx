@@ -59,6 +59,7 @@ export default async function HomeFeaturedVehicles() {
               src={vehicle.featuredImage}
               alt={vehicle.title}
               className="h-full w-full object-cover opacity-90 transition duration-700 group-hover:scale-[1.06]"
+              sizes="(max-width: 768px) 100vw, 384px"
             />
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
             <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white backdrop-blur">
