@@ -18,6 +18,9 @@ type GalleryVehicleOffer = {
 
 export default async function GalleryPage() {
   const vehicles: GalleryVehicleOffer[] = await prisma.vehicleOffer.findMany({
+      where: {
+        NOT: { featuredImage: { contains: 'unsplash' } },
+      },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
     select: {
       id: true,

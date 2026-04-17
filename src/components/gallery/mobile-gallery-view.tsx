@@ -220,6 +220,9 @@ function MobileVehicleCard({ vehicle }: { vehicle: GalleryVehicleOffer }) {
 
 export default async function MobileGalleryView() {
   const vehicles: GalleryVehicleOffer[] = await prisma.vehicleOffer.findMany({
+      where: {
+        NOT: { featuredImage: { contains: 'unsplash' } },
+      },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
     select: {
       id: true,
