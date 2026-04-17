@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import Image from "next/image";
 
 const gradients = [
   "from-[#2f67de] to-[#4f86f7]",
@@ -55,11 +56,12 @@ export default async function HomeFeaturedVehicles() {
           className={`group relative overflow-hidden rounded-[22px] border border-[#e1e4ee] bg-white shadow-[0_6px_18px_-8px_rgba(15,23,42,0.1)] transition hover:-translate-y-1 ${hovers[index % 3]} hover:shadow-[0_24px_50px_-18px_rgba(47,103,222,0.25)]`}
         >
           <div className={`relative h-44 overflow-hidden bg-gradient-to-br ${gradients[index % 3]}`}>
-            <img
+            <Image
               src={vehicle.featuredImage}
               alt={vehicle.title}
-              className="h-full w-full object-cover opacity-90 transition duration-700 group-hover:scale-[1.06]"
-              sizes="(max-width: 768px) 100vw, 384px"
+              fill
+              className="object-cover opacity-90 transition duration-700 group-hover:scale-[1.06]"
+              sizes="384px"
             />
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
             <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white backdrop-blur">
