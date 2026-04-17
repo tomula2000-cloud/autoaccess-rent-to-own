@@ -41,6 +41,12 @@ function formatFuelType(value: string) {
   return value === "DIESEL" ? "Diesel" : "Petrol";
 }
 
+function formatCurrency(value: string) {
+  const num = Number(value.replace(/[^\d.-]/g, ""));
+  if (!Number.isFinite(num)) return `R ${value}`;
+  return `R ${num.toLocaleString("en-ZA")}`;
+}
+
 export default function VehicleOfferCard({ offer }: VehicleOfferCardProps) {
   const isAvailable = offer.status === "AVAILABLE";
   const isUnderOffer = offer.status === "UNDER_OFFER";
@@ -108,7 +114,7 @@ export default function VehicleOfferCard({ offer }: VehicleOfferCardProps) {
         </div>
 
         {/* Title */}
-        <h3 className="mt-2 text-[1.35rem] font-semibold leading-tight tracking-tight text-[#1b2345] line-clamp-2">
+        <h3 className="mt-2 h-[3.2rem] overflow-hidden text-[1.15rem] font-semibold leading-tight tracking-tight text-[#1b2345] line-clamp-2">
           {offer.title}
         </h3>
 
@@ -130,7 +136,7 @@ export default function VehicleOfferCard({ offer }: VehicleOfferCardProps) {
                 </p>
               </div>
               <p className="mt-2 break-words text-[1.2rem] font-semibold tabular-nums leading-tight text-[#1b2345]">
-                {offer.depositAmount}
+                {formatCurrency(offer.depositAmount)}
               </p>
             </div>
           </div>
@@ -153,7 +159,7 @@ export default function VehicleOfferCard({ offer }: VehicleOfferCardProps) {
                 </p>
               </div>
               <p className="mt-2 break-words text-[1.2rem] font-semibold tabular-nums leading-tight text-[#1b2345]">
-                {offer.monthlyPayment}
+                {formatCurrency(offer.monthlyPayment)}
               </p>
             </div>
           </div>
