@@ -6,7 +6,7 @@ import { authOptions } from "../../../auth";
 import { prisma } from "@/lib/prisma";
 
 type PageProps = {
-  searchParams?: Promise<{ status?: string; stage?: string; q?: string }>;
+  searchParams?: Promise<{ status?: string; q?: string }>;
 };
 
 type AdminApplicationRow = {
@@ -24,102 +24,76 @@ type AdminApplicationRow = {
   createdAt: Date;
 };
 
-const STATUS_GROUPS = [
-  {
-    key: "NEW",
-    label: "New Applications",
-    color: "#BA7517",
-    bg: "#FAEEDA",
-    border: "#EF9F27",
-    textColor: "#633806",
-    dot: "#BA7517",
-    statuses: ["APPLICATION_RECEIVED", "PRE_QUALIFICATION_REVIEW", "PRE_QUALIFIED"],
-  },
-  {
-    key: "DOCS",
-    label: "Document Collection",
-    color: "#185FA5",
-    bg: "#E6F1FB",
-    border: "#378ADD",
-    textColor: "#042C53",
-    dot: "#185FA5",
-    statuses: ["AWAITING_DOCUMENTS", "DOCUMENTS_SUBMITTED", "DOCUMENTS_UNDER_REVIEW", "ADDITIONAL_DOCUMENTS_REQUIRED"],
-  },
-  {
-    key: "APPROVAL",
-    label: "Approval & Contract",
-    color: "#534AB7",
-    bg: "#EEEDFE",
-    border: "#7F77DD",
-    textColor: "#26215C",
-    dot: "#534AB7",
-    statuses: ["APPROVED_IN_PRINCIPLE", "CONTRACT_REQUESTED", "CONTRACT_ISSUED"],
-  },
-  {
-    key: "PAYMENT",
-    label: "Payment & Completion",
-    color: "#3B6D11",
-    bg: "#EAF3DE",
-    border: "#639922",
-    textColor: "#173404",
-    dot: "#3B6D11",
-    statuses: ["AWAITING_INVOICE", "INVOICE_ISSUED", "AWAITING_PAYMENT", "PAYMENT_UNDER_VERIFICATION", "PAYMENT_CONFIRMED", "COMPLETED"],
-  },
-  {
-    key: "DECLINED",
-    label: "Declined",
-    color: "#A32D2D",
-    bg: "#FCEBEB",
-    border: "#E24B4A",
-    textColor: "#501313",
-    dot: "#A32D2D",
-    statuses: ["DECLINED"],
-  },
-];
+const STATUS_OPTIONS = [
+  "ALL",
+  "APPLICATION_RECEIVED",
+  "PRE_QUALIFICATION_REVIEW",
+  "PRE_QUALIFIED",
+  "AWAITING_DOCUMENTS",
+  "DOCUMENTS_SUBMITTED",
+  "DOCUMENTS_UNDER_REVIEW",
+  "ADDITIONAL_DOCUMENTS_REQUIRED",
+  "APPROVED_IN_PRINCIPLE",
+  "CONTRACT_REQUESTED",
+  "CONTRACT_ISSUED",
+  "AWAITING_INVOICE",
+  "INVOICE_ISSUED",
+  "AWAITING_PAYMENT",
+  "PAYMENT_UNDER_VERIFICATION",
+  "PAYMENT_CONFIRMED",
+  "COMPLETED",
+  "DECLINED",
+] as const;
 
 function formatStatus(status: string) {
   return status.replaceAll("_", " ");
 }
 
-function shortenStatus(status: string) {
-  const map: Record<string, string> = {
-    APPLICATION_RECEIVED: "Received",
-    PRE_QUALIFICATION_REVIEW: "In Review",
-    PRE_QUALIFIED: "Pre-Qualified",
-    AWAITING_DOCUMENTS: "Awaiting Docs",
-    DOCUMENTS_SUBMITTED: "Docs Submitted",
-    DOCUMENTS_UNDER_REVIEW: "Docs in Review",
-    ADDITIONAL_DOCUMENTS_REQUIRED: "More Docs Needed",
-    APPROVED_IN_PRINCIPLE: "Approved",
-    CONTRACT_REQUESTED: "Contract Requested",
-    CONTRACT_ISSUED: "Contract Issued",
-    AWAITING_INVOICE: "Awaiting Invoice",
-    INVOICE_ISSUED: "Invoice Issued",
-    AWAITING_PAYMENT: "Awaiting Payment",
-    PAYMENT_UNDER_VERIFICATION: "Verifying Payment",
-    PAYMENT_CONFIRMED: "Payment Confirmed",
-    COMPLETED: "Completed",
-    DECLINED: "Declined",
-  };
-  return map[status] || formatStatus(status);
+function formatIdentityType(value: string | null) {
+  if (!value) return "—";
+  if (value === "SA_ID") return "SA ID";
+  if (value === "PASSPORT") return "Passport";
+  return value;
 }
 
-function getStatusGroup(status: string) {
-  return STATUS_GROUPS.find((g) => g.statuses.includes(status));
+function getStatusBadge(status: string) {
+  switch (status) {
+    case "APPLICATION_RECEIVED": return "border-blue-400/30 bg-blue-500/10 text-blue-300";
+    case "PRE_QUALIFICATION_REVIEW": return "border-indigo-400/30 bg-indigo-500/10 text-indigo-300";
+    case "PRE_QUALIFIED": return "border-sky-400/30 bg-sky-500/10 text-sky-300";
+    case "AWAITING_DOCUMENTS": return "border-amber-400/30 bg-amber-500/10 text-amber-300";
+    case "DOCUMENTS_SUBMITTED": return "border-cyan-400/30 bg-cyan-500/10 text-cyan-300";
+    case "DOCUMENTS_UNDER_REVIEW": return "border-violet-400/30 bg-violet-500/10 text-violet-300";
+    case "ADDITIONAL_DOCUMENTS_REQUIRED": return "border-orange-400/30 bg-orange-500/10 text-orange-300";
+    case "APPROVED_IN_PRINCIPLE": return "border-emerald-400/30 bg-emerald-500/10 text-emerald-300";
+    case "CONTRACT_REQUESTED": return "border-fuchsia-400/30 bg-fuchsia-500/10 text-fuchsia-300";
+    case "CONTRACT_ISSUED": return "border-purple-400/30 bg-purple-500/10 text-purple-300";
+    case "AWAITING_INVOICE": return "border-violet-400/30 bg-violet-500/10 text-violet-300";
+    case "INVOICE_ISSUED": return "border-purple-400/30 bg-purple-500/10 text-purple-300";
+    case "AWAITING_PAYMENT": return "border-yellow-400/30 bg-yellow-500/10 text-yellow-300";
+    case "PAYMENT_UNDER_VERIFICATION": return "border-teal-400/30 bg-teal-500/10 text-teal-300";
+    case "PAYMENT_CONFIRMED": return "border-green-400/30 bg-green-500/10 text-green-300";
+    case "COMPLETED": return "border-lime-400/30 bg-lime-500/10 text-lime-300";
+    case "DECLINED": return "border-red-400/30 bg-red-500/10 text-red-300";
+    default: return "border-white/20 bg-white/5 text-white/60";
+  }
 }
 
 function getSummaryCount(applications: AdminApplicationRow[], statuses: string[]) {
   return applications.filter((item) => statuses.includes(item.status)).length;
 }
 
-export default async function AdminDashboard({ searchParams }: PageProps) {
+export default async function AdminPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
-  if (!session) redirect("/admin-login");
+  const sessionUser = session?.user as { email?: string; role?: string; loginType?: string } | undefined;
 
-  const params = await (searchParams ?? Promise.resolve({}));
-  const activeStage = params.stage || "";
-  const activeStatus = params.status || "";
-  const searchQuery = params.q || "";
+  if (!sessionUser?.email || sessionUser.role !== "ADMIN" || sessionUser.loginType !== "ADMIN") {
+    redirect("/admin-login");
+  }
+
+  const params = searchParams ? await searchParams : {};
+  const activeStatus = params.status || "ALL";
+  const searchQuery = (params.q || "").trim();
 
   const allApplications: AdminApplicationRow[] = await prisma.application.findMany({
     orderBy: { createdAt: "desc" },
@@ -130,272 +104,195 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
     },
   });
 
-  const activeGroup = STATUS_GROUPS.find((g) => g.key === activeStage);
-
   const applications = allApplications.filter((application: AdminApplicationRow) => {
-    let matchesFilter = true;
-    if (activeStatus) {
-      matchesFilter = application.status === activeStatus;
-    } else if (activeStage && activeGroup) {
-      matchesFilter = activeGroup.statuses.includes(application.status);
-    }
-    const q = searchQuery.toLowerCase();
-    const matchesSearch = !q || [
-      application.referenceNumber, application.fullName, application.email,
-      application.phone, application.identityNumber ?? "", application.preferredVehicle,
-    ].some((field) => field.toLowerCase().includes(q));
-    return matchesFilter && matchesSearch;
+    const matchesStatus = activeStatus === "ALL" ? true : application.status === activeStatus;
+    const haystack = [application.referenceNumber, application.fullName, application.email, application.phone, application.identityNumber || "", application.preferredVehicle].join(" ").toLowerCase();
+    const matchesSearch = searchQuery ? haystack.includes(searchQuery.toLowerCase()) : true;
+    return matchesStatus && matchesSearch;
   });
 
   const totalCount = allApplications.length;
-  const buildHref = (stage: string, status?: string) => {
-    const parts = [];
-    if (stage) parts.push(`stage=${encodeURIComponent(stage)}`);
-    if (status) parts.push(`status=${encodeURIComponent(status)}`);
-    if (searchQuery) parts.push(`q=${encodeURIComponent(searchQuery)}`);
-    return `/admin${parts.length ? `?${parts.join("&")}` : ""}`;
-  };
-
-  const isFilterActive = Boolean(activeStage || activeStatus);
+  const docsCount = getSummaryCount(allApplications, ["AWAITING_DOCUMENTS", "ADDITIONAL_DOCUMENTS_REQUIRED"]);
+  const reviewCount = getSummaryCount(allApplications, ["PRE_QUALIFICATION_REVIEW", "DOCUMENTS_UNDER_REVIEW", "PAYMENT_UNDER_VERIFICATION"]);
+  const approvedCount = getSummaryCount(allApplications, ["APPROVED_IN_PRINCIPLE", "CONTRACT_REQUESTED", "CONTRACT_ISSUED"]);
+  const completedCount = getSummaryCount(allApplications, ["COMPLETED", "PAYMENT_CONFIRMED"]);
+  const declinedCount = getSummaryCount(allApplications, ["DECLINED"]);
+  const pendingDocsCount = getSummaryCount(allApplications, [
+    "APPLICATION_RECEIVED",
+    "PRE_QUALIFIED",
+    "AWAITING_DOCUMENTS",
+    "ADDITIONAL_DOCUMENTS_REQUIRED",
+  ]);
 
   return (
-    <div className="min-h-screen bg-[#f4f6fb] p-4 md:p-8">
-      <div className="mx-auto max-w-7xl">
+    <main className="min-h-screen bg-[#f4f6fb] px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1400px]">
 
-        {/* ── HEADER ── */}
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#d59758]">Admin Panel</p>
-            <h1 className="text-2xl font-bold text-[#1b2345]">Applications Pipeline</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <AdminBulkReminder />
-            <Link href="/admin-logout" className="rounded-full border border-[#e1e4ee] bg-white px-4 py-2 text-[12px] font-semibold text-[#68708a] transition hover:bg-[#f4f6fb]">
-              Log Out
-            </Link>
+        {/* ── Top Header ── */}
+        <div className="mb-6 overflow-hidden rounded-[28px] bg-gradient-to-r from-[#0b1532] via-[#102046] to-[#1b3375] shadow-[0_24px_60px_-20px_rgba(11,21,50,0.55)]">
+          <div className="flex flex-col gap-4 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#f4c89a]">Auto Access · Admin Dashboard</p>
+              <h1 className="mt-1.5 text-2xl font-bold text-white sm:text-3xl">Applications</h1>
+              <p className="mt-1 text-[13px] text-white/50">Monitor and manage all client applications from one command centre.</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href="/admin/vehicles" className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-semibold text-white/80 transition hover:bg-white/20">
+                Manage Vehicles
+              </Link>
+              <Link href="/admin/vehicles/new" className="rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-4 py-2 text-[12px] font-bold text-white shadow-[0_8px_20px_-6px_rgba(213,151,88,0.5)]">
+                Add Vehicle
+              </Link>
+              <form action="/api/auth/signout" method="post">
+                <button type="submit" className="rounded-full border border-red-400/30 bg-red-500/10 px-4 py-2 text-[12px] font-semibold text-red-300 transition hover:bg-red-500/20">
+                  Logout
+                </button>
+              </form>
+            </div>
           </div>
         </div>
 
-        {/* ── PIPELINE STAGE CARDS ── */}
-        <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-5">
-          {/* All card */}
-          <Link
-            href={buildHref("", "")}
-            className={`overflow-hidden rounded-[14px] border bg-white transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(15,23,42,0.15)] ${
-              !isFilterActive ? "border-2 border-[#1b2345]" : "border-[#e1e4ee]"
-            }`}
-          >
-            <div className="flex items-center justify-between px-3 py-3">
-              <span className="text-3xl font-bold text-[#1b2345]">{totalCount}</span>
-              <div className="text-right">
-                <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#a3aac0]">All Stages</p>
-                <p className="mt-0.5 text-[11px] font-semibold leading-tight text-[#1b2345]">Everything</p>
-              </div>
+        {/* ── Stat Cards ── */}
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            { label: "Total", value: totalCount, color: "border-[#dbe6ff] bg-[#eef4ff]", text: "text-[#1b2345]", sub: "text-[#2f67de]" },
+            { label: "Needs Docs", value: docsCount, color: "border-amber-200 bg-amber-50", text: "text-amber-900", sub: "text-amber-700" },
+            { label: "Under Review", value: reviewCount, color: "border-violet-200 bg-violet-50", text: "text-violet-900", sub: "text-violet-700" },
+            { label: "Approved", value: approvedCount, color: "border-emerald-200 bg-emerald-50", text: "text-emerald-900", sub: "text-emerald-700" },
+            { label: "Completed", value: completedCount, color: "border-green-200 bg-green-50", text: "text-green-900", sub: "text-green-700" },
+            { label: "Declined", value: declinedCount, color: "border-red-200 bg-red-50", text: "text-red-900", sub: "text-red-700" },
+          ].map((stat) => (
+            <div key={stat.label} className={`rounded-[20px] border ${stat.color} p-4`}>
+              <p className={`text-[10px] font-bold uppercase tracking-[0.16em] ${stat.sub}`}>{stat.label}</p>
+              <p className={`mt-1.5 text-3xl font-bold ${stat.text}`}>{stat.value}</p>
             </div>
-            <div className="h-[3px] bg-[#1b2345]" />
-          </Link>
-
-          {STATUS_GROUPS.map((group, index) => {
-            const count = getSummaryCount(allApplications, group.statuses);
-            const isActive = activeStage === group.key && !activeStatus;
-            return (
-              <Link
-                key={group.key}
-                href={buildHref(group.key)}
-                className={`overflow-hidden rounded-[14px] border bg-white transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(15,23,42,0.15)] ${
-                  isActive ? "border-2" : "border-[#e1e4ee]"
-                }`}
-                style={isActive ? { borderColor: group.color } : {}}
-              >
-                <div className="flex items-center justify-between px-3 py-3">
-                  <span className="text-3xl font-bold" style={{ color: group.textColor }}>{count}</span>
-                  <div className="text-right">
-                    <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#a3aac0]">Stage {index + 1}</p>
-                    <p className="mt-0.5 text-[11px] font-semibold leading-tight" style={{ color: group.textColor }}>{group.label}</p>
-                  </div>
-                </div>
-                <div className="h-[3px]" style={{ background: group.color }} />
-              </Link>
-            );
-          })}
+          ))}
         </div>
 
-        {/* ── SUB-STATUS PILLS (only shown when a stage is selected) ── */}
-        {activeGroup ? (
-          <div className="mb-6 overflow-hidden rounded-[14px] border bg-white" style={{ borderColor: activeGroup.border }}>
-            <div className="flex items-center gap-2 px-4 py-3" style={{ background: activeGroup.bg }}>
-              <span className="h-2 w-2 rounded-full" style={{ background: activeGroup.dot }} />
-              <span className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: activeGroup.textColor }}>{activeGroup.label}</span>
-              <span className="ml-auto text-[11px]" style={{ color: activeGroup.textColor }}>
-                {getSummaryCount(allApplications, activeGroup.statuses)} application{getSummaryCount(allApplications, activeGroup.statuses) !== 1 ? "s" : ""}
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2 p-3">
-              <Link
-                href={buildHref(activeGroup.key)}
-                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition ${
-                  !activeStatus ? "" : "hover:bg-[#fafbff]"
-                }`}
-                style={!activeStatus ? {
-                  background: activeGroup.color,
-                  borderColor: activeGroup.color,
-                  color: "#ffffff",
-                } : {
-                  background: "#fafbff",
-                  borderColor: "#e1e4ee",
-                  color: "#68708a",
-                }}
-              >
-                All in stage
-                <span
-                  className="rounded-full px-1.5 py-0.5 text-[9px] font-bold"
-                  style={!activeStatus ? {
-                    background: "rgba(255,255,255,0.25)",
-                    color: "#ffffff",
-                  } : {
-                    background: activeGroup.color,
-                    color: "#ffffff",
-                  }}
-                >
-                  {getSummaryCount(allApplications, activeGroup.statuses)}
-                </span>
-              </Link>
-              {activeGroup.statuses.map((status) => {
+        {/* ── Bulk Reminder ── */}
+        <div className="mb-6">
+          <AdminBulkReminder pendingCount={pendingDocsCount} />
+        </div>
+
+        {/* ── Search and Filter ── */}
+        <div className="mb-5 overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+          <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Search & Filter</p>
+            <h2 className="text-[1rem] font-semibold text-white">Find Applications</h2>
+          </div>
+          <div className="p-5">
+            <form className="grid gap-3 sm:grid-cols-[1fr_auto]">
+              <input
+                type="text"
+                name="q"
+                defaultValue={searchQuery}
+                placeholder="Search by reference, name, email, phone, ID or vehicle..."
+                className="w-full rounded-[14px] border border-[#dde1ee] bg-[#fafbff] px-4 py-3 text-sm text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
+              />
+              <input type="hidden" name="status" value={activeStatus} />
+              <button type="submit" className="rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_-6px_rgba(47,103,222,0.4)]">
+                Search
+              </button>
+            </form>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {STATUS_OPTIONS.map((status) => {
                 const isActive = activeStatus === status;
-                const count = getSummaryCount(allApplications, [status]);
+                const href = `/admin?status=${encodeURIComponent(status)}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""}`;
                 return (
                   <Link
                     key={status}
-                    href={buildHref(activeGroup.key, status)}
-                    className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition"
-                    style={isActive ? {
-                      background: activeGroup.color,
-                      borderColor: activeGroup.color,
-                      color: "#ffffff",
-                    } : {
-                      background: "#fafbff",
-                      borderColor: "#e1e4ee",
-                      color: "#68708a",
-                    }}
+                    href={href}
+                    className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition ${
+                      isActive
+                        ? "border-[#2f67de] bg-[#2f67de] text-white"
+                        : "border-[#e1e4ee] bg-[#fafbff] text-[#68708a] hover:border-[#dbe6ff] hover:text-[#2f67de]"
+                    }`}
                   >
-                    {shortenStatus(status)}
-                    <span
-                      className="rounded-full px-1.5 py-0.5 text-[9px] font-bold"
-                      style={isActive ? {
-                        background: "rgba(255,255,255,0.25)",
-                        color: "#ffffff",
-                      } : {
-                        background: activeGroup.color,
-                        color: "#ffffff",
-                      }}
-                    >
-                      {count}
-                    </span>
+                    {status === "ALL" ? "All" : formatStatus(status)}
                   </Link>
                 );
               })}
             </div>
           </div>
-        ) : null}
-
-        {/* ── SEARCH ── */}
-        <div className="mb-4 rounded-[14px] border border-[#e1e4ee] bg-white p-3">
-          <form method="GET" action="/admin" className="flex gap-2">
-            <input
-              type="text"
-              name="q"
-              defaultValue={searchQuery}
-              placeholder="Search by reference, name, email, phone, ID or vehicle..."
-              className="w-full rounded-[10px] border border-[#dde1ee] bg-[#fafbff] px-3 py-2 text-sm text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
-            />
-            {activeStage ? <input type="hidden" name="stage" value={activeStage} /> : null}
-            {activeStatus ? <input type="hidden" name="status" value={activeStatus} /> : null}
-            <button type="submit" className="shrink-0 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-5 py-2 text-sm font-semibold text-white">
-              Search
-            </button>
-          </form>
         </div>
 
-        {/* ── RESULTS BAR ── */}
-        <div className="mb-3 flex items-center justify-between px-1">
-          <p className="text-[13px] text-[#68708a]">
-            Showing <span className="font-semibold text-[#1b2345]">{applications.length}</span> application{applications.length !== 1 ? "s" : ""}
-            {activeStatus ? (
-              <span> · <span className="font-semibold" style={{ color: getStatusGroup(activeStatus)?.color ?? "#1b2345" }}>{formatStatus(activeStatus)}</span></span>
-            ) : activeGroup ? (
-              <span> · <span className="font-semibold" style={{ color: activeGroup.color }}>{activeGroup.label}</span></span>
-            ) : null}
-          </p>
-          {isFilterActive || searchQuery ? (
-            <Link href="/admin" className="text-[11px] font-semibold text-[#68708a] underline underline-offset-2 hover:text-[#1b2345]">
-              Clear filters
-            </Link>
-          ) : null}
+        {/* ── Results count ── */}
+        <div className="mb-3 flex items-center gap-2 px-1">
+          <span className="text-[12px] font-semibold text-[#68708a]">
+            Showing <span className="text-[#1b2345]">{applications.length}</span> application{applications.length === 1 ? "" : "s"}
+            {activeStatus !== "ALL" ? <> · <span className="text-[#1b2345]">{formatStatus(activeStatus)}</span></> : null}
+            {searchQuery ? <> matching <span className="text-[#1b2345]">"{searchQuery}"</span></> : null}
+          </span>
         </div>
 
-        {/* ── TABLE ── */}
-        <div className="overflow-hidden rounded-[14px] border border-[#e1e4ee] bg-white shadow-[0_4px_12px_-6px_rgba(15,23,42,0.08)]">
+        {/* ── Applications Table ── */}
+        <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+          <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Application Records</p>
+            <h2 className="text-[1rem] font-semibold text-white">All Submitted Applications</h2>
+          </div>
+
           {applications.length === 0 ? (
-            <div className="py-16 text-center">
-              <p className="text-[15px] font-semibold text-[#1b2345]">No applications found</p>
+            <div className="p-10 text-center">
+              <p className="text-[13px] font-semibold text-[#1b2345]">No applications found</p>
               <p className="mt-1 text-[12px] text-[#68708a]">Try adjusting your search or filter criteria.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
+              <table className="min-w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563]">
-                    {["Reference", "Name", "Email", "Phone", "Income", "Vehicle", "Status", "Applied", "Action"].map((h) => (
-                      <th key={h} className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.14em] text-white/70">{h}</th>
+                  <tr className="border-b border-[#eef0f7] bg-[#fafbff]">
+                    {["Reference", "Applicant", "Phone", "Identity", "Employment", "Income", "Vehicle", "Status", "Date", "Action"].map((h) => (
+                      <th key={h} className="px-5 py-3.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a]">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {applications.map((app, i) => {
-                    const group = getStatusGroup(app.status);
-                    return (
-                      <tr key={app.id} className={`border-b border-[#f0f2f8] transition hover:bg-[#fafbff] ${i % 2 === 0 ? "bg-white" : "bg-[#fdfeff]"}`}>
-                        <td className="px-4 py-3 text-[11px] font-bold text-[#2f67de]">{app.referenceNumber}</td>
-                        <td className="px-4 py-3 text-[12px] font-semibold text-[#1b2345]">{app.fullName}</td>
-                        <td className="px-4 py-3 text-[11px] text-[#68708a]">{app.email}</td>
-                        <td className="px-4 py-3 text-[11px] text-[#68708a]">{app.phone}</td>
-                        <td className="px-4 py-3 text-[11px] text-[#68708a]">R {app.monthlyIncome}</td>
-                        <td className="px-4 py-3 text-[11px] text-[#68708a]">{app.preferredVehicle || "—"}</td>
-                        <td className="px-4 py-3">
-                          <span
-                            className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em]"
-                            style={group ? {
-                              background: group.bg,
-                              borderColor: group.border,
-                              color: group.textColor,
-                            } : {}}
-                          >
-                            <span className="h-1.5 w-1.5 rounded-full" style={{ background: group?.dot }} />
-                            {shortenStatus(app.status)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-[11px] text-[#68708a]">
-                          {new Date(app.createdAt).toLocaleDateString("en-ZA")}
-                        </td>
-                        <td className="px-4 py-3">
-                          <Link
-                            href={`/admin/${app.id}`}
-                            className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-3 py-1.5 text-[10px] font-bold text-white"
-                          >
-                            View
-                            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                          </Link>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {applications.map((application: AdminApplicationRow, index: number) => (
+                    <tr
+                      key={application.id}
+                      className={`border-t border-[#eef0f7] align-top transition hover:bg-[#fafbff] ${index % 2 === 0 ? "bg-white" : "bg-[#fdfdff]"}`}
+                    >
+                      <td className="px-5 py-4">
+                        <span className="font-mono text-[12px] font-bold text-[#2f67de]">{application.referenceNumber}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <p className="text-[13px] font-semibold text-[#1b2345]">{application.fullName}</p>
+                        <p className="mt-0.5 text-[11px] text-[#68708a]">{application.email}</p>
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.phone}</td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <p className="text-[12px] font-medium text-[#39425d]">{formatIdentityType(application.identityType)}</p>
+                        <p className="mt-0.5 text-[11px] text-[#68708a]">{application.identityNumber || "—"}</p>
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.employmentStatus}</td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">R {application.monthlyIncome}</td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.preferredVehicle}</td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <span className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${getStatusBadge(application.status)}`}>
+                          {formatStatus(application.status)}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[11px] text-[#68708a]">
+                        {new Date(application.createdAt).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <Link
+                          href={`/admin/${application.id}`}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-2 text-[11px] font-bold text-white transition hover:from-[#2a3563] hover:to-[#3b4a82]"
+                        >
+                          View
+                          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           )}
         </div>
-
       </div>
-    </div>
+    </main>
   );
 }
