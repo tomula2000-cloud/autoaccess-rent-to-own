@@ -217,12 +217,23 @@ export default async function AdminPage({ searchParams }: PageProps) {
         </div>
 
         {/* ── Results count ── */}
-        <div className="mb-3 flex items-center gap-2 px-1">
+        <div className="mb-3 flex items-center justify-between gap-2 px-1">
           <span className="text-[12px] font-semibold text-[#68708a]">
             Showing <span className="text-[#1b2345]">{applications.length}</span> application{applications.length === 1 ? "" : "s"}
             {activeStatus !== "ALL" ? <> · <span className="text-[#1b2345]">{formatStatus(activeStatus)}</span></> : null}
             {searchQuery ? <> matching <span className="text-[#1b2345]">"{searchQuery}"</span></> : null}
           </span>
+          {applications.length > 0 ? (
+            
+            <a
+              href={"/api/admin/export-phones?status=" + encodeURIComponent(activeStatus) + "&q=" + encodeURIComponent(searchQuery)}
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-[11px] font-semibold text-emerald-700 transition hover:bg-emerald-100"
+              download
+            >
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Numbers ({applications.length})
+            </a>
+          ) : null}
         </div>
 
         {/* ── Applications Table ── */}
