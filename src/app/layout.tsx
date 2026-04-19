@@ -13,12 +13,12 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Auto Access Rent To Own",
   description: "Auto Access Rent To Own application and portal system",
-  icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
-    apple: "/favicon.svg",
-  },
+
+
+
+
+
+
 };
 
 export default function RootLayout({
