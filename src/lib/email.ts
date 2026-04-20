@@ -663,7 +663,6 @@ export async function sendContractSignedClientEmail({
       referenceNumber,
     }),
   };
-  }
   return resend.emails.send(payload);
 }
 
