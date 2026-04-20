@@ -3,6 +3,27 @@ import { sendStatusUpdateEmail } from "@/lib/email";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../../../auth";
 import { prisma } from "@/lib/prisma";
+import twilio from "twilio";
+
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+
+const VOICE_STATUSES: Record<string, (name: string) => string> = {
+  PRE_QUALIFIED: (name) =>
+    `Hello ${name}, great news from Auto Access! Your application has been pre-qualified. We will be in touch with next steps shortly.`,
+  AWAITING_DOCUMENTS: (name) =>
+    `Hello ${name}, this is Auto Access. We need you to submit supporting documents to continue processing your application. Please log in to your portal to upload them.`,
+  APPROVED_IN_PRINCIPLE: (name) =>
+    `Congratulations ${name}! Your Auto Access application has been approved in principle. Please log in to your portal to proceed with the next steps.`,
+  CONTRACT_ISSUED: (name) =>
+    `Hello ${name}, your Auto Access contract is ready. Please log in to your portal to review and accept your contract as soon as possible.`,
+  DECLINED: (name) =>
+    `Hello ${name}, thank you for applying to Auto Access. Unfortunately your application was not successful at this time. Please contact us for more information.`,
+  COMPLETED: (name) =>
+    `Congratulations ${name}! Your Auto Access application is now complete. Welcome to the Auto Access family. We look forward to seeing you soon!`,
+};
 
 const VALID_STATUSES = [
   "APPLICATION_RECEIVED",
@@ -145,6 +166,7 @@ export async function POST(
         id: true,
         email: true,
         fullName: true,
+        phone: true,
         referenceNumber: true,
         status: true,
         approvalValidUntil: true,
@@ -156,7 +178,8 @@ export async function POST(
         contractAccepted: true,
         contractAcceptedAt: true,
         contractAcceptedName: true,
-
+      contractSignatureImage: true,
+      contractSignedAt: true,
         contractVehicleTitle: true,
         contractDepositAmount: true,
         contractLicensingFee: true,
@@ -292,6 +315,8 @@ export async function POST(
           contractAccepted: true,
           contractAcceptedAt: true,
           contractAcceptedName: true,
+      contractSignatureImage: true,
+      contractSignedAt: true,
         },
       }),
       prisma.statusLog.create({
@@ -308,16 +333,33 @@ export async function POST(
       }),
     ]);
 
+    // Send status update email (non-blocking)
     try {
-      await sendStatusUpdateEmail({
-        to: existingApplication.email,
-        fullName: existingApplication.fullName,
-        referenceNumber: existingApplication.referenceNumber,
-        status: newStatus,
-        note: note || null,
-      });
-    } catch (emailError) {
-      console.error("Status email failed (non-blocking):", emailError);
+  await sendStatusUpdateEmail({
+    to: existingApplication.email,
+    fullName: existingApplication.fullName,
+    referenceNumber: existingApplication.referenceNumber,
+    status: newStatus,
+    note: note || null,
+  });
+} catch (emailError) {
+  console.error("Status email failed (non-blocking):", emailError);
+}
+
+    // Send voice call notification (non-blocking)
+    try {
+      const voiceMessage = VOICE_STATUSES[newStatus];
+      if (voiceMessage && existingApplication.phone) {
+        const message = voiceMessage(existingApplication.fullName);
+        await twilioClient.calls.create({
+          twiml: `<Response><Say voice="alice" language="en-GB">${message}</Say></Response>`,
+          to: existingApplication.phone.startsWith("+") ? existingApplication.phone : "+27" + existingApplication.phone.replace(/^0/, ""),
+          from: process.env.TWILIO_PHONE_NUMBER!,
+        });
+        console.log(`Voice call sent to ${existingApplication.fullName} for status: ${newStatus}`);
+      }
+    } catch (callError) {
+      console.error("Voice call failed (non-blocking):", callError);
     }
 
     return NextResponse.json({
@@ -335,7 +377,7 @@ export async function POST(
         success: false,
         message: `Status update failed: ${message}`,
       },
-      { status: 500 }
+        { status: 500 }
     );
   }
 }

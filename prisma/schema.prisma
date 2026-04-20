@@ -47,6 +47,8 @@ model Application {
   contractAccepted             Boolean           @default(false)
   contractAcceptedAt           DateTime?
   contractAcceptedName         String?
+  contractSignatureImage       String?
+  contractSignedAt             DateTime?
   contractVehicleTitle         String?
   contractVehicleImage         String?
   contractVehicleYearModel     String?

@@ -362,6 +362,72 @@ function getStatusTemplate(status: string, note?: string | null) {
         `,
       };
 
+    case "CONTRACT_ISSUED":
+      return {
+        subject: "Your Auto Access Rent-to-Own Contract is ready",
+        heading: "Your contract is ready to review",
+        motto: "A few steps away from your new vehicle.",
+        intro:
+          "Thank you for choosing Auto Access Rent-to-Own. Attached to this email is your Rent-to-Own Vehicle Contract. Please take a moment to carefully read and understand the terms outlined in the document.",
+        detailHtml: `
+          <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:22px;">
+            <p style="margin:0 0 14px; font-size:15px; line-height:1.7; color:#4b5563;">
+              You do not need to print the contract at this stage — the original copy will be signed upon vehicle delivery.
+            </p>
+            <p style="margin:0; font-size:15px; line-height:1.7; color:#4b5563;">
+              Once you have read and understood the terms, please either <strong style="color:#1b2345;">sign digitally in your portal</strong> or reply to this email confirming that you have read and understood the agreement. After we receive your confirmation, an invoice will be sent to you for payment.
+            </p>
+          </div>
+
+          <div style="margin:24px 0; border:2px solid #c9973a; background:#fff8ee; border-radius:16px; padding:22px; text-align:center;">
+            <p style="margin:0 0 8px; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#c9973a; font-weight:700;">
+              ⏱ Payment required within 24 hours
+            </p>
+            <p style="margin:0 0 14px; font-size:15px; line-height:1.6; color:#39425d;">
+              To keep your application active, payment must be completed before the contract expires. View your live countdown in the portal.
+            </p>
+          </div>
+
+          <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:22px;">
+            <p style="margin:0 0 14px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#f97316; font-weight:700;">
+              🔹 Key Information to Note
+            </p>
+
+            <p style="margin:0 0 6px; font-size:14px; font-weight:700; color:#1b2345;">1. Licensing &amp; Registration</p>
+            <p style="margin:0 0 14px; font-size:14px; line-height:1.7; color:#4b5563;">
+              Licensing and registration are completed within 24 to 48 hours for clients based in the Western Cape. Vehicles can only be collected after registration is completed, or delivery can be arranged to your address.
+            </p>
+
+            <p style="margin:0 0 6px; font-size:14px; font-weight:700; color:#1b2345;">2. Clients Outside the Western Cape</p>
+            <p style="margin:0 0 14px; font-size:14px; line-height:1.7; color:#4b5563;">
+              For clients outside the province, collection is not available because registration must be done in the same province where you are based (insurance requirement). Delivery will be completed within 3 to 5 business days after payment. You are, however, welcome to make payment at our office if you wish — the vehicle will still be delivered afterward.
+            </p>
+
+            <p style="margin:0 0 6px; font-size:14px; font-weight:700; color:#1b2345;">3. Upon Delivery</p>
+            <p style="margin:0 0 8px; font-size:14px; line-height:1.7; color:#4b5563;">
+              You will receive a <strong>Full Starter Pack</strong> which includes:
+            </p>
+            <ul style="margin:0 0 14px; padding-left:20px; font-size:14px; line-height:1.8; color:#4b5563;">
+              <li>Insurance information (covering accident, damage, or theft procedures)</li>
+              <li>Service and maintenance details (where and when to service the vehicle)</li>
+              <li>Debit order mandate form</li>
+              <li>Vehicle inspection forms</li>
+            </ul>
+
+            <p style="margin:0 0 6px; font-size:14px; font-weight:700; color:#1b2345;">4. Delivery Policy</p>
+            <p style="margin:0; font-size:14px; line-height:1.7; color:#4b5563;">
+              Delivery is done only to the applicant's home or work address. No third-party deliveries are allowed under any circumstances.
+            </p>
+          </div>
+
+          <p style="margin:24px 0 0; font-size:14px; line-height:1.7; color:#4b5563;">
+            If you have any questions or need clarification on any point before confirming, please don't hesitate to reply to this email.
+          </p>
+
+          ${noteBlock}
+        `,
+      };
+
     default:
       return {
         subject: `Your Auto Access application status is now: ${formatStatus(status)}`,
@@ -535,6 +601,114 @@ export async function sendStatusUpdateEmail({
       detailHtml: template.detailHtml,
       portalUrl,
       to,
+      referenceNumber,
+    }),
+  });
+}/*
+ * ============================================================
+ * INSTRUCTIONS — Append these TWO functions to the BOTTOM of
+ * src/lib/email.ts
+ * ============================================================
+ */
+
+
+// ── Email sent to the client after they sign the contract ──
+export async function sendContractSignedClientEmail({
+  to,
+  fullName,
+  referenceNumber,
+}: {
+  to: string;
+  fullName: string;
+  referenceNumber: string;
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not set.");
+  }
+  const portalUrl = getPortalUrl();
+  const payload: any = {
+    from: "Auto Access <noreply@autoaccess.co.za>",
+    replyTo: "support@autoaccess.co.za",
+    to,
+    subject: `✅ Contract Signed — ${referenceNumber}`,
+    html: getEmailShell({
+      eyebrow: "Auto Access Rent To Own",
+      heading: "Thank you for signing your contract",
+      motto: "Welcome to Auto Access",
+      intro: `Hello ${fullName}, we have successfully received your signed Vehicle Rental Agreement. A copy of your signed contract is attached to this email for your records.`,
+      detailHtml: `
+        <div style="padding:16px 20px; background:#f5f7fb; border-left:3px solid #c9973a; border-radius:6px; margin:16px 0;">
+          <p style="margin:0 0 8px 0; font-size:13px; color:#1b2345;"><strong>What happens next:</strong></p>
+          <ul style="margin:0; padding-left:20px; font-size:13px; color:#39425d; line-height:1.7;">
+            <li>Our team is now preparing your invoice for payment</li>
+            <li>You will receive the invoice with banking details shortly</li>
+            <li><strong style="color:#c9973a;">Payment must be completed before the contract expires</strong> — please refer to your portal countdown</li>
+            <li>Once payment is verified, your vehicle will be prepared for collection or delivery</li>
+          </ul>
+        </div>
+        <div style="margin:24px 0; border:2px solid #c9973a; background:#fff8ee; border-radius:16px; padding:20px; text-align:center;">
+          <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#c9973a; font-weight:700;">
+            ⏱ Live payment countdown
+          </p>
+          <p style="margin:0; font-size:14px; line-height:1.6; color:#39425d;">
+            Your live countdown to payment deadline is available in your portal.
+          </p>
+        </div>
+        <p style="font-size:13px; color:#39425d; line-height:1.6;">
+          You can view your signed contract anytime in your client portal.
+        </p>
+      `,
+      portalUrl,
+      to,
+      referenceNumber,
+    }),
+  };
+  }
+  return resend.emails.send(payload);
+}
+
+
+// ── Email sent to admin when a client signs ──
+export async function sendContractSignedAdminEmail({
+  fullName,
+  email,
+  referenceNumber,
+  signedAt,
+}: {
+  fullName: string;
+  email: string;
+  referenceNumber: string;
+  signedAt: Date;
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not set.");
+  }
+  const portalUrl = getPortalUrl();
+  const formattedDate = signedAt.toLocaleString("en-ZA", {
+    dateStyle: "full",
+    timeStyle: "short",
+  });
+  return resend.emails.send({
+    from: "Auto Access <noreply@autoaccess.co.za>",
+    replyTo: email,
+    to: "admin@autoaccess.co.za",
+    subject: `🖊️ Client signed contract — ${referenceNumber}`,
+    html: getEmailShell({
+      eyebrow: "Admin Notification",
+      heading: "A client has signed their contract",
+      motto: `Reference: ${referenceNumber}`,
+      intro: `${fullName} has just signed their Vehicle Rental Agreement. Please review the signed contract and begin the next step of the process.`,
+      detailHtml: `
+        <div style="padding:16px 20px; background:#f5f7fb; border-left:3px solid #1b2345; border-radius:6px; margin:16px 0; font-size:13px; color:#39425d; line-height:1.8;">
+          <div><strong style="color:#1b2345;">Client:</strong> ${fullName}</div>
+          <div><strong style="color:#1b2345;">Email:</strong> ${email}</div>
+          <div><strong style="color:#1b2345;">Reference:</strong> ${referenceNumber}</div>
+          <div><strong style="color:#1b2345;">Signed at:</strong> ${formattedDate}</div>
+        </div>
+        <p style="font-size:13px; color:#39425d;">Log in to the admin panel to view the signed contract and advance the application.</p>
+      `,
+      portalUrl,
+      to: "admin@autoaccess.co.za",
       referenceNumber,
     }),
   });

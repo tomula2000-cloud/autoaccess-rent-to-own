@@ -390,6 +390,8 @@ export default async function ClientPortalPage() {
       contractAccepted: true,
       contractAcceptedAt: true,
       contractAcceptedName: true,
+      contractSignatureImage: true,
+      contractSignedAt: true,
       createdAt: true,
       contractVehicleTitle: true,
       contractVehicleImage: true,
@@ -532,6 +534,10 @@ export default async function ClientPortalPage() {
     application.contractVehicleMileage || selectedVehicle?.mileage || null;
 
   const contractDataForModal = {
+    id: application.id,
+    contractAccepted: application.contractAccepted,
+    contractSignatureImage: application.contractSignatureImage,
+    contractSignedAt: application.contractSignedAt,
     referenceNumber: application.referenceNumber,
     contractVehicleTitle: application.contractVehicleTitle,
     contractVehicleImage: application.contractVehicleImage,
