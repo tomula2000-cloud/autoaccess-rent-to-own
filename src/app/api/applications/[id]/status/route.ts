@@ -346,6 +346,20 @@ export async function POST(
   console.error("Status email failed (non-blocking):", emailError);
 }
 
+    // Send BulkSMS notification for APPROVED_IN_PRINCIPLE (non-blocking)
+    if (newStatus === "APPROVED_IN_PRINCIPLE" && existingApplication.phone) {
+      try {
+        const { sendBulkSMS } = await import("@/lib/sms");
+        await sendBulkSMS({
+          to: existingApplication.phone,
+          message: `Congratulations ${existingApplication.fullName}! Your Auto Access application has been approved in principle. Log in to your client portal to view your vehicle options. Your approval is valid for 12 days only. - Auto Access`,
+        });
+        console.log(`BulkSMS sent to ${existingApplication.fullName} for APPROVED_IN_PRINCIPLE`);
+      } catch (smsError) {
+        console.error("BulkSMS failed (non-blocking):", smsError);
+      }
+    }
+
     // Send voice call notification (non-blocking)
     try {
       const voiceMessage = VOICE_STATUSES[newStatus];
