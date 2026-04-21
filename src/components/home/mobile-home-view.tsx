@@ -866,7 +866,7 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
                       >
                         Go to Client Portal
                       </Link>
-                      
+                      <a
                         href="/"
                         className="inline-flex w-full items-center justify-center rounded-full border border-[#dbe1ee] bg-white px-6 py-4 text-sm font-semibold text-[#1b2345]"
                       >
