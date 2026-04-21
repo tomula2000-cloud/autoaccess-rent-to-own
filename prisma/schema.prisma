@@ -74,6 +74,26 @@ model Application {
   clientBranchCode             String?
   clientBankSubmittedAt        DateTime?
   clientBankConfirmed          Boolean           @default(false)
+  invoiceNumber                String?
+  invoiceIssuedAt              DateTime?
+  invoiceDueAt                 DateTime?
+  invoiceDepositAmount         String?
+  invoiceLicensingFee          String?
+  invoiceMonthlyAmount         String?
+  invoiceTotalDue              String?
+  invoiceItems                 Json?
+  invoiceBankName              String?
+  invoiceBankHolder            String?
+  invoiceBankAccount           String?
+  invoiceBankBranch            String?
+  invoiceBankType              String?
+  invoicePaymentReference      String?
+  invoiceTerms                 String?
+  invoiceSentAt                DateTime?
+  proofOfPaymentUrls           Json?
+  proofOfPaymentSubmittedAt    DateTime?
+  clientPaymentCompletedAt     DateTime?
+  adminSeen                    Boolean           @default(true)
   createdAt                    DateTime          @default(now())
   updatedAt                    DateTime          @updatedAt
   applicant                    User              @relation(fields: [applicantId], references: [id])

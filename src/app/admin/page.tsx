@@ -124,6 +124,21 @@ export default async function AdminPage({ searchParams }: PageProps) {
     "ADDITIONAL_DOCUMENTS_REQUIRED",
   ]);
 
+  // Count unseen applications in trigger statuses for admin notification badges
+  const unseenCounts = await prisma.application.groupBy({
+    by: ["status"],
+    where: {
+      adminSeen: false,
+      status: { in: ["DOCUMENTS_SUBMITTED", "PAYMENT_UNDER_VERIFICATION", "AWAITING_INVOICE"] },
+    },
+    _count: { id: true },
+  });
+
+  const unseenByStatus: Record<string, number> = {};
+  for (const row of unseenCounts) {
+    unseenByStatus[row.status] = row._count.id;
+  }
+
   return (
     <main className="min-h-screen bg-[#f4f6fb] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1400px]">
@@ -202,13 +217,23 @@ export default async function AdminPage({ searchParams }: PageProps) {
                   <Link
                     key={status}
                     href={href}
-                    className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition ${
+                    className={`relative inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition ${
                       isActive
                         ? "border-[#2f67de] bg-[#2f67de] text-white"
                         : "border-[#e1e4ee] bg-[#fafbff] text-[#68708a] hover:border-[#dbe6ff] hover:text-[#2f67de]"
                     }`}
                   >
-                    {status === "ALL" ? "All" : formatStatus(status)}
+                    <span>{status === "ALL" ? "All" : formatStatus(status)}</span>
+                    {unseenByStatus[status] > 0 && (
+                      <span
+                        className={`inline-flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold leading-none ${
+                          isActive ? "bg-white text-[#2f67de]" : "bg-[#e11d48] text-white"
+                        }`}
+                        aria-label={`${unseenByStatus[status]} unseen`}
+                      >
+                        {unseenByStatus[status]}
+                      </span>
+                    )}
                   </Link>
                 );
               })}

@@ -125,6 +125,7 @@ export async function POST(request: Request) {
       },
       data: {
         status: "DOCUMENTS_SUBMITTED" as never,
+        adminSeen: false,
       },
     });
 

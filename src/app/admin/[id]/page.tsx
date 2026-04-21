@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import AdminDocumentViewer from "@/components/admin-document-viewer";
 import AdminDocumentActions from "@/components/admin-document-actions";
 import { prisma } from "@/lib/prisma";
+import PrepareInvoiceForm from "@/components/prepare-invoice-form";
 import AdminStatusForm from "@/components/admin-status-form";
 import AdminApprovalValidityForm from "@/components/admin-approval-validity-form";
 
@@ -282,6 +283,21 @@ export default async function AdminApplicationDetailPage({
       contractAcceptedName: true,
       contractSignatureImage: true,
       contractSignedAt: true,
+      invoiceNumber: true,
+      invoiceIssuedAt: true,
+      invoiceDueAt: true,
+      invoiceDepositAmount: true,
+      invoiceLicensingFee: true,
+      invoiceMonthlyAmount: true,
+      invoiceTotalDue: true,
+      invoiceBankName: true,
+      invoiceBankHolder: true,
+      invoiceBankAccount: true,
+      invoiceBankBranch: true,
+      invoiceBankType: true,
+      invoicePaymentReference: true,
+      invoiceTerms: true,
+      invoiceSentAt: true,
       selectedVehicleId: true,
       createdAt: true,
 
@@ -348,6 +364,18 @@ export default async function AdminApplicationDetailPage({
 
   if (!application) {
     notFound();
+  }
+
+  // Mark application as seen by admin (non-blocking, fire-and-forget)
+  if (!(application as { adminSeen?: boolean }).adminSeen) {
+    prisma.application
+      .update({
+        where: { id },
+        data: { adminSeen: true },
+      })
+      .catch((err) => {
+        console.error("Failed to mark application as seen (non-blocking):", err);
+      });
   }
 
   const selectedVehicle = application.selectedVehicle;
@@ -1172,45 +1200,42 @@ export default async function AdminApplicationDetailPage({
             {(application.status === "CONTRACT_ISSUED" ||
               application.status === "AWAITING_INVOICE" ||
               application.status === "INVOICE_ISSUED") && (
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
-                <h2 className="mb-4 text-2xl font-bold text-amber-950">
-                  Contract Stage Overview
-                </h2>
-
-                <div className="space-y-3 text-sm leading-6 text-amber-900">
-                  <p>
-                    <span className="font-semibold">Issued At:</span>{" "}
-                    {application.contractIssuedAt
-                      ? new Date(application.contractIssuedAt).toLocaleString()
-                      : "Not recorded"}
-                  </p>
-
-                  <p>
-                    <span className="font-semibold">Contract Expires:</span>{" "}
-                    {application.contractExpiresAt
-                      ? new Date(application.contractExpiresAt).toLocaleString()
-                      : "Not recorded"}
-                  </p>
-
-                  <p>
-                    <span className="font-semibold">
-                      Client Acceptance Recorded:
-                    </span>{" "}
-                    {application.contractAccepted ? "Yes" : "No"}
-                  </p>
-
-                  <p>
-                    <span className="font-semibold">Accepted Name:</span>{" "}
-                    {application.contractAcceptedName || "Not yet signed"}
-                  </p>
-
-                  <p>
-                    <span className="font-semibold">Accepted At:</span>{" "}
-                    {application.contractAcceptedAt
-                      ? new Date(application.contractAcceptedAt).toLocaleString()
-                      : "Not yet signed"}
-                  </p>
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-[#dde1ec] bg-[#f8f9fc] p-5">
+                  <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.16em] text-[#8a9bbf]">Contract Stage Overview</h2>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p className="text-xs text-[#8a9bbf]">Issued At</p>
+                      <p className="font-semibold text-[#1b2345]">{application.contractIssuedAt ? new Date(application.contractIssuedAt).toLocaleString() : "Not recorded"}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-[#8a9bbf]">Contract Expires</p>
+                      <p className="font-semibold text-[#1b2345]">{application.contractExpiresAt ? new Date(application.contractExpiresAt).toLocaleString() : "Not recorded"}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-[#8a9bbf]">Client Signed</p>
+                      <p className="font-semibold text-[#1b2345]">{application.contractAccepted ? `Yes — ${application.contractAcceptedName || ""}` : "Not yet signed"}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-[#8a9bbf]">Signed At</p>
+                      <p className="font-semibold text-[#1b2345]">{application.contractAcceptedAt ? new Date(application.contractAcceptedAt).toLocaleString() : "—"}</p>
+                    </div>
+                  </div>
                 </div>
+                {(application.status === "AWAITING_INVOICE" ||
+                  application.status === "INVOICE_ISSUED") && (
+                  <PrepareInvoiceForm
+                    applicationId={application.id}
+                    referenceNumber={application.referenceNumber}
+                    contractDepositAmount={application.contractDepositAmount}
+                    contractLicensingFee={application.contractLicensingFee}
+                    contractMonthlyPayment={application.contractMonthlyPayment}
+                    contractTotalPayableNow={application.contractTotalPayableNow}
+                    clientFullName={application.contractClientFullName}
+                    invoiceNumber={application.invoiceNumber}
+                    invoiceSentAt={application.invoiceSentAt}
+                  />
+                )}
               </div>
             )}
           </div>

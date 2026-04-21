@@ -34,6 +34,7 @@ export async function POST(
       where: { id },
       select: {
         id: true,
+        applicantId: true,
         status: true,
         email: true,
         fullName: true,
@@ -72,6 +73,19 @@ export async function POST(
         contractAccepted: true,
         contractAcceptedAt: new Date(),
         contractAcceptedName: signedName || existing.fullName,
+        status: "AWAITING_INVOICE",
+        adminSeen: false,
+      },
+    });
+
+    // Log the status change
+    await prisma.statusLog.create({
+      data: {
+        applicationId: id,
+        fromStatus: "CONTRACT_ISSUED",
+        toStatus: "AWAITING_INVOICE",
+        note: "Contract signed digitally by client — auto-advanced to awaiting invoice",
+        updatedById: existing.applicantId,
       },
     });
 

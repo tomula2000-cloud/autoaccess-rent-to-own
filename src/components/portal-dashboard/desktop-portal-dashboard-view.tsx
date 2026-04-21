@@ -5,6 +5,8 @@ import Link from "next/link";
 import ApprovalCountdownCard from "@/components/approval-countdown-card";
 import PortalApplicationProgressCard from "@/components/portal-application-progress-card";
 import ContractReviewModal from "@/components/contract-review-modal";
+import InvoiceDownloadButton from "@/components/invoice-download-button";
+import ProofOfPaymentUpload from "@/components/proof-of-payment-upload";
 
 type StatusLogItem = {
   id: string;
@@ -416,6 +418,24 @@ export default async function ClientPortalPage() {
       clientAccountNumber: true,
       clientAccountType: true,
       clientBranchCode: true,
+      invoiceNumber: true,
+      invoiceIssuedAt: true,
+      invoiceDueAt: true,
+      invoiceDepositAmount: true,
+      invoiceLicensingFee: true,
+      invoiceMonthlyAmount: true,
+      invoiceTotalDue: true,
+      invoiceBankName: true,
+      invoiceBankHolder: true,
+      invoiceBankAccount: true,
+      invoiceBankBranch: true,
+      invoiceBankType: true,
+      invoicePaymentReference: true,
+      invoiceTerms: true,
+      invoiceSentAt: true,
+      proofOfPaymentUrls: true,
+      proofOfPaymentSubmittedAt: true,
+      clientPaymentCompletedAt: true,
       clientBankSubmittedAt: true,
       clientBankConfirmed: true,
       documents: {
@@ -1450,16 +1470,69 @@ export default async function ClientPortalPage() {
                   <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
                     <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4 sm:px-6"><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Payment Details</p><h2 className="text-[1.05rem] font-semibold text-white sm:text-[1.15rem]">Auto Access Banking Information</h2></div>
                     <div className="p-5 sm:p-6 space-y-4">
-                      <div className="overflow-hidden rounded-[18px] border border-[#e7eaf2] bg-white">
-                        <div className="divide-y divide-[#f0f2f8]">
-                          <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Bank</span><span className="text-sm font-semibold text-[#1b2345]">First National Bank (FNB)</span></div>
-                          <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Name</span><span className="text-sm font-semibold text-[#1b2345]">Auto Access (Pty) Ltd</span></div>
-                          <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Number</span><span className="font-mono text-sm font-bold text-[#1b2345]">XXXXXXXXXX</span></div>
-                          <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Branch Code</span><span className="font-mono text-sm font-bold text-[#1b2345]">250655</span></div>
-                          <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Type</span><span className="text-sm font-semibold text-[#1b2345]">Cheque Account</span></div>
-                          <div className="flex items-center justify-between bg-[#eef4ff] px-5 py-3"><span className="text-sm font-bold text-[#2f67de]">Payment Reference</span><span className="font-mono text-sm font-bold text-[#2f67de]">{application.referenceNumber}</span></div>
+                      {application.invoiceBankName ? (
+                        <>
+                          {application.invoiceNumber ? (
+                            <div className="mb-3 flex items-center justify-between rounded-[14px] border border-[#c9973a]/30 bg-[#fff8ee] px-4 py-2.5">
+                              <div>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#c9973a]">Invoice No.</p>
+                                <p className="mt-0.5 text-sm font-bold text-[#1b2345]">{application.invoiceNumber}</p>
+                              </div>
+                              {application.invoiceDueAt ? (
+                                <div className="text-right">
+                                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#c9973a]">Payment Due By</p>
+                                  <p className="mt-0.5 text-sm font-bold text-[#1b2345]">{new Date(application.invoiceDueAt).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" })}</p>
+                                </div>
+                              ) : null}
+                            </div>
+                          ) : null}
+                          <div className="overflow-hidden rounded-[18px] border border-[#e7eaf2] bg-white">
+                            <div className="divide-y divide-[#f0f2f8]">
+                              <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Bank</span><span className="text-sm font-semibold text-[#1b2345]">{application.invoiceBankName}</span></div>
+                              <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Name</span><span className="text-sm font-semibold text-[#1b2345]">{application.invoiceBankHolder}</span></div>
+                              <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Number</span><span className="font-mono text-sm font-bold text-[#1b2345]">{application.invoiceBankAccount}</span></div>
+                              <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Branch Code</span><span className="font-mono text-sm font-bold text-[#1b2345]">{application.invoiceBankBranch}</span></div>
+                              <div className="flex items-center justify-between px-5 py-3"><span className="text-sm text-[#68708a]">Account Type</span><span className="text-sm font-semibold text-[#1b2345]">{application.invoiceBankType}</span></div>
+                              <div className="flex items-center justify-between bg-[#fff8ee] px-5 py-3"><span className="text-sm font-bold text-[#c9973a]">Payment Reference</span><span className="font-mono text-sm font-bold text-[#c9973a]">{application.invoicePaymentReference || application.referenceNumber}</span></div>
+                            </div>
+                          </div>
+                          {application.invoiceTotalDue ? (
+                            <div className="mt-3 flex items-center justify-between rounded-[14px] bg-[#1b2345] px-5 py-3">
+                              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8a9bbf]">Total Due Now</p>
+                              <p className="text-xl font-bold text-[#c9973a]" style={{ fontFamily: "Georgia, serif" }}>R {application.invoiceTotalDue}</p>
+                            </div>
+                          ) : null}
+                          <div className="mt-3">
+                            <InvoiceDownloadButton
+                              invoiceNumber={application.invoiceNumber || ""}
+                              referenceNumber={application.referenceNumber}
+                              invoiceIssuedAt={application.invoiceIssuedAt ? String(application.invoiceIssuedAt) : null}
+                              invoiceDueAt={application.invoiceDueAt ? String(application.invoiceDueAt) : null}
+                              invoiceDepositAmount={application.invoiceDepositAmount}
+                              invoiceLicensingFee={application.invoiceLicensingFee}
+                              invoiceMonthlyAmount={application.invoiceMonthlyAmount}
+                              invoiceTotalDue={application.invoiceTotalDue}
+                              invoiceBankName={application.invoiceBankName}
+                              invoiceBankHolder={application.invoiceBankHolder}
+                              invoiceBankAccount={application.invoiceBankAccount}
+                              invoiceBankBranch={application.invoiceBankBranch}
+                              invoiceBankType={application.invoiceBankType}
+                              invoicePaymentReference={application.invoicePaymentReference}
+                              invoiceTerms={application.invoiceTerms}
+                            />
+                          </div>
+                          <div className="mt-3">
+                            <ProofOfPaymentUpload
+                              initialFiles={(application.proofOfPaymentUrls as any[]) || []}
+                              paymentCompletedAt={application.clientPaymentCompletedAt}
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="overflow-hidden rounded-[18px] border border-[#e7eaf2] bg-[#fafbff] p-5">
+                          <p className="text-sm text-[#68708a]">Banking details will appear here once your invoice is issued.</p>
                         </div>
-                      </div>
+                      )}
                       {application.clientBankName ? (
                         <div className="overflow-hidden rounded-[18px] border border-emerald-200 bg-emerald-50">
                           <div className="border-b border-emerald-100 px-5 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">Your Payment Account on Record</p></div>

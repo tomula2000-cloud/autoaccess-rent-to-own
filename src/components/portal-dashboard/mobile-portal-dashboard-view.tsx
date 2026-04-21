@@ -5,6 +5,8 @@ import Link from "next/link";
 import ApprovalCountdownCard from "@/components/approval-countdown-card";
 import PortalApplicationProgressCard from "@/components/portal-application-progress-card";
 import ContractReviewModal from "@/components/contract-review-modal";
+import InvoiceDownloadButton from "@/components/invoice-download-button";
+import ProofOfPaymentUpload from "@/components/proof-of-payment-upload";
 import PortalMobileShell from "@/components/portal-mobile/portal-mobile-shell";
 import PortalMobileTopbar from "@/components/portal-mobile/portal-mobile-topbar";
 import PortalMobileHero from "@/components/portal-mobile/portal-mobile-hero";
@@ -213,6 +215,24 @@ export default async function MobilePortalDashboardView() {
       clientAccountNumber: true,
       clientAccountType: true,
       clientBranchCode: true,
+      invoiceNumber: true,
+      invoiceIssuedAt: true,
+      invoiceDueAt: true,
+      invoiceDepositAmount: true,
+      invoiceLicensingFee: true,
+      invoiceMonthlyAmount: true,
+      invoiceTotalDue: true,
+      invoiceBankName: true,
+      invoiceBankHolder: true,
+      invoiceBankAccount: true,
+      invoiceBankBranch: true,
+      invoiceBankType: true,
+      invoicePaymentReference: true,
+      invoiceTerms: true,
+      invoiceSentAt: true,
+      proofOfPaymentUrls: true,
+      proofOfPaymentSubmittedAt: true,
+      clientPaymentCompletedAt: true,
       clientBankSubmittedAt: true,
       clientBankConfirmed: true,
       documents: {
@@ -523,24 +543,81 @@ export default async function MobilePortalDashboardView() {
             </div>
 
             {application.clientBankSubmittedAt ? (
-              <div className="rounded-[14px] border border-[#dbe6ff] bg-[#eef4ff] px-3.5 py-3">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-[#2f67de]" />
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2f67de]">Banking Details Submitted</p>
+              <div className="overflow-hidden rounded-[16px] border border-[#dde1ec] bg-white p-4 shadow-[0_4px_14px_-8px_rgba(27,35,69,0.1)]">
+                {/* Header */}
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="relative inline-flex h-2.5 w-2.5 shrink-0 rounded-full bg-[#c9973a]">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#c9973a] opacity-40" />
+                    </span>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c9973a]">Awaiting Invoice</p>
+                  </div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#8a9bbf]">Stage 3 of 5</p>
                 </div>
-                <p className="mt-1.5 text-[12px] leading-5 text-[#39425d]">Your banking details have been received and are under review. Your invoice will be issued once verified.</p>
-                <div className="mt-2 divide-y divide-[#eef0f8] rounded-[12px] border border-[#e8ecf5] bg-white">
-                  <div className="flex items-center justify-between px-3 py-2">
-                    <p className="text-[11px] text-[#68708a]">Bank</p>
-                    <p className="text-[11px] font-semibold text-[#1b2345]">{application.clientBankName}</p>
+
+                {/* Title */}
+                <p className="text-[15px] font-bold text-[#1b2345]" style={{ fontFamily: "Georgia, serif" }}>Our team is preparing your invoice</p>
+                <p className="mt-1 text-[12px] leading-5 text-[#5a6480]">Your banking details have been received and are being verified. Your official payment invoice will follow shortly.</p>
+
+                {/* Progress track */}
+                <div className="relative mt-5 mb-4 h-1 overflow-hidden rounded-full bg-[#eef0f5]">
+                  <div className="absolute left-0 top-0 h-full rounded-full bg-[#1b2345]" style={{ width: "62%" }} />
+                  <div className="absolute top-0 h-full animate-[aa-shimmer_2s_ease-in-out_infinite]" style={{ left: "62%", width: "30%", background: "linear-gradient(90deg, transparent, #c9973a, transparent)" }} />
+                </div>
+
+                {/* Stages */}
+                <div className="grid grid-cols-4 gap-1">
+                  {/* Contract - done */}
+                  <div className="text-center">
+                    <div className="relative z-10 mx-auto -mt-4 flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#1b2345] bg-[#1b2345]">
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="#c9973a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    </div>
+                    <p className="mt-1.5 text-[9px] font-bold uppercase tracking-wider text-[#1b2345]">Contract</p>
+                    <p className="text-[9px] text-[#8a9bbf]">Signed</p>
                   </div>
-                  <div className="flex items-center justify-between px-3 py-2">
-                    <p className="text-[11px] text-[#68708a]">Account Holder</p>
-                    <p className="text-[11px] font-semibold text-[#1b2345]">{application.clientAccountHolder}</p>
+                  {/* Banking - done */}
+                  <div className="text-center">
+                    <div className="relative z-10 mx-auto -mt-4 flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#1b2345] bg-[#1b2345]">
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="#c9973a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    </div>
+                    <p className="mt-1.5 text-[9px] font-bold uppercase tracking-wider text-[#1b2345]">Banking</p>
+                    <p className="text-[9px] text-[#8a9bbf]">Received</p>
                   </div>
-                  <div className="flex items-center justify-between px-3 py-2">
-                    <p className="text-[11px] text-[#68708a]">Account Type</p>
-                    <p className="text-[11px] font-semibold text-[#1b2345]">{application.clientAccountType}</p>
+                  {/* Invoice - active */}
+                  <div className="text-center">
+                    <div className="relative z-10 mx-auto -mt-4 flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#c9973a] bg-white">
+                      <span className="absolute inset-[-6px] rounded-full border-2 border-[#c9973a] opacity-50 animate-ping" />
+                      <span className="h-2 w-2 rounded-full bg-[#c9973a]" />
+                    </div>
+                    <p className="mt-1.5 text-[9px] font-bold uppercase tracking-wider text-[#c9973a]">Invoice</p>
+                    <p className="text-[9px] text-[#8a9bbf]">In progress</p>
+                  </div>
+                  {/* Payment - pending */}
+                  <div className="text-center">
+                    <div className="relative z-10 mx-auto -mt-4 h-7 w-7 rounded-full border-2 border-[#dde1ec] bg-white" />
+                    <p className="mt-1.5 text-[9px] font-bold uppercase tracking-wider text-[#8a9bbf]">Payment</p>
+                    <p className="text-[9px] text-[#8a9bbf]">Upcoming</p>
+                  </div>
+                </div>
+
+                {/* Info banner */}
+                <div className="mt-4 flex items-start gap-2.5 rounded-r-[10px] border-l-[3px] border-[#c9973a] bg-[#f8f6f0] px-3 py-2.5">
+                  <svg className="h-4 w-4 shrink-0 text-[#c9973a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  <p className="text-[11.5px] leading-5 text-[#5a6480]">
+                    <span className="font-bold text-[#1b2345]">Important: </span>
+                    Your invoice will be released shortly. Payment must be completed before the contract timer above expires — please keep an eye on your countdown.
+                  </p>
+                </div>
+
+                {/* Banking recap */}
+                <div className="mt-3 rounded-[12px] border border-[#e8ecf5] bg-[#fafbfd] p-3">
+                  <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[#8a9bbf]">Your Payment Account (Submitted)</p>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[11.5px]"><span className="text-[#8a9bbf]">Bank</span><span className="font-bold text-[#1b2345]">{application.clientBankName}</span></div>
+                    <div className="flex justify-between text-[11.5px]"><span className="text-[#8a9bbf]">Account Holder</span><span className="font-bold text-[#1b2345]">{application.clientAccountHolder}</span></div>
+                    <div className="flex justify-between text-[11.5px]"><span className="text-[#8a9bbf]">Account Type</span><span className="font-bold text-[#1b2345]">{application.clientAccountType}</span></div>
                   </div>
                 </div>
               </div>
@@ -648,51 +725,88 @@ export default async function MobilePortalDashboardView() {
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#c37d43]">Payment Instructions</p>
               <p className="mt-1.5 text-[12px] leading-5 text-[#39425d]">Use reference number <span className="font-semibold text-[#1b2345]">{application.referenceNumber}</span> when making payment. Keep your proof of payment ready.</p>
             </div>
-            {/* Auto Access banking details */}
-            <div className="rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] p-3.5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1b2345]">Auto Access Payment Details</p>
-              <p className="mt-1 text-[11px] leading-5 text-[#68708a]">Make payment to the account below using your reference number as the payment reference.</p>
-              <div className="mt-2 divide-y divide-[#eef0f8] rounded-[12px] border border-[#e8ecf5] bg-white">
-                <div className="flex items-center justify-between px-3 py-2.5">
-                  <p className="text-[11px] text-[#68708a]">Bank</p>
-                  <p className="text-[11px] font-semibold text-[#1b2345]">First National Bank (FNB)</p>
+            {/* Invoice banking details from DB */}
+            {application.invoiceBankName ? (
+              <div className="rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] p-3.5">
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1b2345]">Payment Details</p>
+                  {application.invoiceNumber && (
+                    <span className="rounded-full bg-[#1b2345] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[#c9973a]">{application.invoiceNumber}</span>
+                  )}
                 </div>
-                <div className="flex items-center justify-between px-3 py-2.5">
-                  <p className="text-[11px] text-[#68708a]">Account Name</p>
-                  <p className="text-[11px] font-semibold text-[#1b2345]">Auto Access (Pty) Ltd</p>
+                {application.invoiceDueAt && (
+                  <div className="mb-2 rounded-[10px] border border-[#c9973a]/30 bg-[#fff8ee] px-3 py-2">
+                    <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#c9973a]">Payment Due</p>
+                    <p className="mt-0.5 text-[12px] font-bold text-[#1b2345]">{new Date(application.invoiceDueAt).toLocaleString("en-ZA", { dateStyle: "full", timeStyle: "short" })}</p>
+                  </div>
+                )}
+                <p className="mb-2 text-[11px] leading-5 text-[#68708a]">Make payment to the account below using your reference number as the payment reference.</p>
+                <div className="divide-y divide-[#eef0f8] rounded-[12px] border border-[#e8ecf5] bg-white">
+                  <div className="flex items-center justify-between px-3 py-2.5">
+                    <p className="text-[11px] text-[#68708a]">Bank</p>
+                    <p className="text-[11px] font-semibold text-[#1b2345]">{application.invoiceBankName}</p>
+                  </div>
+                  <div className="flex items-center justify-between px-3 py-2.5">
+                    <p className="text-[11px] text-[#68708a]">Account Name</p>
+                    <p className="text-[11px] font-semibold text-[#1b2345]">{application.invoiceBankHolder}</p>
+                  </div>
+                  <div className="flex items-center justify-between px-3 py-2.5">
+                    <p className="text-[11px] text-[#68708a]">Account Number</p>
+                    <p className="font-mono text-[11px] font-bold text-[#1b2345]">{application.invoiceBankAccount}</p>
+                  </div>
+                  <div className="flex items-center justify-between px-3 py-2.5">
+                    <p className="text-[11px] text-[#68708a]">Branch Code</p>
+                    <p className="font-mono text-[11px] font-bold text-[#1b2345]">{application.invoiceBankBranch}</p>
+                  </div>
+                  <div className="flex items-center justify-between px-3 py-2.5">
+                    <p className="text-[11px] text-[#68708a]">Account Type</p>
+                    <p className="text-[11px] font-semibold text-[#1b2345]">{application.invoiceBankType}</p>
+                  </div>
+                  <div className="flex items-center justify-between bg-[#fff8ee] px-3 py-2.5">
+                    <p className="text-[11px] font-bold text-[#c9973a]">Payment Reference</p>
+                    <p className="font-mono text-[11px] font-bold text-[#c9973a]">{application.invoicePaymentReference || application.referenceNumber}</p>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between px-3 py-2.5">
-                  <p className="text-[11px] text-[#68708a]">Account Number</p>
-                  <p className="font-mono text-[11px] font-bold text-[#1b2345]">XXXXXXXXXX</p>
-                </div>
-                <div className="flex items-center justify-between px-3 py-2.5">
-                  <p className="text-[11px] text-[#68708a]">Branch Code</p>
-                  <p className="font-mono text-[11px] font-bold text-[#1b2345]">250655</p>
-                </div>
-                <div className="flex items-center justify-between px-3 py-2.5">
-                  <p className="text-[11px] text-[#68708a]">Account Type</p>
-                  <p className="text-[11px] font-semibold text-[#1b2345]">Cheque Account</p>
-                </div>
-                <div className="flex items-center justify-between bg-[#eef4ff] px-3 py-2.5">
-                  <p className="text-[11px] font-bold text-[#2f67de]">Reference</p>
-                  <p className="font-mono text-[11px] font-bold text-[#2f67de]">{application.referenceNumber}</p>
-                </div>
+                {application.invoiceTotalDue && (
+                  <div className="mt-2 flex items-center justify-between rounded-[10px] bg-[#1b2345] px-3.5 py-2.5">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#8a9bbf]">Total Due Now</p>
+                    <p className="text-[16px] font-bold text-[#c9973a]">R {application.invoiceTotalDue}</p>
+                  </div>
+                )}
               </div>
-            </div>
+            ) : (
+              <div className="rounded-[14px] border border-[#e8ecf5] bg-[#fbfcff] p-3.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1b2345]">Payment Details</p>
+                <p className="mt-1 text-[12px] text-[#68708a]">Banking details will appear here once your invoice is issued.</p>
+              </div>
+            )}
 
             {/* Download Invoice */}
-            <button className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#dbe6ff] bg-[#eef4ff] px-5 py-3 text-sm font-semibold text-[#2f67de]">
-              Download Invoice (PDF)
-            </button>
+            {application.invoiceNumber && (
+              <InvoiceDownloadButton
+                invoiceNumber={application.invoiceNumber}
+                referenceNumber={application.referenceNumber}
+                invoiceIssuedAt={application.invoiceIssuedAt ? String(application.invoiceIssuedAt) : null}
+                invoiceDueAt={application.invoiceDueAt ? String(application.invoiceDueAt) : null}
+                invoiceDepositAmount={application.invoiceDepositAmount}
+                invoiceLicensingFee={application.invoiceLicensingFee}
+                invoiceMonthlyAmount={application.invoiceMonthlyAmount}
+                invoiceTotalDue={application.invoiceTotalDue}
+                invoiceBankName={application.invoiceBankName}
+                invoiceBankHolder={application.invoiceBankHolder}
+                invoiceBankAccount={application.invoiceBankAccount}
+                invoiceBankBranch={application.invoiceBankBranch}
+                invoiceBankType={application.invoiceBankType}
+                invoicePaymentReference={application.invoicePaymentReference}
+                invoiceTerms={application.invoiceTerms}
+              />
+            )}
 
-            {/* I Have Made Payment */}
-            <div className="rounded-[14px] border border-emerald-200 bg-emerald-50/70 p-3.5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700">Payment Confirmation</p>
-              <p className="mt-1 text-[12px] leading-5 text-[#39425d]">Once you have completed your payment, click the button below to notify our team. Keep your proof of payment ready for verification.</p>
-              <button className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-700 px-5 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_-8px_rgba(16,185,129,0.4)]">
-                I Have Made Payment
-              </button>
-            </div>
+            {/* Proof of Payment Upload + Confirmation */}
+            <ProofOfPaymentUpload
+              initialFiles={(application.proofOfPaymentUrls as any[]) || []}
+              paymentCompletedAt={application.clientPaymentCompletedAt}
+            />
 
             {/* Delivery details popup */}
             <details className="group rounded-[14px] border border-[#e1e4ee] bg-[#fafbff]">
