@@ -800,32 +800,79 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
                   </p>
                 </div>
               ) : (
-                <div className="text-center">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-2xl text-white shadow-[0_12px_26px_rgba(16,185,129,0.3)]">
-                    ✓
+                <div className="-mx-5 -my-5 overflow-hidden rounded-none">
+                  <div className="bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 backdrop-blur">
+                        <svg className="h-4 w-4 text-[#f4c89a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">
+                          Auto Access · Rent To Own
+                        </p>
+                        <h3 className="text-[1rem] font-semibold text-white">
+                          Application Pre-Approved
+                        </h3>
+                      </div>
+                    </div>
                   </div>
-                  <p className="mt-4 text-lg font-semibold text-[#1b2345]">
-                    Application submitted successfully
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-[#68708a]">
-                    Your reference number is:
-                  </p>
-                  <p className="mt-3 rounded-2xl border border-[#dbe6ff] bg-[#eef4ff] px-4 py-3 font-mono text-base font-semibold tracking-wide text-[#1b2345]">
-                    {referenceNumber}
-                  </p>
-                  <div className="mt-5 grid gap-3">
-                    <Link
-                      href="/portal-login"
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-6 py-4 text-sm font-semibold text-white"
-                    >
-                      Go to Client Portal
-                    </Link>
-                    <a
-                      href="/"
-                      className="inline-flex w-full items-center justify-center rounded-full border border-[#dbe1ee] bg-white px-6 py-4 text-sm font-semibold text-[#1b2345]"
-                    >
-                      Return Home
-                    </a>
+
+                  <div className="bg-[#fbfcff] px-5 py-6 text-center">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-[0_12px_26px_rgba(16,185,129,0.3)]">
+                      <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+
+                    <h3 className="mt-4 text-xl font-semibold tracking-tight text-[#1b2345]">
+                      You are pre-approved
+                    </h3>
+                    <p className="mx-auto mt-2 max-w-sm text-[13px] leading-[1.7] text-[#68708a]">
+                      Your application has been successfully received and pre-approved for the next review stage.
+                    </p>
+
+                    <div className="mt-5 rounded-[16px] border border-[#e1e4ee] bg-gradient-to-br from-[#fafbff] to-white px-4 py-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#68708a]">
+                        Reference Number
+                      </p>
+                      <p className="mt-1.5 font-mono text-[1.4rem] font-semibold tracking-tight text-[#1b2345]">
+                        {referenceNumber}
+                      </p>
+                    </div>
+
+                    <div className="mt-3 flex items-start gap-3 rounded-[16px] border-l-4 border-[#d59758] bg-gradient-to-r from-[#fbf2ea] to-white px-4 py-3 text-left">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-[#d59758] shadow-sm">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                          <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c37d43]">
+                          Next Step
+                        </p>
+                        <p className="mt-1 text-[12px] leading-[1.6] text-[#39425d]">
+                          Your client portal login details will help you continue with document uploads and progress tracking.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 grid gap-3">
+                      <Link
+                        href="/portal-login"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-6 py-4 text-sm font-semibold text-white"
+                      >
+                        Go to Client Portal
+                      </Link>
+                      
+                        href="/"
+                        className="inline-flex w-full items-center justify-center rounded-full border border-[#dbe1ee] bg-white px-6 py-4 text-sm font-semibold text-[#1b2345]"
+                      >
+                        Return Home
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}

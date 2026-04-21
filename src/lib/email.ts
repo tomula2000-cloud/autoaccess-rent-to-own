@@ -228,17 +228,63 @@ function getStatusTemplate(status: string, note?: string | null) {
 
     case "APPROVED_IN_PRINCIPLE":
       return {
-        subject: "Your application has been approved in principle",
-        heading: "Your application has been approved in principle",
-        motto: "Momentum is building.",
+        subject: "🎉 Congratulations — Your application has been approved in principle",
+        heading: "Congratulations — You're approved in principle",
+        motto: "You're one step closer to your new vehicle.",
         intro:
-          "We are pleased to let you know that your application has been approved in principle.",
+          "we are pleased to inform you that your Auto Access rent-to-own application has been officially approved in principle. You've met our initial assessment criteria and your application has progressed to the vehicle selection stage.",
         detailHtml: `
-          <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:20px;">
-            <p style="margin:0; font-size:16px; line-height:1.7; color:#4b5563;">
-              The remaining steps will now focus on final processing and completion requirements.
+          <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:22px;">
+            <p style="margin:0 0 10px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#f97316; font-weight:700;">
+              What this means
+            </p>
+            <p style="margin:0; font-size:15px; line-height:1.7; color:#4b5563;">
+              Based on our affordability assessment, you now have access to a curated list of qualifying vehicles within your approved budget. These are ready to view and select in your client portal.
             </p>
           </div>
+
+          <div style="margin:24px 0; border:2px solid #c9973a; background:#fff8ee; border-radius:16px; padding:22px; text-align:center;">
+            <p style="margin:0 0 8px; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#c9973a; font-weight:700;">
+              ⏱ Important — Your approval is valid for 12 days only
+            </p>
+            <p style="margin:0 0 10px; font-size:15px; line-height:1.6; color:#39425d;">
+              If you do not complete the next steps (vehicle selection, deposit, and contract signing) within <strong>12 days from today</strong>, your approval will expire.
+            </p>
+            <p style="margin:0; font-size:14px; line-height:1.6; color:#39425d;">
+              Should your approval expire, a new application may only be submitted after <strong>6 months</strong>. We strongly recommend logging in as soon as possible.
+            </p>
+          </div>
+
+          <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:22px;">
+            <p style="margin:0 0 14px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#f97316; font-weight:700;">
+              🔹 Your Next Steps
+            </p>
+
+            <p style="margin:0 0 6px; font-size:14px; font-weight:700; color:#1b2345;">1. Log in to your Client Portal</p>
+            <p style="margin:0 0 14px; font-size:14px; line-height:1.7; color:#4b5563;">
+              Use the credentials shared with you during application. If you need help logging in, reply to this email.
+            </p>
+
+            <p style="margin:0 0 6px; font-size:14px; font-weight:700; color:#1b2345;">2. Review Your Vehicle Offers</p>
+            <p style="margin:0 0 14px; font-size:14px; line-height:1.7; color:#4b5563;">
+              Browse through the qualifying vehicles available within your approved budget. Full details, photos, and monthly rental amounts are shown for each.
+            </p>
+
+            <p style="margin:0 0 6px; font-size:14px; font-weight:700; color:#1b2345;">3. Select Your Preferred Vehicle</p>
+            <p style="margin:0 0 14px; font-size:14px; line-height:1.7; color:#4b5563;">
+              Choose the vehicle that best suits your needs and confirm your selection in the portal.
+            </p>
+
+            <p style="margin:0 0 6px; font-size:14px; font-weight:700; color:#1b2345;">4. Proceed to Contract &amp; Payment</p>
+            <p style="margin:0; font-size:14px; line-height:1.7; color:#4b5563;">
+              Follow the portal prompts to review your rent-to-own contract and complete the required deposit payment.
+            </p>
+          </div>
+
+          <p style="margin:24px 0 0; font-size:14px; line-height:1.7; color:#4b5563;">
+            Use the <strong>Client Portal</strong> button below to log in and get started. If you have any questions or need help choosing a vehicle, please reply to this email or reach out to us via WhatsApp. Our team is here to guide you through every step.
+          </p>
+
           ${noteBlock}
         `,
       };
@@ -710,5 +756,342 @@ export async function sendContractSignedAdminEmail({
       to: "admin@autoaccess.co.za",
       referenceNumber,
     }),
+  });
+}
+
+// ── Invoice email sent to client when admin issues invoice ──
+export async function sendInvoiceEmail({
+  to,
+  fullName,
+  referenceNumber,
+  invoiceNumber,
+  invoiceIssuedAt,
+  invoiceDueAt,
+  invoiceDepositAmount,
+  invoiceLicensingFee,
+  invoiceMonthlyAmount,
+  invoiceTotalDue,
+  invoiceBankName,
+  invoiceBankHolder,
+  invoiceBankAccount,
+  invoiceBankBranch,
+  invoiceBankType,
+  invoiceTerms,
+}: {
+  to: string;
+  fullName: string;
+  referenceNumber: string;
+  invoiceNumber: string;
+  invoiceIssuedAt: Date;
+  invoiceDueAt: Date;
+  invoiceDepositAmount: string;
+  invoiceLicensingFee: string;
+  invoiceMonthlyAmount: string;
+  invoiceTotalDue: string;
+  invoiceBankName: string;
+  invoiceBankHolder: string;
+  invoiceBankAccount: string;
+  invoiceBankBranch: string;
+  invoiceBankType: string;
+  invoiceTerms: string;
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not set.");
+  }
+
+  const portalUrl = getPortalUrl();
+
+  const fmtDate = (d: Date) =>
+    d.toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" });
+
+  const fmtTime = (d: Date) =>
+    d.toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit" });
+
+  return resend.emails.send({
+    from: "Auto Access <noreply@autoaccess.co.za>",
+    replyTo: "admin@autoaccess.co.za",
+    to,
+    subject: `Invoice ${invoiceNumber} — Payment Required | Auto Access`,
+    html: `
+    <div style="font-family: Arial, sans-serif; background:#f4f5f7; padding:40px 20px; color:#1b2345;">
+      <div style="max-width:680px; margin:0 auto;">
+
+        <!-- Header -->
+        <div style="background:#1b2345; padding:28px 32px; display:block;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+                <div style="font-size:22px; font-weight:700; color:#c9973a; font-family:Georgia,serif;">Auto Access</div>
+                <div style="font-size:10px; color:#8a9bbf; letter-spacing:0.18em; text-transform:uppercase; margin-top:2px;">Access Holdings (Pty) Ltd T/A Auto Access</div>
+                <div style="font-size:11px; color:#8a9bbf; margin-top:10px; line-height:1.7;">
+                  22 Eiland St, Eiland Park, Paarl, 7646<br/>
+                  087 012 6734 &nbsp;|&nbsp; admin@autoaccess.co.za
+                </div>
+              </td>
+              <td style="text-align:right; vertical-align:top;">
+                <div style="font-size:26px; color:#ffffff; font-family:Georgia,serif; font-weight:400;">Invoice</div>
+                <div style="font-size:10px; color:#c9973a; letter-spacing:0.22em; text-transform:uppercase; margin-top:4px;">Payment Request</div>
+                <div style="margin-top:12px; display:inline-block; background:#fff0e0; border:1px solid #c9973a; padding:3px 12px; font-size:10px; color:#c9973a; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;">Due within 24 hours</div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Gold bar -->
+        <div style="height:3px; background:#c9973a;"></div>
+
+        <!-- Ref strip -->
+        <div style="background:#f8f6f0; padding:12px 32px; border-bottom:1px solid #e2ddd5;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding-right:24px;">
+                <div style="font-size:9px; text-transform:uppercase; letter-spacing:0.18em; color:#8a9bbf;">Invoice No.</div>
+                <div style="font-size:14px; font-weight:700; color:#c9973a; margin-top:2px;">${invoiceNumber}</div>
+              </td>
+              <td style="padding-right:24px;">
+                <div style="font-size:9px; text-transform:uppercase; letter-spacing:0.18em; color:#8a9bbf;">Contract Ref.</div>
+                <div style="font-size:13px; font-weight:700; color:#1b2345; margin-top:2px;">${referenceNumber}</div>
+              </td>
+              <td style="padding-right:24px;">
+                <div style="font-size:9px; text-transform:uppercase; letter-spacing:0.18em; color:#8a9bbf;">Invoice Date</div>
+                <div style="font-size:13px; font-weight:700; color:#1b2345; margin-top:2px;">${fmtDate(invoiceIssuedAt)}</div>
+              </td>
+              <td>
+                <div style="font-size:9px; text-transform:uppercase; letter-spacing:0.18em; color:#8a9bbf;">Due Date</div>
+                <div style="font-size:13px; font-weight:700; color:#c9973a; margin-top:2px;">${fmtDate(invoiceDueAt)} at ${fmtTime(invoiceDueAt)}</div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Body -->
+        <div style="background:#ffffff; padding:28px 32px;">
+
+          <!-- Greeting -->
+          <p style="margin:0 0 20px; font-size:15px; line-height:1.7; color:#1b2345;">
+            Dear <strong>${fullName}</strong>,<br/><br/>
+            Thank you for signing your Rent-to-Own Vehicle Contract with Auto Access. Please find your payment invoice below. 
+            <strong style="color:#c9973a;">Payment must be completed within 24 hours</strong> to keep your contract active.
+          </p>
+
+          <!-- Line items -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-bottom:20px;">
+            <thead>
+              <tr style="background:#1b2345;">
+                <th style="padding:10px 14px; text-align:left; font-size:9px; text-transform:uppercase; letter-spacing:0.18em; color:#8a9bbf; font-weight:400;">#</th>
+                <th style="padding:10px 14px; text-align:left; font-size:9px; text-transform:uppercase; letter-spacing:0.18em; color:#8a9bbf; font-weight:400;">Description</th>
+                <th style="padding:10px 14px; text-align:right; font-size:9px; text-transform:uppercase; letter-spacing:0.18em; color:#8a9bbf; font-weight:400;">Amount Due</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #eef0f5;">
+                <td style="padding:12px 14px; font-size:12px; color:#8a9bbf;">01</td>
+                <td style="padding:12px 14px;">
+                  <div style="font-size:13px; font-weight:700; color:#1b2345;">Security Deposit</div>
+                  <div style="font-size:11px; color:#8a9bbf; margin-top:2px;">Refundable upon successful completion of 54-month term</div>
+                </td>
+                <td style="padding:12px 14px; text-align:right; font-size:13px; font-weight:700; color:#1b2345;">R ${invoiceDepositAmount}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #eef0f5; background:#fafbfd;">
+                <td style="padding:12px 14px; font-size:12px; color:#8a9bbf;">02</td>
+                <td style="padding:12px 14px;">
+                  <div style="font-size:13px; font-weight:700; color:#1b2345;">Licensing &amp; Registration Fee</div>
+                  <div style="font-size:11px; color:#8a9bbf; margin-top:2px;">Vehicle registration &amp; licence disc</div>
+                </td>
+                <td style="padding:12px 14px; text-align:right; font-size:13px; font-weight:700; color:#1b2345;">R ${invoiceLicensingFee}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #eef0f5; opacity:0.7;">
+                <td style="padding:12px 14px; font-size:12px; color:#8a9bbf;">03</td>
+                <td style="padding:12px 14px;">
+                  <div style="font-size:13px; font-weight:700; color:#1b2345;">Monthly Instalment <span style="display:inline-block; background:#eef0f5; border:0.5px solid #c8d0e0; padding:1px 8px; font-size:9px; color:#8a9bbf; letter-spacing:0.1em; text-transform:uppercase; margin-left:6px;">Not due now</span></div>
+                  <div style="font-size:11px; color:#8a9bbf; margin-top:2px;">R ${invoiceMonthlyAmount}/month (incl. service plan) — commences next calendar month via debit order</div>
+                </td>
+                <td style="padding:12px 14px; text-align:right; font-size:13px; font-weight:700; color:#8a9bbf;">R 0.00</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Deferred note -->
+          <div style="background:#f8f6f0; border-left:3px solid #c9973a; padding:10px 14px; margin-bottom:20px; font-size:12px; color:#5a6480; line-height:1.6;">
+            <strong style="color:#1b2345;">Note on monthly instalment:</strong> Your first monthly instalment of <strong>R ${invoiceMonthlyAmount}</strong> is not payable now. It commences via debit order in the next calendar month following vehicle delivery.
+          </div>
+
+          <!-- Total -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+            <tr>
+              <td></td>
+              <td width="280">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr style="border-bottom:1px solid #eef0f5;">
+                    <td style="padding:7px 0; font-size:13px; color:#5a6480;">Deposit</td>
+                    <td style="padding:7px 0; font-size:13px; font-weight:700; text-align:right; color:#1b2345;">R ${invoiceDepositAmount}</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid #eef0f5;">
+                    <td style="padding:7px 0; font-size:13px; color:#5a6480;">Licensing &amp; Registration</td>
+                    <td style="padding:7px 0; font-size:13px; font-weight:700; text-align:right; color:#1b2345;">R ${invoiceLicensingFee}</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid #eef0f5;">
+                    <td style="padding:7px 0; font-size:13px; color:#5a6480;">Monthly Instalment (deferred)</td>
+                    <td style="padding:7px 0; font-size:13px; font-weight:700; text-align:right; color:#8a9bbf;">R 0.00</td>
+                  </tr>
+                </table>
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:8px; background:#1b2345;">
+                  <tr>
+                    <td style="padding:12px 14px; font-size:12px; text-transform:uppercase; letter-spacing:0.12em; color:#8a9bbf;">Total Due Now</td>
+                    <td style="padding:12px 14px; text-align:right; font-size:18px; font-weight:700; color:#c9973a; font-family:Georgia,serif;">R ${invoiceTotalDue}</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Banking details -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px; border-collapse:collapse;">
+            <tr>
+              <td width="48%" style="vertical-align:top; padding-right:12px;">
+                <div style="border:1px solid #dde1ec; padding:14px;">
+                  <div style="font-size:9px; text-transform:uppercase; letter-spacing:0.18em; color:#c9973a; font-weight:700; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #eef0f5;">Banking Details</div>
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr><td style="font-size:12px; color:#8a9bbf; padding:3px 0;">Bank</td><td style="font-size:12px; font-weight:700; color:#1b2345; text-align:right;">${invoiceBankName}</td></tr>
+                    <tr><td style="font-size:12px; color:#8a9bbf; padding:3px 0;">Account Holder</td><td style="font-size:12px; font-weight:700; color:#1b2345; text-align:right;">${invoiceBankHolder}</td></tr>
+                    <tr><td style="font-size:12px; color:#8a9bbf; padding:3px 0;">Account No.</td><td style="font-size:12px; font-weight:700; color:#1b2345; text-align:right;">${invoiceBankAccount}</td></tr>
+                    <tr><td style="font-size:12px; color:#8a9bbf; padding:3px 0;">Branch Code</td><td style="font-size:12px; font-weight:700; color:#1b2345; text-align:right;">${invoiceBankBranch}</td></tr>
+                    <tr><td style="font-size:12px; color:#8a9bbf; padding:3px 0;">Account Type</td><td style="font-size:12px; font-weight:700; color:#1b2345; text-align:right;">${invoiceBankType}</td></tr>
+                  </table>
+                </div>
+              </td>
+              <td width="52%" style="vertical-align:top; padding-left:12px;">
+                <div style="border:1px solid #dde1ec; padding:14px; margin-bottom:10px;">
+                  <div style="font-size:9px; text-transform:uppercase; letter-spacing:0.18em; color:#c9973a; font-weight:700; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #eef0f5;">Payment Reference</div>
+                  <div style="background:#fff8ee; border:1px solid #c9973a; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-size:11px; color:#8a9bbf; text-transform:uppercase; letter-spacing:0.12em;">Use exactly as shown</span>
+                    <span style="font-size:16px; font-weight:700; color:#c9973a; font-family:Georgia,serif;">${referenceNumber}</span>
+                  </div>
+                  <div style="font-size:11px; color:#8a9bbf; line-height:1.6;">Always quote your reference number. Payments without a reference cannot be allocated and will cause delays.</div>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Terms -->
+          <div style="background:#fafbfd; border:1px solid #eef0f5; padding:14px; margin-bottom:20px;">
+            <div style="font-size:9px; text-transform:uppercase; letter-spacing:0.18em; color:#8a9bbf; margin-bottom:10px;">Terms &amp; Conditions of Payment</div>
+            <div style="font-size:11px; color:#5a6480; line-height:1.7; white-space:pre-wrap;">${invoiceTerms}</div>
+          </div>
+
+          <!-- CTA -->
+          <div style="text-align:center; margin:24px 0;">
+            <a href="${portalUrl}" style="display:inline-block; background:#1b2345; color:#c9973a; text-decoration:none; font-weight:700; padding:14px 36px; font-size:14px; letter-spacing:0.04em; font-family:Georgia,serif;">
+              View Invoice in Portal
+            </a>
+          </div>
+
+          <p style="font-size:12px; color:#8a9bbf; line-height:1.7; text-align:center; margin:0;">
+            Questions? Call us on <strong style="color:#1b2345;">087 012 6734</strong> or reply to this email.<br/>
+            Monday to Friday, 8am to 5pm.
+          </p>
+
+        </div>
+
+        <!-- Footer -->
+        <div style="background:#1b2345; padding:14px 32px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="font-size:10px; color:#8a9bbf; line-height:1.6;">
+                Access Holdings (Pty) Ltd T/A Auto Access &nbsp;|&nbsp; Reg No: 1999/002599/10<br/>
+                22 Eiland St, Eiland Park, Paarl, 7646 &nbsp;|&nbsp; admin@autoaccess.co.za
+              </td>
+              <td style="text-align:right; font-size:10px; color:#5a6480;">
+                Invoice Ref: ${invoiceNumber}<br/>
+                Page 1 of 1
+              </td>
+            </tr>
+          </table>
+        </div>
+
+      </div>
+    </div>
+    `,
+  });
+}
+
+// ── Admin alert when client confirms payment ──
+export async function sendPaymentCompletedAdminEmail({
+  fullName,
+  email,
+  referenceNumber,
+  invoiceNumber,
+  invoiceTotalDue,
+  proofOfPaymentCount,
+  completedAt,
+}: {
+  fullName: string;
+  email: string;
+  referenceNumber: string;
+  invoiceNumber: string;
+  invoiceTotalDue: string;
+  proofOfPaymentCount: number;
+  completedAt: Date;
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not set.");
+  }
+
+  const adminUrl = `${getPortalUrl().replace("/portal", "")}/admin`;
+
+  return resend.emails.send({
+    from: "Auto Access <noreply@autoaccess.co.za>",
+    replyTo: "admin@autoaccess.co.za",
+    to: "admin@autoaccess.co.za",
+    subject: `🔔 Payment Completed — ${referenceNumber} | ${fullName}`,
+    html: `
+    <div style="font-family: Arial, sans-serif; background:#f4f5f7; padding:40px 20px; color:#1b2345;">
+      <div style="max-width:600px; margin:0 auto; background:#ffffff; border:1px solid #dde1ec;">
+
+        <div style="background:#1b2345; padding:24px 28px;">
+          <div style="font-size:11px; color:#c9973a; text-transform:uppercase; letter-spacing:0.2em; font-weight:700;">Admin Alert</div>
+          <div style="font-size:20px; color:#ffffff; font-family:Georgia,serif; margin-top:4px;">Payment Completed by Client</div>
+        </div>
+
+        <div style="height:3px; background:#c9973a;"></div>
+
+        <div style="padding:24px 28px;">
+
+          <div style="background:#fff8ee; border-left:3px solid #c9973a; padding:14px 16px; margin-bottom:20px;">
+            <p style="margin:0; font-size:13px; line-height:1.7; color:#1b2345;">
+              <strong>${fullName}</strong> has confirmed payment completion and uploaded 
+              <strong>${proofOfPaymentCount} proof of payment ${proofOfPaymentCount === 1 ? "document" : "documents"}</strong>.
+              The application is now awaiting payment verification.
+            </p>
+          </div>
+
+          <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-bottom:20px;">
+            <tr><td style="padding:6px 0; font-size:12px; color:#8a9bbf;">Reference</td><td style="padding:6px 0; font-size:13px; font-weight:700; color:#1b2345; text-align:right;">${referenceNumber}</td></tr>
+            <tr><td style="padding:6px 0; font-size:12px; color:#8a9bbf;">Invoice No.</td><td style="padding:6px 0; font-size:13px; font-weight:700; color:#c9973a; text-align:right;">${invoiceNumber}</td></tr>
+            <tr><td style="padding:6px 0; font-size:12px; color:#8a9bbf;">Client Email</td><td style="padding:6px 0; font-size:13px; font-weight:700; color:#1b2345; text-align:right;">${email}</td></tr>
+            <tr><td style="padding:6px 0; font-size:12px; color:#8a9bbf;">Total Due</td><td style="padding:6px 0; font-size:13px; font-weight:700; color:#1b2345; text-align:right;">R ${invoiceTotalDue}</td></tr>
+            <tr><td style="padding:6px 0; font-size:12px; color:#8a9bbf;">POP Files</td><td style="padding:6px 0; font-size:13px; font-weight:700; color:#1b2345; text-align:right;">${proofOfPaymentCount} uploaded</td></tr>
+            <tr><td style="padding:6px 0; font-size:12px; color:#8a9bbf;">Completed At</td><td style="padding:6px 0; font-size:13px; font-weight:700; color:#1b2345; text-align:right;">${completedAt.toLocaleString("en-ZA", { dateStyle: "full", timeStyle: "short" })}</td></tr>
+          </table>
+
+          <div style="text-align:center; margin:24px 0;">
+            <a href="${adminUrl}" style="display:inline-block; background:#1b2345; color:#c9973a; text-decoration:none; font-weight:700; padding:14px 32px; font-size:13px; letter-spacing:0.04em; font-family:Georgia,serif;">
+              Review Payment in Admin Panel →
+            </a>
+          </div>
+
+          <p style="margin:0; font-size:11px; color:#8a9bbf; text-align:center; line-height:1.6;">
+            Status is now PAYMENT_UNDER_VERIFICATION. Please review the proof of payment and verify against your bank statement.
+          </p>
+
+        </div>
+
+        <div style="background:#1b2345; padding:12px 28px;">
+          <p style="margin:0; font-size:10px; color:#8a9bbf;">Auto Access Admin System · ${referenceNumber}</p>
+        </div>
+
+      </div>
+    </div>
+    `,
   });
 }
