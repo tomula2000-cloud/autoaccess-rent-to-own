@@ -16,6 +16,7 @@ import PortalMobileFooterBar from "@/components/portal-mobile/portal-mobile-foot
 import { portalMobileThemes } from "@/components/portal-mobile/portal-mobile-theme";
 import { getCompactCountdown } from "@/components/portal-mobile/portal-mobile-utils";
 import PortalStatusPoller from "@/components/portal-status-poller";
+import PortalDashboardHero from "@/components/portal-dashboard/portal-dashboard-hero";
 
 type StatusLogItem = {
   id: string;
@@ -338,25 +339,14 @@ export default async function MobilePortalDashboardView() {
   return (
     <PortalMobileShell>
       <PortalStatusPoller currentStatus={application.status} referenceNumber={application.referenceNumber} />
-      <PortalMobileTopbar rightHref="/portal/documents" rightLabel="Documents" />
-
-      <PortalMobileHero
-        theme={theme}
-        eyebrow={heroCopy.eyebrow}
-        title={heroCopy.title}
-        description={heroCopy.description}
-        statusLabel={statusLabel}
+      <PortalDashboardHero
+        status={application.status}
+        fullName={application.fullName}
         referenceNumber={application.referenceNumber}
-        countdownText={countdownText}
-        selectionText={application.preferredVehicle || "No preferred vehicle"}
-      />
-
-      <PortalMobileStatRow
-        items={[
-          { label: "Progress", value: `${progressNumeric}%`, tone: "blue" },
-          { label: "Documents", value: String(application.documents.length), tone: application.documents.length > 0 ? "green" : "default" },
-          { label: "Stage", value: statusLabel },
-        ]}
+        approvalValidUntil={application.approvalValidUntil}
+        documentsCount={application.documents.length}
+        createdAt={application.createdAt}
+        isMobile={true}
       />
 
 

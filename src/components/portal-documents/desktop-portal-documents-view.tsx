@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import DocumentUploadWizard from "@/components/portal-documents/document-upload-wizard";
 
 type DocumentItem = {
   id: string;
@@ -608,143 +609,12 @@ export default async function PortalDocumentsPage({ searchParams }: PageProps) {
           </div>
 
           <div className="space-y-5">
-            <section className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_10px_28px_-14px_rgba(15,23,42,0.10)]">
-              <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4 sm:px-6">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#9cc0ff]">
-                  Encrypted
-                </p>
-                <h2 className="text-[1.05rem] font-semibold text-white sm:text-[1.15rem]">
-                  Secure Upload Vault
-                </h2>
-              </div>
-
-              {!documentsStageLocked ? (
-                <form
-                  action="/api/portal-documents"
-                  method="POST"
-                  encType="multipart/form-data"
-                  className="space-y-4 p-5 sm:p-6"
-                >
-                  <div>
-                    <label
-                      htmlFor="documentType"
-                      className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#68708a]"
-                    >
-                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-[#eef4ff] text-[#2f67de]">
-                        <IconFile />
-                      </span>
-                      Document Type
-                    </label>
-
-                    <div className="relative">
-                      <select
-                        id="documentType"
-                        name="documentType"
-                        defaultValue="ID_DOCUMENT"
-                        className="w-full appearance-none rounded-2xl border border-[#dde1ee] bg-white px-4 py-3.5 pr-10 text-sm font-medium text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
-                      >
-                        <option value="ID_DOCUMENT">ID Document</option>
-                        <option value="PASSPORT">Passport</option>
-                        <option value="PROOF_OF_INCOME" disabled={isSelfEmployedFlow}>
-                          {isSelfEmployedFlow
-                            ? "Proof of Income / Payslip (Not applicable)"
-                            : "Proof of Income / Payslip"}
-                        </option>
-                        <option value="BANK_STATEMENT">
-                          {isSelfEmployedFlow
-                            ? "6 Months Bank Statement"
-                            : "Bank Statement"}
-                        </option>
-                        <option value="PROOF_OF_RESIDENCE">
-                          Proof of Residence
-                        </option>
-                        <option value="DRIVERS_LICENSE">
-                          Driver's License
-                        </option>
-                        <option value="OTHER">Other</option>
-                      </select>
-
-                      <svg
-                        className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#68708a]"
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div className="rounded-[20px] border-2 border-dashed border-[#cdd5e8] bg-gradient-to-br from-[#fafbff] via-white to-[#f4f7ff] p-5">
-                    <div className="mb-4 flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2f67de] to-[#4f86f7] text-white shadow-[0_10px_24px_-8px_rgba(47,103,222,0.45)]">
-                        <IconUpload />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-[#1b2345]">
-                          Choose files to upload
-                        </p>
-                        <p className="mt-1 text-[12px] text-[#68708a]">
-                          PDF, JPG, PNG, WEBP · Multiple files allowed
-                        </p>
-                      </div>
-                    </div>
-
-                    <input
-                      type="file"
-                      name="files"
-                      multiple
-                      accept=".pdf,.jpg,.jpeg,.png,.webp,image/*"
-                      required
-                      className="w-full cursor-pointer rounded-xl border border-[#dde1ee] bg-white px-4 py-3 text-sm text-[#1b2345] outline-none transition file:mr-3 file:rounded-lg file:border-0 file:bg-[#eef4ff] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[#2f67de]"
-                    />
-
-                    <button
-                      type="submit"
-                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(47,103,222,0.45)] transition hover:from-[#2559c6] hover:to-[#3568d6]"
-                    >
-                      Upload Document(s)
-                    </button>
-
-                    <p className="mt-3 text-[12px] leading-6 text-[#68708a]">
-                      On most devices, this supports files, photos and camera capture.
-                    </p>
-                  </div>
-                </form>
-              ) : (
-                <div className="p-5 sm:p-6">
-                  <div className="rounded-[20px] border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 p-5">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white">
-                        <IconLock />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
-                          Uploads Locked
-                        </p>
-                        <p className="mt-1.5 text-sm font-semibold text-[#1b2345]">
-                          This document stage has been closed.
-                        </p>
-                        <p className="mt-1 text-[13px] leading-6 text-[#4d546a]">
-                          {documentsLockMessage}
-                        </p>
-                      </div>
-                    </div>
-
-                    <Link
-                      href="/portal"
-                      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#1d2240] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#2a3563]"
-                    >
-                      Go to Dashboard
-                    </Link>
-                  </div>
-                </div>
-              )}
+            <section className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white p-5 shadow-[0_10px_28px_-14px_rgba(15,23,42,0.10)] sm:p-6">
+              <DocumentUploadWizard
+                isSelfEmployedFlow={isSelfEmployedFlow}
+                submittedTypes={Array.from(submittedTypes)}
+                documentsStageLocked={documentsStageLocked}
+              />
             </section>
 
             <section className="rounded-[24px] border border-[#e1e4ee] bg-white p-5 shadow-[0_10px_28px_-14px_rgba(15,23,42,0.10)] sm:p-6">
