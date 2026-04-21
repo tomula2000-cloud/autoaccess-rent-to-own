@@ -6,6 +6,7 @@ type PortalLoginApplication = {
   referenceNumber: string;
   email: string;
   fullName: string;
+  status: string;
 };
 
 function normalizeEmail(value: string) {
@@ -99,6 +100,7 @@ export async function POST(request: Request) {
           referenceNumber: true,
           email: true,
           fullName: true,
+          status: true,
         },
         orderBy: {
           createdAt: "desc",
@@ -145,7 +147,9 @@ export async function POST(request: Request) {
       return response;
     }
 
-    const response = NextResponse.redirect(new URL("/portal", request.url));
+    const docStatuses = ["PRE_QUALIFIED", "AWAITING_DOCUMENTS", "ADDITIONAL_DOCUMENTS_REQUIRED"];
+    const landingPath = docStatuses.includes(matchedApplication.status) ? "/portal/documents" : "/portal";
+    const response = NextResponse.redirect(new URL(landingPath, request.url));
     setPortalCookies(response, matchedApplication);
     return response;
   } catch (error) {
