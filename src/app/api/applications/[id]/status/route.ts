@@ -352,7 +352,7 @@ export async function POST(
         const { sendBulkSMS } = await import("@/lib/sms");
         await sendBulkSMS({
           to: existingApplication.phone,
-          message: `🎉 Congratulations ${existingApplication.fullName}!\n\nYour Auto Access application [${existingApplication.referenceNumber}] is APPROVED IN PRINCIPLE.\n\nLog in to your portal using your email & reference number to view your vehicle offers.\n\n⏳ Approval valid for 12 days only.\n\n📞 Need help? Call us: 087 012 6734\n- Auto Access`,
+          message: `Congratulations ${existingApplication.fullName}!\n\nYour Auto Access application [${existingApplication.referenceNumber}] is APPROVED IN PRINCIPLE.\n\nLog in to your portal using your email and reference number to view your vehicle offers.\n\nApproval valid for 12 days only.\n\nNeed help? Call us: 087 012 6734\n- Auto Access`,
         });
         console.log(`BulkSMS sent to ${existingApplication.fullName} for APPROVED_IN_PRINCIPLE`);
       } catch (smsError) {
