@@ -10,8 +10,14 @@ export async function sendBulkSMS({
   to: string;
   message: string;
 }): Promise<void> {
-  const username = process.env.SENDMODE_USERNAME;
-  const password = process.env.SENDMODE_PASSWORD;
+  const username = process.env.SENDMODE_USERNAME?.trim();
+  const password = process.env.SENDMODE_PASSWORD?.trim();
+
+  console.log("[SMS DEBUG] Sendmode start", {
+    hasUsername: Boolean(username),
+    hasPassword: Boolean(password),
+    to,
+  });
 
   if (!username || !password) {
     console.warn("Sendmode credentials not set — skipping SMS send");
@@ -25,6 +31,8 @@ export async function sendBulkSMS({
     ? to
     : `27${to.replace(/^0/, "")}`;
 
+  console.log("[SMS DEBUG] Normalised number:", normalised);
+
   const url = new URL("https://api.sendmode.co.za/httppost.aspx");
   url.searchParams.set("Type", "sendparam");
   url.searchParams.set("username", username);
@@ -32,12 +40,22 @@ export async function sendBulkSMS({
   url.searchParams.set("numto", normalised);
   url.searchParams.set("data1", message);
 
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    cache: "no-store",
+  });
+
   const responseText = await response.text();
 
-  if (!response.ok || responseText.includes("<r>False</r>")) {
+  console.log("[SMS DEBUG] Sendmode HTTP status:", response.status);
+  console.log("Sendmode SMS response:", responseText);
+
+  const hasExplicitError =
+    responseText.includes("<result>False</result>") ||
+    responseText.includes("<r>False</r>") ||
+    /<error>\s*[^<]+\s*<\/error>/i.test(responseText);
+
+  if (!response.ok || hasExplicitError) {
     throw new Error(`Sendmode API error: ${responseText}`);
   }
-
-  console.log("Sendmode SMS response:", responseText);
 }
