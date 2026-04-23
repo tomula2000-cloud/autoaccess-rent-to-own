@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import PrepareInvoiceForm from "@/components/prepare-invoice-form";
 import AdminStatusForm from "@/components/admin-status-form";
 import AdminApprovalValidityForm from "@/components/admin-approval-validity-form";
+import AdminEditApplicationForm from "@/components/admin-edit-application-form";
 
 type PageProps = {
   params: Promise<{
@@ -498,8 +499,28 @@ export default async function AdminApplicationDetailPage({
           <div className="space-y-6">
             <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
               <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Applicant Profile</p>
-                <h2 className="text-[1.05rem] font-semibold text-white">Applicant Information</h2>
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Applicant Profile</p>
+                    <h2 className="text-[1.05rem] font-semibold text-white">Applicant Information</h2>
+                  </div>
+                  <AdminEditApplicationForm
+                    application={{
+                      id: application.id,
+                      fullName: application.fullName,
+                      email: application.email,
+                      phone: application.phone,
+                      identityType: application.identityType ?? null,
+                      identityNumber: application.identityNumber ?? null,
+                      employmentStatus: application.employmentStatus,
+                      monthlyIncome: application.monthlyIncome,
+                      salaryDate: application.salaryDate ?? null,
+                      preferredVehicle: application.preferredVehicle,
+                      physicalAddress: application.physicalAddress ?? null,
+                      notes: application.notes ?? null,
+                    }}
+                  />
+                </div>
               </div>
               <div className="grid gap-0 divide-y divide-[#eef0f7] sm:grid-cols-2 sm:divide-y-0">
                 {[
