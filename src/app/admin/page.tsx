@@ -124,7 +124,11 @@ export default async function AdminPage({ searchParams }: PageProps) {
     "ADDITIONAL_DOCUMENTS_REQUIRED",
   ]);
 
-  // Count unseen applications in trigger statuses for admin notification badges
+  const countsByStatus: Record<string, number> = {};
+  for (const application of allApplications) {
+    countsByStatus[application.status] = (countsByStatus[application.status] || 0) + 1;
+  }
+
   const unseenCounts = await prisma.application.groupBy({
     by: ["status"],
     where: {
@@ -143,7 +147,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
     <main className="min-h-screen bg-[#f4f6fb] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1400px]">
 
-        {/* ── Top Header ── */}
+        {/* Top Header */}
         <div className="mb-6 overflow-hidden rounded-[28px] bg-gradient-to-r from-[#0b1532] via-[#102046] to-[#1b3375] shadow-[0_24px_60px_-20px_rgba(11,21,50,0.55)]">
           <div className="flex flex-col gap-4 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -167,7 +171,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
           </div>
         </div>
 
-        {/* ── Stat Cards ── */}
+        {/* Stat Cards */}
         <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {[
             { label: "Total", value: totalCount, color: "border-[#dbe6ff] bg-[#eef4ff]", text: "text-[#1b2345]", sub: "text-[#2f67de]" },
@@ -184,12 +188,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
           ))}
         </div>
 
-        {/* ── Bulk Reminder ── */}
+        {/* Bulk Reminder */}
         <div className="mb-6">
           <AdminBulkReminder pendingCount={pendingDocsCount} />
         </div>
 
-        {/* ── Search and Filter ── */}
+        {/* Search and Filter */}
         <div className="mb-5 overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
           <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
             <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Search & Filter</p>
@@ -209,39 +213,52 @@ export default async function AdminPage({ searchParams }: PageProps) {
                 Search
               </button>
             </form>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {STATUS_OPTIONS.map((status) => {
-                const isActive = activeStatus === status;
-                const href = `/admin?status=${encodeURIComponent(status)}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""}`;
-                return (
-                  <Link
-                    key={status}
-                    href={href}
-                    className={`relative inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition ${
-                      isActive
-                        ? "border-[#2f67de] bg-[#2f67de] text-white"
-                        : "border-[#e1e4ee] bg-[#fafbff] text-[#68708a] hover:border-[#dbe6ff] hover:text-[#2f67de]"
-                    }`}
-                  >
-                    <span>{status === "ALL" ? "All" : formatStatus(status)}</span>
-                    {unseenByStatus[status] > 0 && (
+
+            {/* Compact Filter Pills */}
+            <div className="mt-4 border-t border-[#eef0f7] pt-3">
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.2em] text-[#a3aac0]">Filter by status</p>
+              <div className="flex flex-wrap gap-1.5">
+                {STATUS_OPTIONS.map((status) => {
+                  const isActive = activeStatus === status;
+                  const href = `/admin?status=${encodeURIComponent(status)}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""}`;
+                  const count = status === "ALL" ? totalCount : (countsByStatus[status] || 0);
+                  return (
+                    <Link
+                      key={status}
+                      href={href}
+                      className={`relative inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10.5px] font-semibold leading-none transition ${
+                        isActive
+                          ? "border-[#d59758] bg-gradient-to-r from-[#d59758] to-[#e4ad72] text-white shadow-[0_4px_12px_-4px_rgba(213,151,88,0.5)]"
+                          : "border-[#e1e4ee] bg-[#fafbff] text-[#68708a] hover:border-[#d59758]/40 hover:bg-white hover:text-[#0b1532]"
+                      }`}
+                    >
+                      <span>{status === "ALL" ? "All" : formatStatus(status)}</span>
                       <span
-                        className={`inline-flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold leading-none ${
-                          isActive ? "bg-white text-[#2f67de]" : "bg-[#e11d48] text-white"
+                        className={`rounded-full px-1.5 py-0.5 text-[9.5px] font-bold leading-none ${
+                          isActive
+                            ? "bg-white/25 text-white"
+                            : "bg-[#eef0f7] text-[#68708a]"
                         }`}
-                        aria-label={`${unseenByStatus[status]} unseen`}
                       >
-                        {unseenByStatus[status]}
+                        {count}
                       </span>
-                    )}
-                  </Link>
-                );
-              })}
+                      {unseenByStatus[status] > 0 && (
+                        <span
+                          className="absolute -right-1 -top-1 inline-flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-[#e11d48] px-1 text-[8.5px] font-bold leading-none text-white ring-2 ring-white"
+                          aria-label={`${unseenByStatus[status]} unseen`}
+                        >
+                          {unseenByStatus[status]}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ── Results count ── */}
+        {/* Results count */}
         <div className="mb-3 flex items-center justify-between gap-2 px-1">
           <span className="text-[12px] font-semibold text-[#68708a]">
             Showing <span className="text-[#1b2345]">{applications.length}</span> application{applications.length === 1 ? "" : "s"}
@@ -249,7 +266,6 @@ export default async function AdminPage({ searchParams }: PageProps) {
             {searchQuery ? <> matching <span className="text-[#1b2345]">"{searchQuery}"</span></> : null}
           </span>
           {applications.length > 0 ? (
-            
             <a
               href={"/api/admin/export-phones?status=" + encodeURIComponent(activeStatus) + "&q=" + encodeURIComponent(searchQuery)}
               className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-[11px] font-semibold text-emerald-700 transition hover:bg-emerald-100"
@@ -261,7 +277,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
           ) : null}
         </div>
 
-        {/* ── Applications Table ── */}
+        {/* Applications Table */}
         <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
           <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
             <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Application Records</p>
@@ -278,8 +294,8 @@ export default async function AdminPage({ searchParams }: PageProps) {
               <table className="min-w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-[#eef0f7] bg-[#fafbff]">
-                    {["Reference", "Applicant", "Phone", "Identity", "Employment", "Income", "Vehicle", "Status", "Date", "Action"].map((h) => (
-                      <th key={h} className="px-5 py-3.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a]">{h}</th>
+                    {["Reference", "Applicant", "Contact", "Employment", "Vehicle", "Status", "Date", "Action"].map((h) => (
+                      <th key={h} className="px-3 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a]">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -289,30 +305,31 @@ export default async function AdminPage({ searchParams }: PageProps) {
                       key={application.id}
                       className={`border-t border-[#eef0f7] align-top transition hover:bg-[#fafbff] ${index % 2 === 0 ? "bg-white" : "bg-[#fdfdff]"}`}
                     >
-                      <td className="px-5 py-4">
+                      <td className="px-3 py-3">
                         <span className="font-mono text-[12px] font-bold text-[#2f67de]">{application.referenceNumber}</span>
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-3 py-3">
                         <p className="text-[13px] font-semibold text-[#1b2345]">{application.fullName}</p>
                         <p className="mt-0.5 text-[11px] text-[#68708a]">{application.email}</p>
                       </td>
-                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.phone}</td>
-                      <td className="whitespace-nowrap px-5 py-4">
-                        <p className="text-[12px] font-medium text-[#39425d]">{formatIdentityType(application.identityType)}</p>
-                        <p className="mt-0.5 text-[11px] text-[#68708a]">{application.identityNumber || "—"}</p>
+                      <td className="px-3 py-3">
+                        <p className="text-[12px] font-medium text-[#39425d]">{application.phone}</p>
+                        <p className="mt-0.5 text-[11px] text-[#68708a]">{formatIdentityType(application.identityType)} · {application.identityNumber || "—"}</p>
                       </td>
-                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.employmentStatus}</td>
-                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">R {application.monthlyIncome}</td>
-                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.preferredVehicle}</td>
-                      <td className="whitespace-nowrap px-5 py-4">
+                      <td className="px-3 py-3">
+                        <p className="text-[12px] font-medium text-[#39425d]">{application.employmentStatus}</p>
+                        <p className="mt-0.5 text-[11px] text-[#68708a]">R {application.monthlyIncome}</p>
+                      </td>
+                      <td className="px-3 py-3 text-[12px] text-[#39425d]">{application.preferredVehicle}</td>
+                      <td className="whitespace-nowrap px-3 py-3">
                         <span className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${getStatusBadge(application.status)}`}>
                           {formatStatus(application.status)}
                         </span>
                       </td>
-                      <td className="whitespace-nowrap px-5 py-4 text-[11px] text-[#68708a]">
+                      <td className="whitespace-nowrap px-3 py-3 text-[11px] text-[#68708a]">
                         {new Date(application.createdAt).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })}
                       </td>
-                      <td className="whitespace-nowrap px-5 py-4">
+                      <td className="whitespace-nowrap px-3 py-3">
                         <Link
                           href={`/admin/${application.id}`}
                           className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-2 text-[11px] font-bold text-white transition hover:from-[#2a3563] hover:to-[#3b4a82]"
