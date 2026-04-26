@@ -606,6 +606,20 @@ export default async function ClientPortalPage() {
             createdAt={application.createdAt}
             isMobile={false}
           />
+
+          {/* SA Reviews badge */}
+          <a
+            href="https://sareviews.co.za/auto-access"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 flex items-center gap-2.5 rounded-[14px] border border-[#d59758]/30 bg-gradient-to-r from-[#fbf2ea] to-white px-4 py-3 shadow-[0_2px_8px_-2px_rgba(213,151,88,0.15)] transition hover:shadow-[0_4px_12px_-2px_rgba(213,151,88,0.25)]"
+          >
+            <div className="flex items-center gap-0.5">
+              {[1,2,3,4,5].map((i) => (<svg key={i} width="12" height="12" viewBox="0 0 24 24" fill="#d59758"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>))}
+            </div>
+            <span className="text-[12px] font-semibold text-[#c37d43]">4.7 &bull; 229+ verified reviews on SA Reviews</span>
+            <svg className="ml-auto h-3.5 w-3.5 text-[#d59758]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </a>
         </div>
 
         <div className="mt-6 overflow-hidden rounded-[30px] border border-[#e1e4ee] bg-white/95 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.18)] backdrop-blur md:p-2">

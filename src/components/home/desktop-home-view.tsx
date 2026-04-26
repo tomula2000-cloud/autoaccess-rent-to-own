@@ -1,4 +1,5 @@
 "use client";
+import ReviewsSection from "@/components/home/ReviewsSection";
 import type { ReactNode } from "react";
 
 import Link from "next/link";
@@ -1034,6 +1035,9 @@ function HomePageContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Reac
           </section>
             </div>
           </section>
+          {/* REVIEWS */}
+          <ReviewsSection />
+
           {/* ════════════════════════════════════════════════════
               § 7  TRUST & COMPLIANCE
           ════════════════════════════════════════════════════ */}

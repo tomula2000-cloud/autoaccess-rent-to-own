@@ -1,4 +1,6 @@
 "use client";
+import ReviewsBadge from "@/components/home/ReviewsBadge";
+import ReviewsSection from "@/components/home/ReviewsSection";
 import type { ReactNode } from "react";
 
 import Link from "next/link";
@@ -177,6 +179,7 @@ function MobileHomeFallback() {
           <p className="mt-4 text-[13px] text-[#68708a]">Loading…</p>
         </div>
       </div>
+      <ReviewsBadge />
     </main>
   );
 }
@@ -1043,6 +1046,8 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
         <section className="section-reveal mt-4">
           {featuredVehiclesSlot}
         </section>
+
+        <ReviewsSection />
 
         <footer className="section mt-4 overflow-hidden rounded-[24px] bg-gradient-to-br from-[#0b1532] to-[#060e24] px-5 py-7">
           <div className="flex items-center gap-3">

@@ -1,4 +1,4 @@
-import WhatsAppFloat from "@/components/whatsapp-float";
+import ZandiFloat from "@/components/zandi-float";
 import PortalHeaderChip from "@/components/portal-header-chip";
 import { DesktopNav, MobileMenu } from "@/components/portal-nav-aware";
 import Link from "next/link";
@@ -44,7 +44,7 @@ export default function AppShell({ children }: AppShellProps) {
       </header>
 
       {children}
-      <WhatsAppFloat />
+      <ZandiFloat />
     </div>
   );
 }
