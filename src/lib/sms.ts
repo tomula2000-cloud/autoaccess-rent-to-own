@@ -33,14 +33,12 @@ export async function sendBulkSMS({
 
   console.log("[SMS DEBUG] Normalised number:", normalised);
 
-  const url = new URL("https://api.sendmode.co.za/httppost.aspx");
-  url.searchParams.set("Type", "sendparam");
-  url.searchParams.set("username", username);
-  url.searchParams.set("password", password);
-  url.searchParams.set("numto", normalised);
-  url.searchParams.set("data1", message);
+  // Route through Render proxy to avoid Cloudflare blocking on Vercel
+  const proxyUrl = new URL("https://sendmode-proxy.onrender.com/send-sms");
+  proxyUrl.searchParams.set("numto", normalised);
+  proxyUrl.searchParams.set("data1", message);
 
-  const response = await fetch(url.toString(), {
+  const response = await fetch(proxyUrl.toString(), {
     method: "GET",
     cache: "no-store",
   });
