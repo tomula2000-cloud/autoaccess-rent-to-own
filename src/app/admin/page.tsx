@@ -22,6 +22,7 @@ type AdminApplicationRow = {
   preferredVehicle: string;
   status: string;
   createdAt: Date;
+  adminSeen: boolean;
 };
 
 const STATUS_OPTIONS = [
@@ -95,20 +96,47 @@ export default async function AdminPage({ searchParams }: PageProps) {
   const activeStatus = params.status || "ALL";
   const searchQuery = (params.q || "").trim();
 
-  const allApplications: AdminApplicationRow[] = await prisma.application.findMany({
+  const priorityStatuses = ["CONTRACT_REQUESTED", "AWAITING_INVOICE"];
+
+  const allApplications = await prisma.application.findMany({
     orderBy: { createdAt: "desc" },
     select: {
       id: true, referenceNumber: true, fullName: true, email: true, phone: true,
       identityType: true, identityNumber: true, employmentStatus: true,
       monthlyIncome: true, preferredVehicle: true, status: true, createdAt: true,
+      adminSeen: true,
     },
   });
 
-  const applications = allApplications.filter((application: AdminApplicationRow) => {
+  const statusLogs = await prisma.statusLog.findMany({
+    where: { toStatus: { in: priorityStatuses as never[] } },
+    orderBy: { createdAt: "desc" },
+    select: { applicationId: true, createdAt: true },
+  });
+
+  const statusTimestampMap: Record<string, Date> = {};
+  for (const log of statusLogs) {
+    if (!statusTimestampMap[log.applicationId]) {
+      statusTimestampMap[log.applicationId] = log.createdAt;
+    }
+  }
+
+  const filteredApplications = allApplications.filter((application) => {
     const matchesStatus = activeStatus === "ALL" ? true : application.status === activeStatus;
     const haystack = [application.referenceNumber, application.fullName, application.email, application.phone, application.identityNumber || "", application.preferredVehicle].join(" ").toLowerCase();
     const matchesSearch = searchQuery ? haystack.includes(searchQuery.toLowerCase()) : true;
     return matchesStatus && matchesSearch;
+  });
+
+  const applications = filteredApplications.sort((a, b) => {
+    const isPriorityA = priorityStatuses.includes(a.status);
+    const isPriorityB = priorityStatuses.includes(b.status);
+    if (isPriorityA && isPriorityB) {
+      const timeA = statusTimestampMap[a.id]?.getTime() ?? 0;
+      const timeB = statusTimestampMap[b.id]?.getTime() ?? 0;
+      return timeB - timeA;
+    }
+    return 0;
   });
 
   const totalCount = allApplications.length;
@@ -332,9 +360,15 @@ export default async function AdminPage({ searchParams }: PageProps) {
                       <td className="whitespace-nowrap px-3 py-3">
                         <Link
                           href={`/admin/${application.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-2 text-[11px] font-bold text-white transition hover:from-[#2a3563] hover:to-[#3b4a82]"
+                          className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[11px] font-bold text-white transition ${
+                            priorityStatuses.includes(application.status)
+                              ? application.adminSeen
+                                ? "bg-gradient-to-r from-[#4b5563] to-[#6b7280] hover:from-[#6b7280] hover:to-[#9ca3af]"
+                                : "bg-gradient-to-r from-[#1b2345] to-[#2a3563] hover:from-[#2a3563] hover:to-[#3b4a82]"
+                              : "bg-gradient-to-r from-[#1b2345] to-[#2a3563] hover:from-[#2a3563] hover:to-[#3b4a82]"
+                          }`}
                         >
-                          View
+                          {priorityStatuses.includes(application.status) && application.adminSeen ? "✓ Viewed" : "View"}
                           <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
                         </Link>
                       </td>
