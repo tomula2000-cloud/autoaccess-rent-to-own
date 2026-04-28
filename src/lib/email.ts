@@ -234,6 +234,11 @@ function getStatusTemplate(status: string, note?: string | null) {
         intro:
           "we are pleased to inform you that your Auto Access rent-to-own application has been officially approved in principle. You've met our initial assessment criteria and your application has progressed to the vehicle selection stage.",
         detailHtml: `
+          <div style="margin:0 0 24px; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
+            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Contact your appointed sales consultant</p>
+            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Your dedicated sales consultant is available to assist you in finalising this process — from vehicle selection to contract signing. Reach out via WhatsApp for prompt assistance.</p>
+            <a href="https://wa.me/27745462367" style="display:inline-block; background:#25d366; color:#ffffff; text-decoration:none; font-size:14px; font-weight:700; padding:12px 28px; border-radius:100px;">Chat on WhatsApp</a>
+          </div>
           <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:22px;">
             <p style="margin:0 0 10px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#f97316; font-weight:700;">
               What this means
@@ -286,10 +291,7 @@ function getStatusTemplate(status: string, note?: string | null) {
           </p>
           <div style="margin:24px 0; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
             <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Need guidance? Chat with us on WhatsApp</p>
-            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Our consultants are available to guide you through every step — from vehicle selection to contract signing.</p>
-            <a href="https://wa.me/27745462367" style="display:inline-block; background:#25d366; color:#ffffff; text-decoration:none; font-size:14px; font-weight:700; padding:12px 28px; border-radius:100px;">Chat on WhatsApp</a>
-          </div>
-          </p>
+            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">
 
           ${noteBlock}
         `,
@@ -422,6 +424,11 @@ function getStatusTemplate(status: string, note?: string | null) {
         intro:
           "Thank you for choosing Auto Access Rent-to-Own. Attached to this email is your Rent-to-Own Vehicle Contract. Please take a moment to carefully read and understand the terms outlined in the document.",
         detailHtml: `
+          <div style="margin:0 0 24px; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
+            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Contact your appointed sales consultant</p>
+            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Your dedicated sales consultant is available to assist you in finalising this process — from vehicle selection to contract signing. Reach out via WhatsApp for prompt assistance.</p>
+            <a href="https://wa.me/27745462367" style="display:inline-block; background:#25d366; color:#ffffff; text-decoration:none; font-size:14px; font-weight:700; padding:12px 28px; border-radius:100px;">Chat on WhatsApp</a>
+          </div>
           <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:22px;">
             <p style="margin:0 0 14px; font-size:15px; line-height:1.7; color:#4b5563;">
               You do not need to print the contract at this stage — the original copy will be signed upon vehicle delivery.
@@ -475,11 +482,7 @@ function getStatusTemplate(status: string, note?: string | null) {
           <p style="margin:24px 0 0; font-size:14px; line-height:1.7; color:#4b5563;">
             If you have any questions or need clarification on any point before confirming, please don't hesitate to reply to this email or chat with us on WhatsApp.
           </p>
-          <div style="margin:24px 0; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
-            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Need guidance? Chat with us on WhatsApp</p>
-            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Our consultants are available to guide you through the contract and payment process.</p>
-            <a href="https://wa.me/27745462367" style="display:inline-block; background:#25d366; color:#ffffff; text-decoration:none; font-size:14px; font-weight:700; padding:12px 28px; border-radius:100px;">Chat on WhatsApp</a>
-          </div>
+
           </p>
 
           ${noteBlock}
