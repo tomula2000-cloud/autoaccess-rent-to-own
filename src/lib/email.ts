@@ -282,7 +282,13 @@ function getStatusTemplate(status: string, note?: string | null) {
           </div>
 
           <p style="margin:24px 0 0; font-size:14px; line-height:1.7; color:#4b5563;">
-            Use the <strong>Client Portal</strong> button below to log in and get started. If you have any questions or need help choosing a vehicle, please reply to this email or reach out to us via WhatsApp. Our team is here to guide you through every step.
+            Use the <strong>Client Portal</strong> button below to log in and get started. If you have any questions or need help choosing a vehicle, our team is here to guide you through every step.
+          </p>
+          <div style="margin:24px 0; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
+            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Need guidance? Chat with us on WhatsApp</p>
+            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Our consultants are available to guide you through every step — from vehicle selection to contract signing.</p>
+            <a href="https://wa.me/27745462367" style="display:inline-block; background:#25d366; color:#ffffff; text-decoration:none; font-size:14px; font-weight:700; padding:12px 28px; border-radius:100px;">Chat on WhatsApp</a>
+          </div>
           </p>
 
           ${noteBlock}
@@ -467,7 +473,13 @@ function getStatusTemplate(status: string, note?: string | null) {
           </div>
 
           <p style="margin:24px 0 0; font-size:14px; line-height:1.7; color:#4b5563;">
-            If you have any questions or need clarification on any point before confirming, please don't hesitate to reply to this email.
+            If you have any questions or need clarification on any point before confirming, please don't hesitate to reply to this email or chat with us on WhatsApp.
+          </p>
+          <div style="margin:24px 0; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
+            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Need guidance? Chat with us on WhatsApp</p>
+            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Our consultants are available to guide you through the contract and payment process.</p>
+            <a href="https://wa.me/27745462367" style="display:inline-block; background:#25d366; color:#ffffff; text-decoration:none; font-size:14px; font-weight:700; padding:12px 28px; border-radius:100px;">Chat on WhatsApp</a>
+          </div>
           </p>
 
           ${noteBlock}
