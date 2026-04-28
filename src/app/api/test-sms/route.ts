@@ -1,25 +1,19 @@
 import { NextResponse } from "next/server";
+import { sendBulkSMS } from "@/lib/sms";
 
 export async function GET() {
   try {
-    const proxyUrl = new URL("https://sendmode-proxy.onrender.com/send-sms");
-    proxyUrl.searchParams.set("numto", "27630193138");
-    proxyUrl.searchParams.set("data1", "TestFromVercelDirectly");
-
     const startTime = Date.now();
-    const response = await fetch(proxyUrl.toString(), {
-      method: "GET",
-      cache: "no-store",
+    await sendBulkSMS({
+      to: "0630193138",
+      message: "Test via sendBulkSMS function from Vercel",
     });
     const elapsed = Date.now() - startTime;
-    const text = await response.text();
 
     return NextResponse.json({
       success: true,
       elapsed: `${elapsed}ms`,
-      status: response.status,
-      body: text,
-      url: proxyUrl.toString(),
+      message: "sendBulkSMS completed without throwing",
     });
   } catch (error) {
     return NextResponse.json({
