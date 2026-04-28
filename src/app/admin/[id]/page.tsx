@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import AdminDocumentViewer from "@/components/admin-document-viewer";
 import AdminDocumentActions from "@/components/admin-document-actions";
 import { prisma } from "@/lib/prisma";
+import ResendContractButton from "@/components/resend-contract-button";
 import PrepareInvoiceForm from "@/components/prepare-invoice-form";
 import AdminStatusForm from "@/components/admin-status-form";
 import AdminApprovalValidityForm from "@/components/admin-approval-validity-form";
@@ -1242,6 +1243,20 @@ export default async function AdminApplicationDetailPage({
                       <p className="font-semibold text-[#1b2345]">{application.contractAcceptedAt ? new Date(application.contractAcceptedAt).toLocaleString() : "—"}</p>
                     </div>
                   </div>
+                  {application.contractAccepted && (
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <a
+                        href={`/api/admin/preview-contract?id=${application.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-2.5 text-[13px] font-semibold text-indigo-700 transition hover:bg-indigo-100"
+                      >
+                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        Preview Signed Contract
+                      </a>
+                      <ResendContractButton applicationId={application.id} />
+                    </div>
+                  )}
                 </div>
                 {(application.status === "AWAITING_INVOICE" ||
                   application.status === "INVOICE_ISSUED") && (

@@ -1,0 +1,350 @@
+import Link from "next/link";
+import AdminBulkReminder from "@/components/admin-bulk-reminder";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../auth";
+import { prisma } from "@/lib/prisma";
+
+type PageProps = {
+  searchParams?: Promise<{ status?: string; q?: string }>;
+};
+
+type AdminApplicationRow = {
+  id: string;
+  referenceNumber: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  identityType: string | null;
+  identityNumber: string | null;
+  employmentStatus: string;
+  monthlyIncome: string;
+  preferredVehicle: string;
+  status: string;
+  createdAt: Date;
+};
+
+const STATUS_OPTIONS = [
+  "ALL",
+  "APPLICATION_RECEIVED",
+  "PRE_QUALIFICATION_REVIEW",
+  "PRE_QUALIFIED",
+  "AWAITING_DOCUMENTS",
+  "DOCUMENTS_SUBMITTED",
+  "DOCUMENTS_UNDER_REVIEW",
+  "ADDITIONAL_DOCUMENTS_REQUIRED",
+  "APPROVED_IN_PRINCIPLE",
+  "CONTRACT_REQUESTED",
+  "CONTRACT_ISSUED",
+  "AWAITING_INVOICE",
+  "INVOICE_ISSUED",
+  "AWAITING_PAYMENT",
+  "PAYMENT_UNDER_VERIFICATION",
+  "PAYMENT_CONFIRMED",
+  "COMPLETED",
+  "DECLINED",
+] as const;
+
+function formatStatus(status: string) {
+  return status.replaceAll("_", " ");
+}
+
+function formatIdentityType(value: string | null) {
+  if (!value) return "—";
+  if (value === "SA_ID") return "SA ID";
+  if (value === "PASSPORT") return "Passport";
+  return value;
+}
+
+function getStatusBadge(status: string) {
+  switch (status) {
+    case "APPLICATION_RECEIVED": return "border-blue-400/30 bg-blue-500/10 text-blue-300";
+    case "PRE_QUALIFICATION_REVIEW": return "border-indigo-400/30 bg-indigo-500/10 text-indigo-300";
+    case "PRE_QUALIFIED": return "border-sky-400/30 bg-sky-500/10 text-sky-300";
+    case "AWAITING_DOCUMENTS": return "border-amber-400/30 bg-amber-500/10 text-amber-300";
+    case "DOCUMENTS_SUBMITTED": return "border-cyan-400/30 bg-cyan-500/10 text-cyan-300";
+    case "DOCUMENTS_UNDER_REVIEW": return "border-violet-400/30 bg-violet-500/10 text-violet-300";
+    case "ADDITIONAL_DOCUMENTS_REQUIRED": return "border-orange-400/30 bg-orange-500/10 text-orange-300";
+    case "APPROVED_IN_PRINCIPLE": return "border-emerald-400/30 bg-emerald-500/10 text-emerald-300";
+    case "CONTRACT_REQUESTED": return "border-fuchsia-400/30 bg-fuchsia-500/10 text-fuchsia-300";
+    case "CONTRACT_ISSUED": return "border-purple-400/30 bg-purple-500/10 text-purple-300";
+    case "AWAITING_INVOICE": return "border-violet-400/30 bg-violet-500/10 text-violet-300";
+    case "INVOICE_ISSUED": return "border-purple-400/30 bg-purple-500/10 text-purple-300";
+    case "AWAITING_PAYMENT": return "border-yellow-400/30 bg-yellow-500/10 text-yellow-300";
+    case "PAYMENT_UNDER_VERIFICATION": return "border-teal-400/30 bg-teal-500/10 text-teal-300";
+    case "PAYMENT_CONFIRMED": return "border-green-400/30 bg-green-500/10 text-green-300";
+    case "COMPLETED": return "border-lime-400/30 bg-lime-500/10 text-lime-300";
+    case "DECLINED": return "border-red-400/30 bg-red-500/10 text-red-300";
+    default: return "border-white/20 bg-white/5 text-white/60";
+  }
+}
+
+function getSummaryCount(applications: AdminApplicationRow[], statuses: string[]) {
+  return applications.filter((item) => statuses.includes(item.status)).length;
+}
+
+export default async function AdminPage({ searchParams }: PageProps) {
+  const session = await getServerSession(authOptions);
+  const sessionUser = session?.user as { email?: string; role?: string; loginType?: string } | undefined;
+
+  if (!sessionUser?.email || sessionUser.role !== "ADMIN" || sessionUser.loginType !== "ADMIN") {
+    redirect("/admin-login");
+  }
+
+  const params = searchParams ? await searchParams : {};
+  const activeStatus = params.status || "ALL";
+  const searchQuery = (params.q || "").trim();
+
+  const allApplications: AdminApplicationRow[] = await prisma.application.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true, referenceNumber: true, fullName: true, email: true, phone: true,
+      identityType: true, identityNumber: true, employmentStatus: true,
+      monthlyIncome: true, preferredVehicle: true, status: true, createdAt: true,
+    },
+  });
+
+  const applications = allApplications.filter((application: AdminApplicationRow) => {
+    const matchesStatus = activeStatus === "ALL" ? true : application.status === activeStatus;
+    const haystack = [application.referenceNumber, application.fullName, application.email, application.phone, application.identityNumber || "", application.preferredVehicle].join(" ").toLowerCase();
+    const matchesSearch = searchQuery ? haystack.includes(searchQuery.toLowerCase()) : true;
+    return matchesStatus && matchesSearch;
+  });
+
+  const totalCount = allApplications.length;
+  const docsCount = getSummaryCount(allApplications, ["AWAITING_DOCUMENTS", "ADDITIONAL_DOCUMENTS_REQUIRED"]);
+  const reviewCount = getSummaryCount(allApplications, ["PRE_QUALIFICATION_REVIEW", "DOCUMENTS_UNDER_REVIEW", "PAYMENT_UNDER_VERIFICATION"]);
+  const approvedCount = getSummaryCount(allApplications, ["APPROVED_IN_PRINCIPLE", "CONTRACT_REQUESTED", "CONTRACT_ISSUED"]);
+  const completedCount = getSummaryCount(allApplications, ["COMPLETED", "PAYMENT_CONFIRMED"]);
+  const declinedCount = getSummaryCount(allApplications, ["DECLINED"]);
+  const pendingDocsCount = getSummaryCount(allApplications, [
+    "APPLICATION_RECEIVED",
+    "PRE_QUALIFIED",
+    "AWAITING_DOCUMENTS",
+    "ADDITIONAL_DOCUMENTS_REQUIRED",
+  ]);
+
+  const countsByStatus: Record<string, number> = {};
+  for (const application of allApplications) {
+    countsByStatus[application.status] = (countsByStatus[application.status] || 0) + 1;
+  }
+
+  const unseenCounts = await prisma.application.groupBy({
+    by: ["status"],
+    where: {
+      adminSeen: false,
+      status: { in: ["DOCUMENTS_SUBMITTED", "PAYMENT_UNDER_VERIFICATION", "AWAITING_INVOICE"] },
+    },
+    _count: { id: true },
+  });
+
+  const unseenByStatus: Record<string, number> = {};
+  for (const row of unseenCounts) {
+    unseenByStatus[row.status] = row._count.id;
+  }
+
+  return (
+    <main className="min-h-screen bg-[#f4f6fb] px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1400px]">
+
+        {/* Top Header */}
+        <div className="mb-6 overflow-hidden rounded-[28px] bg-gradient-to-r from-[#0b1532] via-[#102046] to-[#1b3375] shadow-[0_24px_60px_-20px_rgba(11,21,50,0.55)]">
+          <div className="flex flex-col gap-4 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#f4c89a]">Auto Access · Admin Dashboard</p>
+              <h1 className="mt-1.5 text-2xl font-bold text-white sm:text-3xl">Applications</h1>
+              <p className="mt-1 text-[13px] text-white/50">Monitor and manage all client applications from one command centre.</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href="/admin/vehicles" className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-semibold text-white/80 transition hover:bg-white/20">
+                Manage Vehicles
+              </Link>
+              <Link href="/admin/vehicles/new" className="rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-4 py-2 text-[12px] font-bold text-white shadow-[0_8px_20px_-6px_rgba(213,151,88,0.5)]">
+                Add Vehicle
+              </Link>
+              <form action="/api/auth/signout" method="post">
+                <button type="submit" className="rounded-full border border-red-400/30 bg-red-500/10 px-4 py-2 text-[12px] font-semibold text-red-300 transition hover:bg-red-500/20">
+                  Logout
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        {/* Stat Cards */}
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            { label: "Total", value: totalCount, color: "border-[#dbe6ff] bg-[#eef4ff]", text: "text-[#1b2345]", sub: "text-[#2f67de]" },
+            { label: "Needs Docs", value: docsCount, color: "border-amber-200 bg-amber-50", text: "text-amber-900", sub: "text-amber-700" },
+            { label: "Under Review", value: reviewCount, color: "border-violet-200 bg-violet-50", text: "text-violet-900", sub: "text-violet-700" },
+            { label: "Approved", value: approvedCount, color: "border-emerald-200 bg-emerald-50", text: "text-emerald-900", sub: "text-emerald-700" },
+            { label: "Completed", value: completedCount, color: "border-green-200 bg-green-50", text: "text-green-900", sub: "text-green-700" },
+            { label: "Declined", value: declinedCount, color: "border-red-200 bg-red-50", text: "text-red-900", sub: "text-red-700" },
+          ].map((stat) => (
+            <div key={stat.label} className={`rounded-[20px] border ${stat.color} p-4`}>
+              <p className={`text-[10px] font-bold uppercase tracking-[0.16em] ${stat.sub}`}>{stat.label}</p>
+              <p className={`mt-1.5 text-3xl font-bold ${stat.text}`}>{stat.value}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Bulk Reminder */}
+        <div className="mb-6">
+          <AdminBulkReminder pendingCount={pendingDocsCount} />
+        </div>
+
+        {/* Search and Filter */}
+        <div className="mb-5 overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+          <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Search & Filter</p>
+            <h2 className="text-[1rem] font-semibold text-white">Find Applications</h2>
+          </div>
+          <div className="p-5">
+            <form className="grid gap-3 sm:grid-cols-[1fr_auto]">
+              <input
+                type="text"
+                name="q"
+                defaultValue={searchQuery}
+                placeholder="Search by reference, name, email, phone, ID or vehicle..."
+                className="w-full rounded-[14px] border border-[#dde1ee] bg-[#fafbff] px-4 py-3 text-sm text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
+              />
+              <input type="hidden" name="status" value={activeStatus} />
+              <button type="submit" className="rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_-6px_rgba(47,103,222,0.4)]">
+                Search
+              </button>
+            </form>
+
+            {/* Compact Filter Pills */}
+            <div className="mt-4 border-t border-[#eef0f7] pt-3">
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.2em] text-[#a3aac0]">Filter by status</p>
+              <div className="flex flex-wrap gap-1.5">
+                {STATUS_OPTIONS.map((status) => {
+                  const isActive = activeStatus === status;
+                  const href = `/admin?status=${encodeURIComponent(status)}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""}`;
+                  const count = status === "ALL" ? totalCount : (countsByStatus[status] || 0);
+                  return (
+                    <Link
+                      key={status}
+                      href={href}
+                      className={`relative inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10.5px] font-semibold leading-none transition ${
+                        isActive
+                          ? "border-[#d59758] bg-gradient-to-r from-[#d59758] to-[#e4ad72] text-white shadow-[0_4px_12px_-4px_rgba(213,151,88,0.5)]"
+                          : "border-[#e1e4ee] bg-[#fafbff] text-[#68708a] hover:border-[#d59758]/40 hover:bg-white hover:text-[#0b1532]"
+                      }`}
+                    >
+                      <span>{status === "ALL" ? "All" : formatStatus(status)}</span>
+                      <span
+                        className={`rounded-full px-1.5 py-0.5 text-[9.5px] font-bold leading-none ${
+                          isActive
+                            ? "bg-white/25 text-white"
+                            : "bg-[#eef0f7] text-[#68708a]"
+                        }`}
+                      >
+                        {count}
+                      </span>
+                      {unseenByStatus[status] > 0 && (
+                        <span
+                          className="absolute -right-1 -top-1 inline-flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-[#e11d48] px-1 text-[8.5px] font-bold leading-none text-white ring-2 ring-white"
+                          aria-label={`${unseenByStatus[status]} unseen`}
+                        >
+                          {unseenByStatus[status]}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Results count */}
+        <div className="mb-3 flex items-center justify-between gap-2 px-1">
+          <span className="text-[12px] font-semibold text-[#68708a]">
+            Showing <span className="text-[#1b2345]">{applications.length}</span> application{applications.length === 1 ? "" : "s"}
+            {activeStatus !== "ALL" ? <> · <span className="text-[#1b2345]">{formatStatus(activeStatus)}</span></> : null}
+            {searchQuery ? <> matching <span className="text-[#1b2345]">"{searchQuery}"</span></> : null}
+          </span>
+          {applications.length > 0 ? (
+            <a
+              href={"/api/admin/export-phones?status=" + encodeURIComponent(activeStatus) + "&q=" + encodeURIComponent(searchQuery)}
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-[11px] font-semibold text-emerald-700 transition hover:bg-emerald-100"
+              download
+            >
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Numbers ({applications.length})
+            </a>
+          ) : null}
+        </div>
+
+        {/* Applications Table */}
+        <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+          <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Application Records</p>
+            <h2 className="text-[1rem] font-semibold text-white">All Submitted Applications</h2>
+          </div>
+
+          {applications.length === 0 ? (
+            <div className="p-10 text-center">
+              <p className="text-[13px] font-semibold text-[#1b2345]">No applications found</p>
+              <p className="mt-1 text-[12px] text-[#68708a]">Try adjusting your search or filter criteria.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-[#eef0f7] bg-[#fafbff]">
+                    {["Reference", "Applicant", "Phone", "Identity", "Employment", "Income", "Vehicle", "Status", "Date", "Action"].map((h) => (
+                      <th key={h} className="px-5 py-3.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a]">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {applications.map((application: AdminApplicationRow, index: number) => (
+                    <tr
+                      key={application.id}
+                      className={`border-t border-[#eef0f7] align-top transition hover:bg-[#fafbff] ${index % 2 === 0 ? "bg-white" : "bg-[#fdfdff]"}`}
+                    >
+                      <td className="px-5 py-4">
+                        <span className="font-mono text-[12px] font-bold text-[#2f67de]">{application.referenceNumber}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <p className="text-[13px] font-semibold text-[#1b2345]">{application.fullName}</p>
+                        <p className="mt-0.5 text-[11px] text-[#68708a]">{application.email}</p>
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.phone}</td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <p className="text-[12px] font-medium text-[#39425d]">{formatIdentityType(application.identityType)}</p>
+                        <p className="mt-0.5 text-[11px] text-[#68708a]">{application.identityNumber || "—"}</p>
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.employmentStatus}</td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">R {application.monthlyIncome}</td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[12px] text-[#39425d]">{application.preferredVehicle}</td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <span className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${getStatusBadge(application.status)}`}>
+                          {formatStatus(application.status)}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4 text-[11px] text-[#68708a]">
+                        {new Date(application.createdAt).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <Link
+                          href={`/admin/${application.id}`}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-2 text-[11px] font-bold text-white transition hover:from-[#2a3563] hover:to-[#3b4a82]"
+                        >
+                          View
+                          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+}

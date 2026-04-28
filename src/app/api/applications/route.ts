@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendApplicationReceivedEmail } from "@/lib/email";
+import { sendBulkSMS } from "@/lib/sms";
 
 function normalizeEmail(value: string) {
   return value.trim().toLowerCase();
@@ -191,6 +192,9 @@ export async function POST(request: Request) {
       },
     });
 
+    // Extract first name from full name
+    const firstName = fullName.split(" ")[0];
+
     try {
       await sendApplicationReceivedEmail({
         to: email,
@@ -199,6 +203,15 @@ export async function POST(request: Request) {
       });
     } catch (emailError) {
       console.error("Application email failed:", emailError);
+    }
+
+    try {
+      await sendBulkSMS({
+        to: phone,
+        message: `Congratulations ${firstName}! Your Auto Access application (Ref: ${application.referenceNumber}) has been pre-approved. Please log in to your portal to upload your required documents: https://autoaccess.co.za/portal`,
+      });
+    } catch (smsError) {
+      console.error("Application SMS failed:", smsError);
     }
 
     return NextResponse.json({

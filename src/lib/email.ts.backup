@@ -234,11 +234,6 @@ function getStatusTemplate(status: string, note?: string | null) {
         intro:
           "we are pleased to inform you that your Auto Access rent-to-own application has been officially approved in principle. You've met our initial assessment criteria and your application has progressed to the vehicle selection stage.",
         detailHtml: `
-          <div style="margin:0 0 24px; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
-            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Contact your appointed sales consultant</p>
-            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Your dedicated sales consultant is available to assist you in finalising this process — from vehicle selection to contract signing. Reach out via WhatsApp for prompt assistance.</p>
-            <a href="https://wa.me/27745462367" style="display:inline-block; background:#25d366; color:#ffffff; text-decoration:none; font-size:14px; font-weight:700; padding:12px 28px; border-radius:100px;">Chat on WhatsApp</a>
-          </div>
           <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:22px;">
             <p style="margin:0 0 10px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#f97316; font-weight:700;">
               What this means
@@ -287,11 +282,8 @@ function getStatusTemplate(status: string, note?: string | null) {
           </div>
 
           <p style="margin:24px 0 0; font-size:14px; line-height:1.7; color:#4b5563;">
-            Use the <strong>Client Portal</strong> button below to log in and get started. If you have any questions or need help choosing a vehicle, our team is here to guide you through every step.
+            Use the <strong>Client Portal</strong> button below to log in and get started. If you have any questions or need help choosing a vehicle, please reply to this email or reach out to us via WhatsApp. Our team is here to guide you through every step.
           </p>
-          <div style="margin:24px 0; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
-            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Need guidance? Chat with us on WhatsApp</p>
-            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">
 
           ${noteBlock}
         `,
@@ -424,11 +416,6 @@ function getStatusTemplate(status: string, note?: string | null) {
         intro:
           "Thank you for choosing Auto Access Rent-to-Own. Attached to this email is your Rent-to-Own Vehicle Contract. Please take a moment to carefully read and understand the terms outlined in the document.",
         detailHtml: `
-          <div style="margin:0 0 24px; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
-            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Contact your appointed sales consultant</p>
-            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Your dedicated sales consultant is available to assist you in finalising this process — from vehicle selection to contract signing. Reach out via WhatsApp for prompt assistance.</p>
-            <a href="https://wa.me/27745462367" style="display:inline-block; background:#25d366; color:#ffffff; text-decoration:none; font-size:14px; font-weight:700; padding:12px 28px; border-radius:100px;">Chat on WhatsApp</a>
-          </div>
           <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:22px;">
             <p style="margin:0 0 14px; font-size:15px; line-height:1.7; color:#4b5563;">
               You do not need to print the contract at this stage — the original copy will be signed upon vehicle delivery.
@@ -480,9 +467,7 @@ function getStatusTemplate(status: string, note?: string | null) {
           </div>
 
           <p style="margin:24px 0 0; font-size:14px; line-height:1.7; color:#4b5563;">
-            If you have any questions or need clarification on any point before confirming, please don't hesitate to reply to this email or chat with us on WhatsApp.
-          </p>
-
+            If you have any questions or need clarification on any point before confirming, please don't hesitate to reply to this email.
           </p>
 
           ${noteBlock}
@@ -530,251 +515,67 @@ export async function sendDocumentReminderEmail({
     from: "Auto Access <noreply@autoaccess.co.za>",
     replyTo: "support@autoaccess.co.za",
     to,
-    subject: "Action required — your Auto Access application is awaiting documents",
+    subject: "Action required — your Auto Access application is waiting for documents",
     html: `
-    <div style="font-family: Georgia, 'Times New Roman', serif; background:#e8e6df; padding:40px 20px; color:#1b2345;">
-      <div style="max-width:680px; margin:0 auto; background:#fbfaf6; border:1px solid #c4beaf;">
+    <div style="font-family: Arial, sans-serif; background:#f8fafc; padding:40px 20px; color:#111827;">
+      <div style="max-width:680px; margin:0 auto; background:#ffffff; border:1px solid #e5e7eb; border-radius:24px; padding:40px;">
+        <p style="margin:0 0 12px; font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:#f97316; font-weight:700;">
+          Auto Access Rent To Own
+        </p>
+        <h1 style="margin:0 0 12px; font-size:28px; line-height:1.2; color:#111827;">
+          Your documents are still outstanding
+        </h1>
+        <p style="margin:0 0 24px; font-size:16px; line-height:1.8; color:#4b5563;">
+          Hello ${fullName}, your Auto Access rent-to-own application has been received but your supporting documents have not yet been uploaded. Your application cannot proceed to the review stage until all documents are received.
+        </p>
 
-        <div style="height:6px; background:#1b2345; border-bottom:2px solid #c9973a;"></div>
-
-        <div style="padding:36px 48px 28px; text-align:center; border-bottom:1px solid #c4beaf;">
-          <div style="font-size:10px; color:#8a8578; letter-spacing:0.36em; text-transform:uppercase; margin-bottom:14px; font-family:Arial,sans-serif;">Est. 1999 &middot; Paarl, South Africa</div>
-          <div style="font-size:34px; color:#1b2345; font-weight:400; letter-spacing:0.08em;">A<span style="color:#c9973a;">UTO</span> A<span style="color:#c9973a;">CCESS</span></div>
-          <div style="width:60px; height:1px; background:#c9973a; margin:14px auto;"></div>
-          <div style="font-size:10px; color:#8a8578; letter-spacing:0.32em; text-transform:uppercase; font-family:Arial,sans-serif;">Rent-to-Own Vehicle Finance</div>
+        <div style="margin:24px 0; border:1px solid #bfdbfe; background:#eff6ff; border-radius:18px; padding:22px; text-align:center;">
+          <p style="margin:0 0 8px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#1d4ed8; font-weight:700;">Reference Number</p>
+          <p style="margin:0; font-size:28px; font-weight:800; color:#1e3a8a;">${referenceNumber}</p>
         </div>
 
-        <div style="padding:40px 48px 28px;">
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
-            <tr>
-              <td style="font-size:11px; color:#8a8578; letter-spacing:0.18em; text-transform:uppercase; font-family:Arial,sans-serif;">
-                Reference<br/>
-                <span style="color:#1b2345; font-family:Georgia,serif; font-size:16px; letter-spacing:0.02em; font-weight:700;">${referenceNumber}</span>
-              </td>
-              <td style="text-align:right; font-size:11px; color:#8a8578; letter-spacing:0.18em; text-transform:uppercase; font-family:Arial,sans-serif;">
-                Review Time<br/>
-                <span style="color:#1b2345; font-family:Georgia,serif; font-size:14px; letter-spacing:0.02em; font-weight:700;">24 &ndash; 48 hrs</span>
-              </td>
-            </tr>
-          </table>
-
-          <p style="margin:0 0 18px; font-size:16px; color:#1b2345; font-style:italic;">Dear ${fullName},</p>
-
-          <p style="margin:0 0 18px; font-size:15px; line-height:1.9; color:#3a4256;">
-            We write to you with regard to your rent-to-own vehicle application lodged with Auto Access. We are pleased to confirm that your application has been received and has successfully passed initial pre-screening.
-          </p>
-          <p style="margin:0 0 18px; font-size:15px; line-height:1.9; color:#3a4256;">
-            In order to advance your application to the formal review and approval stage, we require your supporting documentation at your earliest convenience. Once received, your file will be assessed within <strong>24 to 48 business hours</strong>, after which you will be formally notified of the outcome.
-          </p>
-          <p style="margin:0; font-size:15px; line-height:1.9; color:#3a4256;">
-            For your convenience, the required documentation and the available submission channels are set out in detail below.
-          </p>
+        <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:20px;">
+          <p style="margin:0 0 12px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#f97316; font-weight:700;">Required Documents</p>
+          <ul style="margin:0; padding-left:20px; font-size:15px; line-height:2; color:#4b5563;">
+            <li>South African ID or Passport</li>
+            <li>3 months bank statements</li>
+            <li>Proof of income (payslip or bank statements)</li>
+            <li>Proof of residence (not older than 3 months)</li>
+            <li>Valid driver's licence</li>
+          </ul>
         </div>
 
-        <div style="text-align:center; padding:8px 0 24px;">
-          <span style="color:#c9973a; font-size:14px; letter-spacing:1em;">&#9670; &#9670; &#9670;</span>
-        </div>
-
-        <div style="padding:0 48px 32px;">
-          <div style="font-size:10px; color:#c9973a; letter-spacing:0.32em; text-transform:uppercase; font-family:Arial,sans-serif; text-align:center; margin-bottom:6px;">Article I</div>
-          <h2 style="margin:0 0 22px; font-size:22px; color:#1b2345; font-weight:400; text-align:center; letter-spacing:0.02em;">Required Documentation</h2>
-
-          <table width="100%" cellpadding="0" cellspacing="0" style="border-top:2px solid #1b2345; border-bottom:2px solid #1b2345;">
-            <tr>
-              <td width="32" style="padding:16px 0 16px 8px; vertical-align:top; font-size:13px; color:#c9973a; font-weight:700; border-bottom:1px solid #e0dccf;">i.</td>
-              <td style="padding:16px 8px 16px 4px; border-bottom:1px solid #e0dccf;">
-                <div style="font-size:14px; color:#1b2345; font-weight:700; margin-bottom:2px;">South African Identification or Passport</div>
-                <div style="font-size:12px; color:#6b6655; font-style:italic; font-family:Arial,sans-serif;">Both sides if smartcard ID</div>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:16px 0 16px 8px; vertical-align:top; font-size:13px; color:#c9973a; font-weight:700; border-bottom:1px solid #e0dccf;">ii.</td>
-              <td style="padding:16px 8px 16px 4px; border-bottom:1px solid #e0dccf;">
-                <div style="font-size:14px; color:#1b2345; font-weight:700; margin-bottom:2px;">Proof of Residence</div>
-                <div style="font-size:12px; color:#6b6655; font-style:italic; font-family:Arial,sans-serif;">Issued within the preceding three months</div>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:16px 0 16px 8px; vertical-align:top; font-size:13px; color:#c9973a; font-weight:700; border-bottom:1px solid #e0dccf;">iii.</td>
-              <td style="padding:16px 8px 16px 4px; border-bottom:1px solid #e0dccf;">
-                <div style="font-size:14px; color:#1b2345; font-weight:700; margin-bottom:2px;">Valid Driver&rsquo;s Licence</div>
-                <div style="font-size:12px; color:#6b6655; font-style:italic; font-family:Arial,sans-serif;">Both sides, clearly legible</div>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:18px 0 10px 8px; vertical-align:top; font-size:13px; color:#c9973a; font-weight:700;">iv.</td>
-              <td style="padding:18px 8px 10px 4px;">
-                <div style="font-size:14px; color:#1b2345; font-weight:700; margin-bottom:10px;">Proof of Income</div>
-                <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3efe3; border:1px solid #c9973a;">
-                  <tr>
-                    <td width="50%" style="padding:14px 16px; vertical-align:top; border-right:1px solid #c9973a;">
-                      <div style="font-size:10px; color:#8a8578; letter-spacing:0.18em; text-transform:uppercase; font-family:Arial,sans-serif; margin-bottom:6px;">Option A &mdash; Employed</div>
-                      <div style="font-size:13px; color:#1b2345; font-weight:700; line-height:1.5;">Payslip <span style="color:#c9973a;">&amp;</span> 3 months bank statements</div>
-                    </td>
-                    <td width="50%" style="padding:14px 16px; vertical-align:top;">
-                      <div style="font-size:10px; color:#8a8578; letter-spacing:0.18em; text-transform:uppercase; font-family:Arial,sans-serif; margin-bottom:6px;">Option B &mdash; Self-Employed</div>
-                      <div style="font-size:13px; color:#1b2345; font-weight:700; line-height:1.5;">6 months bank statements</div>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-
-          <p style="margin:14px 0 0; font-size:12px; color:#6b6655; font-style:italic; text-align:center; font-family:Arial,sans-serif;">
-            Digital copies and clear photographs are acceptable. Certification is not required.
+        <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:20px;">
+          <p style="margin:0 0 12px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#f97316; font-weight:700;">3 Ways to Submit Your Documents</p>
+          <p style="margin:0 0 8px; font-size:15px; line-height:1.8; color:#4b5563;">
+            <strong style="color:#111827;">Option 1 — Client Portal (Recommended):</strong><br/>
+            Log into your secure portal and upload directly.
+          </p>
+          <p style="margin:0 0 8px; font-size:15px; line-height:1.8; color:#4b5563;">
+            <strong style="color:#111827;">Option 2 — Email:</strong><br/>
+            Send your documents to <a href="mailto:docs@autoaccess.co.za" style="color:#2563eb;">docs@autoaccess.co.za</a> with your reference number <strong>${referenceNumber}</strong> in the subject line.
+          </p>
+          <p style="margin:0; font-size:15px; line-height:1.8; color:#4b5563;">
+            <strong style="color:#111827;">Option 3 — WhatsApp:</strong><br/>
+            Send your documents via WhatsApp to <a href="https://wa.me/27610490061" style="color:#2563eb;">+27 61 049 0061</a> with your reference number.
           </p>
         </div>
 
-        <div style="text-align:center; padding:0 0 24px;">
-          <span style="color:#c9973a; font-size:14px; letter-spacing:1em;">&#9670; &#9670; &#9670;</span>
+        <div style="margin-top:32px; text-align:center;">
+          <a href="${portalUrl}" style="display:inline-block; background:#2563eb; color:#ffffff; text-decoration:none; font-weight:700; padding:14px 32px; border-radius:12px; font-size:15px;">
+            Go to Client Portal
+          </a>
         </div>
 
-        <div style="padding:0 48px 32px;">
-          <div style="font-size:10px; color:#c9973a; letter-spacing:0.32em; text-transform:uppercase; font-family:Arial,sans-serif; text-align:center; margin-bottom:6px;">Article II</div>
-          <h2 style="margin:0 0 22px; font-size:22px; color:#1b2345; font-weight:400; text-align:center; letter-spacing:0.02em;">Submission Channels</h2>
+        <p style="margin:32px 0 0; font-size:14px; line-height:1.8; color:#6b7280;">
+          Need help? Call us on <strong>087 012 6734</strong> or WhatsApp <strong>+27 61 049 0061</strong><br/>
+          Monday to Friday, 8am to 5pm.
+        </p>
 
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px; border:1px solid #c4beaf; background:#ffffff;">
-            <tr>
-              <td width="60" style="padding:18px 12px; background:#1b2345; text-align:center; vertical-align:middle;">
-                <div style="color:#c9973a; font-size:18px; font-weight:700;">I</div>
-              </td>
-              <td style="padding:16px 20px;">
-                <div style="font-size:14px; color:#1b2345; font-weight:700;">Secure Client Portal</div>
-                <div style="font-size:12px; color:#6b6655; line-height:1.6; font-family:Arial,sans-serif;">Direct upload with immediate confirmation. Recommended.</div>
-              </td>
-            </tr>
-          </table>
-
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px; border:1px solid #c4beaf; background:#ffffff;">
-            <tr>
-              <td width="60" style="padding:18px 12px; background:#1b2345; text-align:center; vertical-align:middle;">
-                <div style="color:#c9973a; font-size:18px; font-weight:700;">II</div>
-              </td>
-              <td style="padding:16px 20px;">
-                <div style="font-size:14px; color:#1b2345; font-weight:700;">Electronic Mail</div>
-                <div style="font-size:12px; color:#6b6655; line-height:1.6; font-family:Arial,sans-serif;">docs@autoaccess.co.za &nbsp;&middot;&nbsp; quote reference ${referenceNumber}</div>
-              </td>
-            </tr>
-          </table>
-
-          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #c4beaf; background:#ffffff;">
-            <tr>
-              <td width="60" style="padding:18px 12px; background:#1b2345; text-align:center; vertical-align:middle;">
-                <div style="color:#c9973a; font-size:18px; font-weight:700;">III</div>
-              </td>
-              <td style="padding:16px 20px;">
-                <div style="font-size:14px; color:#1b2345; font-weight:700;">WhatsApp Concierge</div>
-                <div style="font-size:12px; color:#6b6655; line-height:1.6; font-family:Arial,sans-serif;">+27 61 049 0061 &nbsp;&middot;&nbsp; our team uploads on your behalf</div>
-              </td>
-            </tr>
-          </table>
+        <div style="margin-top:24px; border-top:1px solid #e5e7eb; padding-top:20px; text-align:center;">
+          <p style="margin:0; font-size:12px; color:#9ca3af;">Auto Access (Pty) Ltd · autoaccess.co.za</p>
+          <p style="margin:4px 0 0; font-size:11px; color:#d1d5db; font-style:italic;">Driven by progress. Built on trust.</p>
         </div>
-
-        <div style="text-align:center; padding:0 0 24px;">
-          <span style="color:#c9973a; font-size:14px; letter-spacing:1em;">&#9670; &#9670; &#9670;</span>
-        </div>
-
-        <div style="padding:0 48px 32px;">
-          <div style="font-size:10px; color:#c9973a; letter-spacing:0.32em; text-transform:uppercase; font-family:Arial,sans-serif; text-align:center; margin-bottom:6px;">Article III</div>
-          <h2 style="margin:0 0 22px; font-size:22px; color:#1b2345; font-weight:400; text-align:center; letter-spacing:0.02em;">Our Commitments to You</h2>
-
-          <p style="margin:0 0 20px; font-size:13px; color:#3a4256; line-height:1.9; text-align:center; font-style:italic;">
-            The following undertakings shall apply to your application and any contract that follows.
-          </p>
-
-          <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #c4beaf;">
-            <tr>
-              <td style="padding:14px 0; border-bottom:1px solid #e0dccf;">
-                <table width="100%" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td width="40" style="vertical-align:top; font-size:11px; color:#c9973a; letter-spacing:0.18em; font-family:Arial,sans-serif; font-weight:700;">01</td>
-                    <td>
-                      <div style="font-size:13px; color:#1b2345; font-weight:700; margin-bottom:2px;">Approval based on affordability, not credit score alone.</div>
-                      <div style="font-size:12px; color:#6b6655; font-family:Arial,sans-serif; line-height:1.6;">A limited credit profile shall not, in itself, disqualify your application.</div>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:14px 0; border-bottom:1px solid #e0dccf;">
-                <table width="100%" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td width="40" style="vertical-align:top; font-size:11px; color:#c9973a; letter-spacing:0.18em; font-family:Arial,sans-serif; font-weight:700;">02</td>
-                    <td>
-                      <div style="font-size:13px; color:#1b2345; font-weight:700; margin-bottom:2px;">Full pricing transparency from application to delivery.</div>
-                      <div style="font-size:12px; color:#6b6655; font-family:Arial,sans-serif; line-height:1.6;">All fees, deposits and monthly charges disclosed in writing before any commitment is made.</div>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:14px 0; border-bottom:1px solid #e0dccf;">
-                <table width="100%" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td width="40" style="vertical-align:top; font-size:11px; color:#c9973a; letter-spacing:0.18em; font-family:Arial,sans-serif; font-weight:700;">03</td>
-                    <td>
-                      <div style="font-size:13px; color:#1b2345; font-weight:700; margin-bottom:2px;">A dedicated case agent assigned to your file.</div>
-                      <div style="font-size:12px; color:#6b6655; font-family:Arial,sans-serif; line-height:1.6;">One named point of contact throughout your application and delivery.</div>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:14px 0; border-bottom:1px solid #e0dccf;">
-                <table width="100%" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td width="40" style="vertical-align:top; font-size:11px; color:#c9973a; letter-spacing:0.18em; font-family:Arial,sans-serif; font-weight:700;">04</td>
-                    <td>
-                      <div style="font-size:13px; color:#1b2345; font-weight:700; margin-bottom:2px;">Strict confidentiality of all personal information.</div>
-                      <div style="font-size:12px; color:#6b6655; font-family:Arial,sans-serif; line-height:1.6;">Your documents are encrypted and shared only with parties necessary to your application.</div>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:14px 0; border-bottom:2px solid #1b2345;">
-                <table width="100%" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td width="40" style="vertical-align:top; font-size:11px; color:#c9973a; letter-spacing:0.18em; font-family:Arial,sans-serif; font-weight:700;">05</td>
-                    <td>
-                      <div style="font-size:13px; color:#1b2345; font-weight:700; margin-bottom:2px;">Nationwide door-to-door delivery.</div>
-                      <div style="font-size:12px; color:#6b6655; font-family:Arial,sans-serif; line-height:1.6;">Your vehicle is registered, licensed, and delivered to the address of your choosing.</div>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <div style="padding:0 48px 32px;">
-          <p style="margin:0 0 24px; font-size:15px; line-height:1.9; color:#3a4256;">
-            Should any aspect of this correspondence require clarification, we would welcome the opportunity to assist. Please do not hesitate to contact our client services team directly.
-          </p>
-
-          <p style="margin:0 0 4px; font-size:15px; color:#3a4256; font-style:italic;">Yours sincerely,</p>
-          <div style="font-family:'Brush Script MT','Lucida Handwriting',cursive; font-size:26px; color:#1b2345; margin:10px 0 6px;">Auto Access</div>
-          <div style="width:180px; height:1px; background:#1b2345; margin-bottom:6px;"></div>
-          <p style="margin:0; font-size:12px; color:#6b6655; font-family:Arial,sans-serif; letter-spacing:0.04em;">Client Services Department</p>
-        </div>
-
-        <div style="text-align:center; padding:0 48px 40px;">
-          <a href="${portalUrl}" style="display:inline-block; background:#1b2345; color:#c9973a; text-decoration:none; padding:15px 44px; font-size:12px; letter-spacing:0.22em; text-transform:uppercase; font-family:Arial,sans-serif; font-weight:700;">Access Client Portal</a>
-        </div>
-
-        <div style="background:#1b2345; padding:22px 48px; text-align:center; font-family:Arial,sans-serif; border-top:2px solid #c9973a;">
-          <div style="font-size:10px; color:#c9973a; letter-spacing:0.22em; text-transform:uppercase; font-weight:700; margin-bottom:6px;">Access Holdings (Pty) Ltd</div>
-          <div style="font-size:10px; color:#8a9bbf; line-height:1.8;">
-            22 Eiland Street, Eiland Park, Paarl, 7646<br/>
-            Reg. No. 1999/002599/10 &nbsp;&middot;&nbsp; 087 012 6734 &nbsp;&middot;&nbsp; admin@autoaccess.co.za
-          </div>
-        </div>
-
       </div>
     </div>
     `,
@@ -862,12 +663,10 @@ export async function sendContractSignedClientEmail({
   to,
   fullName,
   referenceNumber,
-  contractPdfBuffer,
 }: {
   to: string;
   fullName: string;
   referenceNumber: string;
-  contractPdfBuffer?: Buffer;
 }) {
   if (!process.env.RESEND_API_KEY) {
     throw new Error("RESEND_API_KEY is not set.");
@@ -878,12 +677,6 @@ export async function sendContractSignedClientEmail({
     replyTo: "support@autoaccess.co.za",
     to,
     subject: `✅ Contract Signed — ${referenceNumber}`,
-    attachments: contractPdfBuffer ? [
-      {
-        filename: `AutoAccess-Contract-${referenceNumber}.pdf`,
-        content: contractPdfBuffer,
-      }
-    ] : undefined,
     html: getEmailShell({
       eyebrow: "Auto Access Rent To Own",
       heading: "Thank you for signing your contract",

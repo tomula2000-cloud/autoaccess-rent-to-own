@@ -68,25 +68,12 @@ function fmtTerm(term: string | null | undefined) {
 export async function generateContractPdf(data: ContractPdfData): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
-      if (!HELVETICA_BUFFER) {
-        reject(new Error("PDF fonts not available. Run: cp node_modules/pdfkit/js/data/*.afm pdf-fonts/"));
-        return;
-      }
       const doc = new PDFDocument({
         size: "A4",
         margin: 40,
         bufferPages: true,
-        font: HELVETICA_BUFFER as any,
       });
-      // Register all font variants we use, from pre-loaded buffers
-      try {
-        if (HELVETICA_BOLD_BUFFER) doc.registerFont("Helvetica-Bold", HELVETICA_BOLD_BUFFER as any);
-        if (HELVETICA_OBLIQUE_BUFFER) doc.registerFont("Helvetica-Oblique", HELVETICA_OBLIQUE_BUFFER as any);
-        doc.registerFont("Helvetica", HELVETICA_BUFFER as any);
-        doc.font("Helvetica");
-      } catch (fontErr) {
-        console.warn("Font registration warning:", fontErr);
-      }
+      doc.font("Helvetica");
 
       const chunks: Buffer[] = [];
       doc.on("data", (chunk) => chunks.push(chunk));
@@ -289,7 +276,13 @@ export async function generateContractPdf(data: ContractPdfData): Promise<Buffer
       y += 22;
 
       // ── Terms and Conditions ──────────────────────────────────────
-      const termsText = data.contractTerms || "";
+      // Clean the terms text: remove stray Ð characters (carriage return artifacts)
+      // and collapse excessive blank lines that cause empty pages
+      const termsText = (data.contractTerms || "")
+        .replace(/\u00D0/g, "")
+        .replace(/\r/g, "")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
       sectionHeader("4. Terms and Conditions");
 
       // Add the terms text spanning multiple pages naturally
@@ -369,7 +362,7 @@ export async function generateContractPdf(data: ContractPdfData): Promise<Buffer
           `Access Holdings (Pty) Ltd T/A Auto Access  |  Reg No: 1999/002599/10  |  admin@autoaccess.co.za  |  Ref: ${data.referenceNumber}  |  Page ${i + 1} of ${range.count}`,
           leftX,
           footerY + 6,
-          { width: pageWidth, align: "center" }
+          { width: pageWidth, align: "center", lineBreak: false, height: 12 }
         );
       }
 
