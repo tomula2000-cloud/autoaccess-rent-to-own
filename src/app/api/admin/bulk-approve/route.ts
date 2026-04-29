@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../auth";
 import { prisma } from "@/lib/prisma";
-import { sendApplicationStatusEmail } from "@/lib/email";
+import { sendStatusUpdateEmail } from "@/lib/email";
 import { sendBulkSMS } from "@/lib/sms";
 
 export async function POST(req: NextRequest) {
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
       // Send email
       try {
-        await sendApplicationStatusEmail({
+        await sendStatusUpdateEmail({
           to: app.email,
           fullName: app.fullName,
           referenceNumber: app.referenceNumber,
