@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AdminBulkReminder from "@/components/admin-bulk-reminder";
+import AdminBulkApprovalSms from "@/components/admin-bulk-approval-sms";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth";
@@ -219,6 +220,10 @@ export default async function AdminPage({ searchParams }: PageProps) {
         {/* Bulk Reminder */}
         <div className="mb-6">
           <AdminBulkReminder pendingCount={pendingDocsCount} />
+        </div>
+        {/* Bulk Approval SMS */}
+        <div className="mb-6">
+          <AdminBulkApprovalSms approvedCount={getSummaryCount(allApplications, ["APPROVED_IN_PRINCIPLE"])} />
         </div>
 
         {/* Search and Filter */}
