@@ -3,6 +3,7 @@ import AdminDocumentViewer from "@/components/admin-document-viewer";
 import AdminDocumentActions from "@/components/admin-document-actions";
 import { prisma } from "@/lib/prisma";
 import ResendContractButton from "@/components/resend-contract-button";
+import SendApprovalSmsButton from "@/components/send-approval-sms-button";
 import PrepareInvoiceForm from "@/components/prepare-invoice-form";
 import AdminStatusForm from "@/components/admin-status-form";
 import AdminApprovalValidityForm from "@/components/admin-approval-validity-form";
@@ -1174,6 +1175,18 @@ export default async function AdminApplicationDetailPage({
                   : null
               }
             />
+            {application.status === "APPROVED_IN_PRINCIPLE" && (
+              <div className="overflow-hidden rounded-[24px] border border-emerald-200 bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
+                <div className="border-b border-emerald-100 bg-gradient-to-r from-emerald-700 to-emerald-500 px-5 py-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-100">Client Notification</p>
+                  <h2 className="text-[1.05rem] font-semibold text-white">Approval SMS</h2>
+                </div>
+                <div className="p-5">
+                  <p className="text-sm text-gray-500 mb-2">Resend the approval SMS notification to the client&apos;s phone number.</p>
+                  <SendApprovalSmsButton applicationId={application.id} />
+                </div>
+              </div>
+            )}
 
             <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
               <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4">

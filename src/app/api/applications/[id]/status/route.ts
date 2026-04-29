@@ -350,9 +350,10 @@ export async function POST(
     if (newStatus === "APPROVED_IN_PRINCIPLE" && existingApplication.phone) {
       try {
         const { sendBulkSMS } = await import("@/lib/sms");
+        const firstName = existingApplication.fullName.split(" ")[0];
         await sendBulkSMS({
           to: existingApplication.phone,
-          message: `Congratulations ${existingApplication.fullName}!\n\nYour Auto Access application [${existingApplication.referenceNumber}] is APPROVED IN PRINCIPLE.\n\nLog in to your portal using your email and reference number to view your vehicle offers.\n\nApproval valid for 12 days only.\n\nNeed help? Call us: 087 012 6734\n- Auto Access`,
+          message: `Dear ${firstName}, great news! Your Auto Access rent-to-own application (Ref: ${existingApplication.referenceNumber}) has been approved in principle. Log in to your portal at autoaccess.co.za/portal using your reference number and email to proceed. Need help? Speak to your appointed sales champion on WhatsApp: 074 546 2367.`,
         });
         console.log(`BulkSMS sent to ${existingApplication.fullName} for APPROVED_IN_PRINCIPLE`);
       } catch (smsError) {

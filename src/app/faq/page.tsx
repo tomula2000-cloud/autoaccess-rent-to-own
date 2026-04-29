@@ -56,23 +56,35 @@ const faqs = [
     ],
   },
   {
-    category: "Nationwide Delivery",
+    category: "Delivery & Collection",
     questions: [
       {
-        q: "Do you assist clients outside the Western Cape?",
-        a: "Absolutely. Auto Access serves clients across all 9 provinces in South Africa. Our services are fully nationwide and your location does not affect your ability to qualify or receive a vehicle.",
+        q: "I live outside the Western Cape — can I still get a vehicle?",
+        a: "Absolutely, and many of our most satisfied clients are based outside the Western Cape. Auto Access delivers vehicles to clients across all 9 provinces in South Africa — from Limpopo to the Eastern Cape, KwaZulu-Natal to the Northern Cape. You do not need to travel anywhere. Once your application is approved and your payment is confirmed, we take care of everything on your behalf. Your vehicle is fully prepared, insured, inspected, and professionally transported directly to your door. You simply wait for the call that your vehicle has arrived. The entire process is managed by our team so that your experience is smooth, compliant, and stress-free — regardless of where you are in the country.",
       },
       {
-        q: "How does delivery work if I am not in the Western Cape?",
-        a: "Once your payment is confirmed, your vehicle is professionally loaded onto an approved third-party transporter and shipped to your province at no cost to you. Before handover, we complete all licensing, registration and insurance requirements in your home province. Delivery typically takes 3 to 5 working days from payment confirmation.",
+        q: "How long will it take to receive my vehicle if I am outside the Western Cape?",
+        a: "Once your payment is confirmed, we immediately begin preparing your vehicle. This includes a full inspection, tracker and immobiliser installation, and insurance processing. Your vehicle is then delivered to our approved agents in your province who complete the full licensing, registration, and number plate process locally. Delivery and handover typically takes 3 to 5 working days from payment confirmation, depending on your location. You will receive updates throughout the process and will be notified the moment your vehicle is ready for handover.",
       },
       {
-        q: "Can I collect my vehicle from the Western Cape?",
-        a: "We do not offer client collection for clients based outside the Western Cape. South African insurance regulations require that vehicles are registered and licensed in the province where the client is based — ensuring your number plates correctly match your province of residence. Our delivery process ensures full provincial compliance before your vehicle is handed over.",
+        q: "Do I need to come to the Western Cape to sign or pay?",
+        a: "No. Out-of-province clients complete the entire process remotely and digitally. Your contract is signed through your secure online portal, and payment can be made via EFT from anywhere in South Africa. You are welcome to visit our branch in Paarl if you prefer to pay in person — but it is entirely optional. There is nothing that requires you to travel. We have designed our process to be fully accessible to clients nationwide, without any need to leave your province.",
       },
       {
-        q: "Where will my vehicle be serviced?",
-        a: "All routine servicing and maintenance is handled at a nominated approved dealership in your home province — selected by Auto Access. You will never need to travel to the Western Cape for any vehicle-related matter.",
+        q: "I am outside the Western Cape — can I collect my vehicle from your branch if I travel to Paarl?",
+        a: "You are welcome to visit our branch in Paarl to make payment in person if you prefer — however, vehicle collection at our premises is not possible for out-of-province clients, and we kindly ask that clients are aware of this before making the trip. Both our insurance requirements and South African traffic department regulations require that your vehicle carries number plates that match your home province. Our insurance policy specifically stipulates that all vehicles issued to clients outside the Western Cape must be registered and licensed in the client's province of residence. To comply with this, your vehicle is delivered to our approved agents in your province, who complete the full licensing, registration, and number plate process locally before the vehicle is handed over to you. This entire process is handled on your behalf — you do not need to travel anywhere or do anything. Once everything is in order, your vehicle is delivered directly to you, fully registered, roadworthy, and correctly plated. This typically takes 3 to 5 working days from payment confirmation, and you will be kept informed at every step.",
+      },
+      {
+        q: "I am in the Western Cape — can I collect my vehicle from your premises?",
+        a: "Yes. Western Cape clients are welcome to visit our branch in Paarl to sign their contract and make payment in person. However, please note that vehicle collection is not available on the same day as payment — and we ask that clients do not arrive at our premises expecting to drive away immediately. After payment is confirmed, your vehicle undergoes a mandatory preparation process including licensing and registration, insurance processing, vehicle inspection, number plate fitment, and tracker and immobiliser installation. This process takes up to 48 hours. You will be personally notified once your vehicle is fully ready for collection.",
+      },
+      {
+        q: "Where will my vehicle be serviced after delivery?",
+        a: "All routine servicing and maintenance is arranged at an approved dealership in your home province — identified and nominated by Auto Access. You will never need to travel to the Western Cape for any vehicle-related matter after delivery. We ensure that your after-delivery experience is just as seamless as the process of getting your vehicle.",
+      },
+      {
+        q: "Can I read reviews from clients who have already received their vehicles?",
+        a: "Yes, and we encourage you to do so. We have a verified review profile featuring feedback from real Auto Access clients across South Africa. Reading their experiences is the best way to understand what to expect from our process. Visit sareviews.co.za/autoaccess to read our client reviews.",
       },
     ],
   },
