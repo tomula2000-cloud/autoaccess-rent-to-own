@@ -365,7 +365,14 @@ export default async function AdminPage({ searchParams }: PageProps) {
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-3 py-3 text-[11px] text-[#68708a]">
-                        {new Date(application.createdAt).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })}
+                        {priorityStatuses.includes(application.status) && statusTimestampMap[application.id] ? (
+                          <span className="text-fuchsia-300">
+                            <span className="block font-semibold">{new Date(statusTimestampMap[application.id]).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                            <span className="block text-[10px]">{new Date(statusTimestampMap[application.id]).toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit" })}</span>
+                          </span>
+                        ) : (
+                          new Date(application.createdAt).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-3 py-3">
                         <Link
