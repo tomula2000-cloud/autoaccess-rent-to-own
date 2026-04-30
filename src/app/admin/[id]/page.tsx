@@ -1239,13 +1239,19 @@ export default async function AdminApplicationDetailPage({
                 <div className="rounded-2xl border border-[#dde1ec] bg-[#f8f9fc] p-5">
                   <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.16em] text-[#8a9bbf]">Contract Stage Overview</h2>
                   <div className="grid grid-cols-2 gap-3 text-sm">
+                    {application.contractRequestedAt && (
+                      <div className="col-span-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                        <p className="text-xs font-bold uppercase tracking-wider text-amber-600">📋 Contract Requested By Client</p>
+                        <p className="mt-1 font-semibold text-amber-800">{new Date(application.contractRequestedAt).toLocaleString("en-ZA", { dateStyle: "full", timeStyle: "short" })}</p>
+                      </div>
+                    )}
                     <div>
-                      <p className="text-xs text-[#8a9bbf]">Issued At</p>
-                      <p className="font-semibold text-[#1b2345]">{application.contractIssuedAt ? new Date(application.contractIssuedAt).toLocaleString() : "Not recorded"}</p>
+                      <p className="text-xs text-[#8a9bbf]">Contract Issued At</p>
+                      <p className="font-semibold text-[#1b2345]">{application.contractIssuedAt ? new Date(application.contractIssuedAt).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" }) : "Not recorded"}</p>
                     </div>
                     <div>
                       <p className="text-xs text-[#8a9bbf]">Contract Expires</p>
-                      <p className="font-semibold text-[#1b2345]">{application.contractExpiresAt ? new Date(application.contractExpiresAt).toLocaleString() : "Not recorded"}</p>
+                      <p className="font-semibold text-[#1b2345]">{application.contractExpiresAt ? new Date(application.contractExpiresAt).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" }) : "Not recorded"}</p>
                     </div>
                     <div>
                       <p className="text-xs text-[#8a9bbf]">Client Signed</p>
@@ -1253,7 +1259,7 @@ export default async function AdminApplicationDetailPage({
                     </div>
                     <div>
                       <p className="text-xs text-[#8a9bbf]">Signed At</p>
-                      <p className="font-semibold text-[#1b2345]">{application.contractAcceptedAt ? new Date(application.contractAcceptedAt).toLocaleString() : "—"}</p>
+                      <p className="font-semibold text-[#1b2345]">{application.contractAcceptedAt ? new Date(application.contractAcceptedAt).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" }) : "—"}</p>
                     </div>
                   </div>
                   {application.contractAccepted && (
