@@ -322,6 +322,12 @@ export default async function AdminApplicationDetailPage({
       contractClientIdentityNumber: true,
       contractClientAddress: true,
       contractTerms: true,
+      clientBankName: true,
+      clientAccountHolder: true,
+      clientAccountNumber: true,
+      clientAccountType: true,
+      clientBranchCode: true,
+      clientBankSubmittedAt: true,
 
       selectedVehicle: {
         select: {
@@ -1277,6 +1283,35 @@ export default async function AdminApplicationDetailPage({
                     </div>
                   )}
                 </div>
+                {(application.status === "AWAITING_INVOICE" ||
+                  application.status === "INVOICE_ISSUED") && application.clientBankSubmittedAt && (
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+                    <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">✅ Client Banking Details Submitted</p>
+                    <p className="mb-3 text-[11px] text-emerald-600">Submitted on {new Date(application.clientBankSubmittedAt).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" })}</p>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-xs text-[#8a9bbf]">Bank Name</p>
+                        <p className="font-semibold text-[#1b2345]">{application.clientBankName || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[#8a9bbf]">Account Holder</p>
+                        <p className="font-semibold text-[#1b2345]">{application.clientAccountHolder || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[#8a9bbf]">Account Number</p>
+                        <p className="font-semibold text-[#1b2345]">{application.clientAccountNumber || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[#8a9bbf]">Account Type</p>
+                        <p className="font-semibold text-[#1b2345]">{application.clientAccountType || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[#8a9bbf]">Branch Code</p>
+                        <p className="font-semibold text-[#1b2345]">{application.clientBranchCode || "—"}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {(application.status === "AWAITING_INVOICE" ||
                   application.status === "INVOICE_ISSUED") && (
                   <PrepareInvoiceForm
