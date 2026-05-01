@@ -371,7 +371,10 @@ export default async function AdminPage({ searchParams }: PageProps) {
                             <span className="block text-[10px]">{new Date(statusTimestampMap[application.id]).toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit" })}</span>
                           </span>
                         ) : (
-                          new Date(application.createdAt).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })
+                          <span>
+                            <span className="block font-semibold">{new Date(application.createdAt).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                            <span className="block text-[10px]">{new Date(application.createdAt).toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit" })}</span>
+                          </span>
                         )}
                       </td>
                       <td className="whitespace-nowrap px-3 py-3">
