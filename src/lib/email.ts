@@ -234,6 +234,14 @@ function getStatusTemplate(status: string, note?: string | null) {
         intro:
           "we are pleased to inform you that your Auto Access rent-to-own application has been officially approved in principle. You've met our initial assessment criteria and your application has progressed to the vehicle selection stage.",
         detailHtml: `
+          <div style="margin:0 0 24px; border:2px solid #c9973a; background:#1b2345; border-radius:16px; padding:24px; text-align:center;">
+            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#f4c89a; font-weight:700;">🎧 Listen First — Important Message From Auto Access</p>
+            <p style="margin:0 0 16px; font-size:13px; line-height:1.6; color:rgba(255,255,255,0.75);">Tap the button below to hear your personalised next steps guide. Approx 2 minutes.</p>
+            <a href="https://auqnznddv3dcilxu.public.blob.vercel-storage.com/Approved.mp3" style="display:inline-flex; align-items:center; gap:10px; background:#c9973a; color:#1b2345; text-decoration:none; font-size:15px; font-weight:700; padding:14px 32px; border-radius:100px;">
+              ▶ Play My Next Steps Guide
+            </a>
+            <p style="margin:12px 0 0; font-size:11px; color:rgba(255,255,255,0.45);">Opens in your browser — no app required</p>
+          </div>
           <div style="margin:0 0 24px; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
             <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Contact your appointed sales consultant</p>
             <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Your dedicated sales consultant is available to assist you in finalising this process — from vehicle selection to contract signing. Reach out via WhatsApp for prompt assistance.</p>
@@ -424,6 +432,14 @@ function getStatusTemplate(status: string, note?: string | null) {
         intro:
           "Thank you for choosing Auto Access Rent-to-Own. Attached to this email is your Rent-to-Own Vehicle Contract. Please take a moment to carefully read and understand the terms outlined in the document.",
         detailHtml: `
+          <div style="margin:0 0 24px; border:2px solid #c9973a; background:#1b2345; border-radius:16px; padding:24px; text-align:center;">
+            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#f4c89a; font-weight:700;">🎧 Listen First — Important Message From Auto Access</p>
+            <p style="margin:0 0 16px; font-size:13px; line-height:1.6; color:rgba(255,255,255,0.75);">Tap the button below to hear your personalised next steps guide. Approx 2 minutes.</p>
+            <a href="https://auqnznddv3dcilxu.public.blob.vercel-storage.com/Approved.mp3" style="display:inline-flex; align-items:center; gap:10px; background:#c9973a; color:#1b2345; text-decoration:none; font-size:15px; font-weight:700; padding:14px 32px; border-radius:100px;">
+              ▶ Play My Next Steps Guide
+            </a>
+            <p style="margin:12px 0 0; font-size:11px; color:rgba(255,255,255,0.45);">Opens in your browser — no app required</p>
+          </div>
           <div style="margin:0 0 24px; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
             <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Contact your appointed sales consultant</p>
             <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Your dedicated sales consultant is available to assist you in finalising this process — from vehicle selection to contract signing. Reach out via WhatsApp for prompt assistance.</p>
