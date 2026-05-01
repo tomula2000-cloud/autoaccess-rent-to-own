@@ -137,6 +137,23 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check if the user account is blocked
+    const user = await prisma.user.findUnique({
+      where: { email: matchedApplication.email },
+      select: { isBlocked: true },
+    });
+
+    if (user?.isBlocked) {
+      const blockedMsg = "Your%20profile%20has%20been%20suspended.%20Please%20contact%20us%20at%20admin%40autoaccess.co.za%20or%20call%20087%20012%206734.";
+      if (contentType.includes("application/json")) {
+        return NextResponse.json(
+          { success: false, message: "Your profile has been suspended. Please contact us at admin@autoaccess.co.za or call 087 012 6734." },
+          { status: 403 }
+        );
+      }
+      return NextResponse.redirect(new URL(`/portal-login?error=${blockedMsg}`, request.url));
+    }
+
     if (contentType.includes("application/json")) {
       const response = NextResponse.json({
         success: true,

@@ -3,6 +3,7 @@ import AdminDocumentViewer from "@/components/admin-document-viewer";
 import AdminDocumentActions from "@/components/admin-document-actions";
 import { prisma } from "@/lib/prisma";
 import ResendContractButton from "@/components/resend-contract-button";
+import BlockUserButton from "@/components/block-user-button";
 import SendApprovalSmsButton from "@/components/send-approval-sms-button";
 import PrepareInvoiceForm from "@/components/prepare-invoice-form";
 import AdminStatusForm from "@/components/admin-status-form";
@@ -328,6 +329,7 @@ export default async function AdminApplicationDetailPage({
       clientAccountType: true,
       clientBranchCode: true,
       clientBankSubmittedAt: true,
+      applicantId: true,
 
       selectedVehicle: {
         select: {
@@ -374,6 +376,10 @@ export default async function AdminApplicationDetailPage({
   if (!application) {
     notFound();
   }
+  const applicantUser = await prisma.user.findUnique({
+    where: { id: (application as { applicantId: string }).applicantId },
+    select: { id: true, isBlocked: true },
+  });
 
   // Mark application as seen by admin (non-blocking, fire-and-forget)
   if (!(application as { adminSeen?: boolean }).adminSeen) {
@@ -1169,6 +1175,15 @@ export default async function AdminApplicationDetailPage({
                   applicationId={application.id}
                   currentStatus={application.status}
                 />
+                {applicantUser && (
+                  <div className="mt-4 border-t border-[#eef0f7] pt-4">
+                    <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#8a9bbf]">Account Access</p>
+                    {applicantUser.isBlocked && (
+                      <div className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-600">⚠️ This client account is currently blocked.</div>
+                    )}
+                    <BlockUserButton userId={applicantUser.id} isBlocked={applicantUser.isBlocked} />
+                  </div>
+                )}
               </div>
             </div>
 
