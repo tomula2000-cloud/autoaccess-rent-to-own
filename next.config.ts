@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/audio/:file*",
+        destination:
+          "https://auqnznddv3dcilxu.public.blob.vercel-storage.com/:file*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
