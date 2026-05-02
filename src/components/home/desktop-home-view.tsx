@@ -111,6 +111,24 @@ function AnimatedStat({
   );
 }
 
+// ─── Hero count-up hook (runs on mount, eased) ───────────────────────────────
+function useCountUp(target: number, duration = 1800) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(eased * target);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return value;
+}
+
 // ─── SVG icons ───────────────────────────────────────────────────────────────
 const IconArrow = () => (
   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -218,6 +236,10 @@ function HomePageContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Reac
 
   const overlayCardRef = useRef<HTMLDivElement | null>(null);
   const submitNoticeRef = useRef<HTMLDivElement | null>(null);
+
+  // ── Hero count-up stats ──
+  const approvalRaw = useCountUp(94, 1800);
+  const vehiclesRaw = useCountUp(1247, 2200);
 
   // ── Effects — UNCHANGED ──
   useEffect(() => {
@@ -347,12 +369,63 @@ function HomePageContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Reac
           ════════════════════════════════════════════════════ */}
           <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
             {/* ── Left: brand panel ── */}
-            <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-gradient-to-br from-[#0b1532] via-[#102046] to-[#1b3375] p-8 shadow-[0_30px_80px_-20px_rgba(11,21,50,0.55)] md:p-10 lg:p-12">
-              {/* Atmosphere */}
-              <div className="absolute inset-0">
-                <div className="absolute -left-20 -top-20 h-[420px] w-[420px] rounded-full bg-[#2f67de]/25 blur-3xl" />
-                <div className="absolute -right-16 top-10 h-[340px] w-[340px] rounded-full bg-[#d59758]/15 blur-3xl" />
-                <div className="absolute -bottom-20 left-10 h-[280px] w-[280px] rounded-full bg-[#2f67de]/15 blur-3xl" />
+            <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-gradient-to-br from-[#0b1532] via-[#102046] to-[#1b3375] p-8 shadow-[0_30px_80px_-20px_rgba(11,21,50,0.55)] md:p-10 lg:p-12 lg:pb-16">
+              <style>{`
+                @keyframes heroWordReveal {
+                  0% { opacity: 0; transform: translateY(22px); filter: blur(8px); }
+                  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+                }
+                @keyframes heroOrb1 {
+                  0%, 100% { transform: translate(0, 0) scale(1); }
+                  33% { transform: translate(30px, -18px) scale(1.08); }
+                  66% { transform: translate(-20px, 24px) scale(0.95); }
+                }
+                @keyframes heroOrb2 {
+                  0%, 100% { transform: translate(0, 0) scale(1); }
+                  50% { transform: translate(-36px, 26px) scale(1.1); }
+                }
+                @keyframes heroOrb3 {
+                  0%, 100% { transform: translate(0, 0) scale(1); }
+                  40% { transform: translate(28px, -28px) scale(1.05); }
+                  80% { transform: translate(-18px, 22px) scale(0.96); }
+                }
+                @keyframes heroAuroraSweep {
+                  0% { transform: rotate(0deg); }
+                  100% { transform: rotate(360deg); }
+                }
+                @keyframes heroGoldPulse {
+                  0%, 100% { box-shadow: 0 0 0 0 rgba(244,200,154,0.55); }
+                  70% { box-shadow: 0 0 0 14px rgba(244,200,154,0); }
+                }
+                @keyframes heroScrollBounce {
+                  0%, 100% { transform: translateY(0); opacity: 0.7; }
+                  50% { transform: translateY(6px); opacity: 1; }
+                }
+              `}</style>
+
+              {/* Atmosphere — animated aurora mesh + drifting orbs */}
+              <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div
+                  className="absolute -inset-1/2 opacity-60 mix-blend-screen"
+                  style={{
+                    background:
+                      "conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(126,168,255,0.18) 70deg, transparent 140deg, rgba(244,200,154,0.12) 220deg, transparent 290deg, rgba(126,168,255,0.15) 340deg, transparent 360deg)",
+                    animation: "heroAuroraSweep 50s linear infinite",
+                    filter: "blur(60px)",
+                  }}
+                />
+                <div
+                  className="absolute -left-20 -top-20 h-[420px] w-[420px] rounded-full bg-[#2f67de]/25 blur-3xl"
+                  style={{ animation: "heroOrb1 18s ease-in-out infinite" }}
+                />
+                <div
+                  className="absolute -right-16 top-10 h-[340px] w-[340px] rounded-full bg-[#d59758]/15 blur-3xl"
+                  style={{ animation: "heroOrb2 22s ease-in-out infinite" }}
+                />
+                <div
+                  className="absolute -bottom-20 left-10 h-[280px] w-[280px] rounded-full bg-[#2f67de]/15 blur-3xl"
+                  style={{ animation: "heroOrb3 26s ease-in-out infinite" }}
+                />
                 <div
                   className="absolute inset-0 opacity-[0.08]"
                   style={{
@@ -383,11 +456,29 @@ function HomePageContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Reac
                     </p>
                   </div>
 
-                  {/* Headline */}
+                  {/* Headline — staggered word reveal */}
                   <h1 className="mt-6 max-w-[560px] text-4xl font-semibold leading-[1.05] tracking-tight text-white md:text-[2.85rem] lg:text-[3.1rem]">
-                    Vehicle access for every South African,
+                    {"Vehicle access for every South African,".split(" ").map((word, i) => (
+                      <span
+                        key={`hl-${i}`}
+                        className="inline-block"
+                        style={{
+                          animation: "heroWordReveal 0.75s cubic-bezier(0.22,1,0.36,1) both",
+                          animationDelay: `${200 + i * 85}ms`,
+                          marginRight: "0.22em",
+                        }}
+                      >
+                        {word}
+                      </span>
+                    ))}
                     <br />
-                    <span className="bg-gradient-to-r from-[#9cc0ff] via-white to-[#f4c89a] bg-clip-text text-transparent">
+                    <span
+                      className="inline-block bg-gradient-to-r from-[#9cc0ff] via-white to-[#f4c89a] bg-clip-text text-transparent"
+                      style={{
+                        animation: "heroWordReveal 0.85s cubic-bezier(0.22,1,0.36,1) both",
+                        animationDelay: `${200 + 6 * 85}ms`,
+                      }}
+                    >
                       regardless of credit.
                     </span>
                   </h1>
@@ -400,8 +491,13 @@ function HomePageContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Reac
                   <div className="mt-7 flex flex-wrap gap-3">
                     <a
                       href="#application-form"
-                      className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-7 py-3.5 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(213,151,88,0.6)] transition hover:from-[#c4863f] hover:to-[#d59758] hover:shadow-[0_16px_36px_-10px_rgba(213,151,88,0.75)]"
+                      className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-7 py-3.5 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(213,151,88,0.6)] transition hover:from-[#c4863f] hover:to-[#d59758] hover:shadow-[0_16px_36px_-10px_rgba(213,151,88,0.75)]"
                     >
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 rounded-full"
+                        style={{ animation: "heroGoldPulse 2.4s ease-out infinite" }}
+                      />
                       Apply Now
                       <span className="transition group-hover:translate-x-0.5"><IconArrow /></span>
                     </a>
@@ -441,7 +537,13 @@ function HomePageContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Reac
                     <div className="mt-3 flex items-center gap-2">
                       <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
                       <p className="text-[12px] text-blue-50/70">
-                        <span className="font-mono text-white tabular-nums">94%</span> approval rate this month
+                        <span className="font-mono text-white tabular-nums">{Math.round(approvalRaw)}%</span> approval rate this month
+                      </p>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="inline-flex h-2 w-2 rounded-full bg-[#f4c89a] shadow-[0_0_10px_rgba(244,200,154,0.7)]" />
+                      <p className="text-[12px] text-blue-50/70">
+                        <span className="font-mono text-white tabular-nums">{Math.floor(vehiclesRaw).toLocaleString()}+</span> vehicles placed nationally
                       </p>
                     </div>
                   </div>
@@ -459,7 +561,8 @@ function HomePageContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Reac
                           strokeWidth="6"
                           fill="none"
                           strokeLinecap="round"
-                          strokeDasharray={`${(94 / 100) * 276} 276`}
+                          strokeDasharray="276"
+                          strokeDashoffset={276 - (approvalRaw / 100) * 276}
                         />
                         <defs>
                           <linearGradient id="homeHeroGrad" x1="0" y1="0" x2="1" y2="1">
@@ -470,10 +573,20 @@ function HomePageContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Reac
                       </svg>
                       <div className="text-center">
                         <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-blue-200/70">Approved</p>
-                        <p className="mt-0.5 text-2xl font-semibold tabular-nums text-white">94%</p>
+                        <p className="mt-0.5 text-2xl font-semibold tabular-nums text-white">{Math.round(approvalRaw)}%</p>
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Bouncing scroll indicator */}
+              <div className="pointer-events-none absolute bottom-4 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1.5 text-blue-200/70 lg:flex">
+                <span className="text-[9px] font-semibold uppercase tracking-[0.24em]">Scroll</span>
+                <div style={{ animation: "heroScrollBounce 1.8s ease-in-out infinite" }}>
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
                 </div>
               </div>
             </div>

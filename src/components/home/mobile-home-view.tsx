@@ -106,6 +106,23 @@ function AnimatedStat({
   );
 }
 
+function useCountUp(target: number, duration = 1800) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(eased * target);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return value;
+}
+
 const IconArrow = () => (
   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="5" y1="12" x2="19" y2="12" />
@@ -212,6 +229,9 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
 
   const overlayCardRef = useRef<HTMLDivElement | null>(null);
   const submitNoticeRef = useRef<HTMLDivElement | null>(null);
+
+  const approvalRaw = useCountUp(94, 1800);
+  const vehiclesRaw = useCountUp(1247, 2200);
 
   useEffect(() => {
     if (prefilledVehicle) setPreferredVehicle(prefilledVehicle);
@@ -372,9 +392,54 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
           </Link>
         </div>
 
-        <section className="relative mt-4 overflow-hidden rounded-[28px] bg-gradient-to-br from-[#0b1532] via-[#102046] to-[#1b3375] px-5 pb-6 pt-7 shadow-[0_24px_60px_-20px_rgba(11,21,50,0.55)]">
-          <div className="absolute -left-10 -top-10 h-44 w-44 rounded-full bg-[#2f67de]/25 blur-3xl" />
-          <div className="absolute -bottom-10 right-0 h-36 w-36 rounded-full bg-[#d59758]/15 blur-3xl" />
+        <section className="relative mt-4 overflow-hidden rounded-[28px] bg-gradient-to-br from-[#0b1532] via-[#102046] to-[#1b3375] px-5 pb-12 pt-7 shadow-[0_24px_60px_-20px_rgba(11,21,50,0.55)]">
+          <style>{`
+            @keyframes mobHeroWordReveal {
+              0% { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+              100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+            }
+            @keyframes mobHeroOrb1 {
+              0%, 100% { transform: translate(0, 0) scale(1); }
+              50% { transform: translate(18px, -12px) scale(1.08); }
+            }
+            @keyframes mobHeroOrb2 {
+              0%, 100% { transform: translate(0, 0) scale(1); }
+              50% { transform: translate(-16px, 14px) scale(1.05); }
+            }
+            @keyframes mobHeroAuroraSweep {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+            @keyframes mobHeroGoldPulse {
+              0%, 100% { box-shadow: 0 0 0 0 rgba(244,200,154,0.5); }
+              70% { box-shadow: 0 0 0 12px rgba(244,200,154,0); }
+            }
+            @keyframes mobHeroScrollBounce {
+              0%, 100% { transform: translateY(0); opacity: 0.7; }
+              50% { transform: translateY(5px); opacity: 1; }
+            }
+          `}</style>
+
+          {/* Animated aurora mesh + drifting orbs */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div
+              className="absolute -inset-1/2 opacity-50 mix-blend-screen"
+              style={{
+                background:
+                  "conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(126,168,255,0.18) 70deg, transparent 140deg, rgba(244,200,154,0.12) 220deg, transparent 290deg, rgba(126,168,255,0.15) 340deg, transparent 360deg)",
+                animation: "mobHeroAuroraSweep 55s linear infinite",
+                filter: "blur(50px)",
+              }}
+            />
+            <div
+              className="absolute -left-10 -top-10 h-44 w-44 rounded-full bg-[#2f67de]/25 blur-3xl"
+              style={{ animation: "mobHeroOrb1 18s ease-in-out infinite" }}
+            />
+            <div
+              className="absolute -bottom-10 right-0 h-36 w-36 rounded-full bg-[#d59758]/15 blur-3xl"
+              style={{ animation: "mobHeroOrb2 22s ease-in-out infinite" }}
+            />
+          </div>
 
           <div className="relative">
             <div className="flex items-center gap-3">
@@ -385,9 +450,27 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
             </div>
 
             <h1 className="mt-5 text-[2rem] font-semibold leading-[1.05] tracking-tight text-white">
-              Vehicle access for every South African,
+              {"Vehicle access for every South African,".split(" ").map((word, i) => (
+                <span
+                  key={`mhl-${i}`}
+                  className="inline-block"
+                  style={{
+                    animation: "mobHeroWordReveal 0.7s cubic-bezier(0.22,1,0.36,1) both",
+                    animationDelay: `${180 + i * 75}ms`,
+                    marginRight: "0.22em",
+                  }}
+                >
+                  {word}
+                </span>
+              ))}
               <br />
-              <span className="bg-gradient-to-r from-[#9cc0ff] via-white to-[#f4c89a] bg-clip-text text-transparent">
+              <span
+                className="inline-block bg-gradient-to-r from-[#9cc0ff] via-white to-[#f4c89a] bg-clip-text text-transparent"
+                style={{
+                  animation: "mobHeroWordReveal 0.8s cubic-bezier(0.22,1,0.36,1) both",
+                  animationDelay: `${180 + 6 * 75}ms`,
+                }}
+              >
                 regardless of credit.
               </span>
             </h1>
@@ -411,11 +494,38 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
               </span>
             </div>
 
+            {/* Hero count-up stats */}
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="rounded-[14px] border border-white/10 bg-white/[0.04] px-3 py-2.5 backdrop-blur-xl">
+                <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-blue-200/60">
+                  Approved
+                </p>
+                <p className="mt-0.5 text-[18px] font-semibold tabular-nums text-white">
+                  {Math.round(approvalRaw)}
+                  <span className="text-[#f4c89a]">%</span>
+                </p>
+              </div>
+              <div className="rounded-[14px] border border-white/10 bg-white/[0.04] px-3 py-2.5 backdrop-blur-xl">
+                <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-blue-200/60">
+                  Vehicles Placed
+                </p>
+                <p className="mt-0.5 text-[18px] font-semibold tabular-nums text-white">
+                  {Math.floor(vehiclesRaw).toLocaleString()}
+                  <span className="text-[#f4c89a]">+</span>
+                </p>
+              </div>
+            </div>
+
             <div className="mt-6 flex gap-3">
               <a
                 href="#application-form"
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-5 py-3.5 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(213,151,88,0.6)]"
+                className="group relative inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-5 py-3.5 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(213,151,88,0.6)]"
               >
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 rounded-full"
+                  style={{ animation: "mobHeroGoldPulse 2.4s ease-out infinite" }}
+                />
                 Apply Now
                 <IconArrow />
               </a>
@@ -425,6 +535,15 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
               >
                 Process
               </a>
+            </div>
+          </div>
+
+          {/* Bouncing scroll indicator */}
+          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 text-blue-200/70">
+            <div style={{ animation: "mobHeroScrollBounce 1.8s ease-in-out infinite" }}>
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </div>
           </div>
         </section>

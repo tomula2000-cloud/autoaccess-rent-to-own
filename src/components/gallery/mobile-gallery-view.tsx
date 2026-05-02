@@ -115,101 +115,114 @@ function IconClock() {
   );
 }
 
-// ── Compact mobile vehicle card ──
+// ── Compact mobile vehicle card — dark navy + gold premium aesthetic ──
 function MobileVehicleCard({ vehicle }: { vehicle: GalleryVehicleOffer }) {
   const isAvailable = vehicle.status === "AVAILABLE";
+  const isUnderOffer = vehicle.status === "UNDER_OFFER";
+
+  const statusMeta =
+    isAvailable
+      ? { label: "Available", dot: "bg-[#f4c89a] shadow-[0_0_8px_rgba(244,200,154,0.7)]" }
+      : isUnderOffer
+      ? { label: "Under Offer", dot: "bg-amber-400" }
+      : vehicle.status === "SOLD"
+      ? { label: "Sold", dot: "bg-red-400" }
+      : { label: vehicle.status.replaceAll("_", " "), dot: "bg-slate-400" };
 
   return (
     <Link
       href={`/gallery/${vehicle.slug}`}
-      className="group block overflow-hidden rounded-[18px] border border-[#e1e4ee] bg-white shadow-[0_6px_20px_-10px_rgba(15,23,42,0.1)] transition hover:border-[#2f67de]/30 hover:shadow-[0_12px_28px_-10px_rgba(47,103,222,0.15)]"
+      className="group block overflow-hidden rounded-[18px] border border-white/[0.07] bg-[#0d1b35] shadow-[0_18px_44px_-14px_rgba(0,0,0,0.55)] transition duration-300 hover:-translate-y-0.5 hover:border-[#d59758]/30 hover:shadow-[0_22px_50px_-14px_rgba(213,151,88,0.18)]"
     >
       {/* Vehicle image */}
-      <div className="relative overflow-hidden bg-[#f4f6fb]">
+      <div className="relative overflow-hidden bg-[#091526]">
         <img
           src={vehicle.featuredImage}
           alt={vehicle.title}
-          className="h-[160px] w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+          className="h-[160px] w-full object-cover transition duration-300 group-hover:scale-[1.04]"
         />
 
-        {/* Status badge */}
-        <div className="absolute left-3 top-3">
-          {isAvailable ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-500 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-white shadow-[0_4px_10px_-4px_rgba(16,185,129,0.5)]">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-              Available
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-slate-600 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-white">
-              Unavailable
-            </span>
-          )}
+        {/* Status pill */}
+        <div className="absolute left-3 top-3 z-20">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/40 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
+            <span className={`h-1.5 w-1.5 rounded-full ${statusMeta.dot} ${isAvailable ? "animate-pulse" : ""}`} />
+            {statusMeta.label}
+          </span>
         </div>
 
-        {/* Year badge */}
-        <div className="absolute right-3 top-3">
-          <span className="rounded-full border border-[#dbe6ff] bg-[#eef4ff]/90 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-[#2f67de] backdrop-blur">
+        {/* Year pill — gold */}
+        <div className="absolute right-3 top-3 z-20">
+          <span className="inline-flex items-center gap-1 rounded-full border border-[#d59758]/40 bg-[#d59758]/15 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-[#d59758] backdrop-blur-sm">
             {vehicle.yearModel}
           </span>
         </div>
+
+        {/* Bottom navy bleed */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#0d1b35] via-[#0d1b35]/55 to-transparent" />
       </div>
 
-      {/* Card body */}
-      <div className="p-3.5">
-        {/* Title + tags */}
-        <h3 className="line-clamp-1 text-[14px] font-semibold text-[#1b2345]">
+      {/* Body */}
+      <div className="px-3.5 pb-3.5 pt-2">
+        {/* Eyebrow */}
+        <div className="flex items-center gap-1.5">
+          <span className="h-px w-3.5 bg-[#d59758]/60" />
+          <p className="text-[8px] font-bold uppercase tracking-[0.22em] text-[#d59758]/80">
+            Auto Access · Rent-To-Own
+          </p>
+        </div>
+
+        {/* Title */}
+        <h3 className="mt-1.5 line-clamp-1 text-[13.5px] font-semibold tracking-tight text-white transition-colors duration-150 group-hover:text-[#d59758]">
           {vehicle.title}
         </h3>
 
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-slate-600">
+        {/* Spec chips */}
+        <div className="mt-2 flex flex-wrap gap-1">
+          <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-blue-100/70">
             {vehicle.transmission}
           </span>
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-slate-600">
+          <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-blue-100/70">
             {vehicle.fuelType}
           </span>
           {vehicle.mileage ? (
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-slate-600">
+            <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-blue-100/70">
               {vehicle.mileage}
             </span>
           ) : null}
         </div>
 
-        {/* Financial stat row */}
-        <div className="mt-3 grid grid-cols-3 gap-1.5">
-          <div className="rounded-[10px] border border-[#e7eaf2] bg-[#fafbff] px-2 py-2">
-            <p className="text-[7.5px] font-bold uppercase tracking-[0.12em] text-[#68708a]">
-              Deposit
-            </p>
-            <p className="mt-0.5 text-[10.5px] font-semibold leading-4 text-[#1b2345]">
-              {vehicle.depositAmount}
-            </p>
-          </div>
-          <div className="rounded-[10px] border border-[#e7eaf2] bg-[#fafbff] px-2 py-2">
-            <p className="text-[7.5px] font-bold uppercase tracking-[0.12em] text-[#68708a]">
+        {/* Pricing — Monthly highlighted, Deposit secondary */}
+        <div className="mt-2.5 flex items-center justify-between gap-2 rounded-[12px] border border-[#d59758]/20 bg-[#d59758]/[0.07] px-3 py-2.5">
+          <div className="min-w-0">
+            <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-[#d59758]/70">
               Monthly
             </p>
-            <p className="mt-0.5 text-[10.5px] font-semibold leading-4 text-[#1b2345]">
+            <p className="mt-0.5 truncate text-[14px] font-bold tabular-nums leading-none text-[#d59758]">
               {vehicle.monthlyPayment}
             </p>
           </div>
-          <div className="rounded-[10px] border border-[#dbe6ff] bg-[#eef4ff] px-2 py-2">
-            <p className="text-[7.5px] font-bold uppercase tracking-[0.12em] text-[#2f67de]">
-              Rent-to-Own
+          <div className="min-w-0 text-right">
+            <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-blue-200/50">
+              Deposit
             </p>
-            <p className="mt-0.5 text-[10.5px] font-semibold leading-4 text-[#1b2345]">
-              View offer
+            <p className="mt-0.5 truncate text-[11px] font-semibold tabular-nums leading-none text-white">
+              {vehicle.depositAmount}
             </p>
           </div>
         </div>
 
         {/* CTA strip */}
-        <div className="mt-3 flex items-center justify-between gap-2">
-          <span className="text-[11px] font-medium text-[#68708a]">
-            Full details inside
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-3 py-1.5 text-[10px] font-semibold text-white">
-            View Offer
+        <div className="mt-2.5 flex items-center justify-end">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold tracking-wide transition ${
+              isAvailable
+                ? "bg-gradient-to-r from-[#d59758] to-[#e4ad72] text-[#0d1b35] shadow-[0_8px_18px_-6px_rgba(213,151,88,0.5)]"
+                : isUnderOffer
+                ? "border border-[#d59758]/30 bg-[#d59758]/10 text-[#d59758]"
+                : "border border-white/15 bg-white/5 text-white/70"
+            }`}
+          >
+            {isAvailable ? "Apply Now" : isUnderOffer ? "View Offer" : "View"}
             <IconArrow />
           </span>
         </div>

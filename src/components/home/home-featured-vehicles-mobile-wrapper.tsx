@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import HomeFeaturedVehiclesMobile from "./home-featured-vehicles-mobile";
+import HomeFeaturedVehiclesMarquee from "./home-featured-vehicles-marquee";
 
 export default async function HomeFeaturedVehiclesMobileWrapper() {
   const vehicles = await prisma.vehicleOffer.findMany({
@@ -21,5 +21,7 @@ export default async function HomeFeaturedVehiclesMobileWrapper() {
     },
   });
 
-  return <HomeFeaturedVehiclesMobile vehicles={vehicles} />;
+  if (vehicles.length === 0) return null;
+
+  return <HomeFeaturedVehiclesMarquee vehicles={vehicles} variant="mobile" />;
 }
