@@ -139,7 +139,7 @@ export default function AudioPage() {
               <button className="skip-btn" onClick={() => skip(10)} disabled={!isReady}>+10s</button>
             </div>
             {error && <p className="error">{error}</p>}
-            <audio ref={audioRef} src="https://auqnznddv3dcilxu.public.blob.vercel-storage.com/approval-message.mp3" preload="metadata" />
+            <audio ref={audioRef} src="/audio/approval-message.mp3" preload="metadata" />
           </div>
           <a href="/portal" className="portal-btn">Go to Client Portal</a>
           <p className="footer">© {new Date().getFullYear()} Auto Access · Rent-to-Own</p>
