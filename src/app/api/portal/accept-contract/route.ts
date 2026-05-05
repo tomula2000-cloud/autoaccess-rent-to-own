@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { sendContractSignedAdminEmail, sendContractSignedClientEmail } from "@/lib/email";
 
 export async function POST(request: Request) {
   try {
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
         status: true,
         contractAccepted: true,
         contractExpiresAt: true,
+        referenceNumber: true,
       },
     });
 
@@ -120,6 +122,7 @@ export async function POST(request: Request) {
           contractAcceptedAt: new Date(),
           contractAcceptedName: acceptedName,
           status: "AWAITING_INVOICE" as never,
+          adminSeen: false,
         },
       }),
       prisma.statusLog.create({
@@ -133,6 +136,17 @@ export async function POST(request: Request) {
       }),
     ]);
 
+    // Notify admin
+    try {
+      await sendContractSignedAdminEmail({
+        fullName: application.fullName,
+        email: application.email,
+        referenceNumber: application.referenceNumber,
+        signedAt: new Date(),
+      });
+    } catch (e) {
+      console.error("Admin notification email failed:", e);
+    }
     return NextResponse.redirect(
       new URL(
         "/portal?success=Your+signed+contract+has+been+recorded.+Your+application+is+now+awaiting+invoice+release.",
