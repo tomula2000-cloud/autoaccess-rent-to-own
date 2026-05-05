@@ -363,6 +363,15 @@ export default async function AdminPage({ searchParams }: PageProps) {
                         <span className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${getStatusBadge(application.status)}`}>
                           {formatStatus(application.status)}
                         </span>
+                        {application.status === "AWAITING_INVOICE" && !application.adminSeen ? (
+                          <span className="ml-2 inline-flex items-center gap-1.5 align-middle text-[10px] font-bold uppercase tracking-[0.12em] text-red-600">
+                            <span className="relative flex h-2 w-2">
+                              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                              <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                            </span>
+                            ! New
+                          </span>
+                        ) : null}
                       </td>
                       <td className="whitespace-nowrap px-3 py-3 text-[11px] text-[#68708a]">
                         {priorityStatuses.includes(application.status) && statusTimestampMap[application.id] ? (
