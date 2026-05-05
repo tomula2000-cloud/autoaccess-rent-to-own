@@ -401,6 +401,38 @@ export default async function MobilePortalDashboardView() {
         </PortalMobileSectionCard>
       ) : null}
 
+      {/* Audio approval message banner — mobile */}
+      {isApprovedInPrinciple ? (
+        <Link
+          href="/audio"
+          className="group mt-4 flex items-center gap-2.5 rounded-[14px] border border-[#d59758]/30 bg-gradient-to-r from-[#0b1532] to-[#102046] px-3 py-2.5 shadow-[0_4px_12px_-4px_rgba(11,21,50,0.4)] transition active:scale-[0.99]"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#d59758] to-[#e4ad72] shadow-[0_6px_14px_-4px_rgba(213,151,88,0.55)]">
+            <svg className="h-4 w-4 translate-x-px text-[#0b1532]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M8 5v14l11-7L8 5z" />
+            </svg>
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#f4c89a]">
+              🎧 Listen First — Important Message
+            </p>
+            <p className="mt-0.5 text-[12.5px] font-semibold leading-tight text-white">
+              Your Personalised Next Steps Guide
+            </p>
+            <p className="mt-0.5 text-[10px] leading-tight text-blue-100/55">
+              Tap to hear your approval message · Approx 2 min
+            </p>
+          </div>
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-[#0b1532] shadow-[0_4px_10px_-4px_rgba(213,151,88,0.5)]">
+            Play
+            <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </span>
+        </Link>
+      ) : null}
+
       {/* ── APPROVED - SELECT VEHICLE ── */}
       {isApprovedInPrinciple ? (
         <PortalMobileSectionCard eyebrow="Action Required" title="Select your vehicle">
