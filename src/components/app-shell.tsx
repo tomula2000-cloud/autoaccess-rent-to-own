@@ -1,7 +1,10 @@
+"use client";
+
 import ZandiFloat from "@/components/zandi-float";
 import PortalHeaderChip from "@/components/portal-header-chip";
 import { DesktopNav, MobileMenu } from "@/components/portal-nav-aware";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 type AppShellProps = {
@@ -11,7 +14,19 @@ type AppShellProps = {
 const PHONE_LINK = "tel:0870126734";
 const WHATSAPP_LINK = "https://wa.me/27610490061";
 
+// Routes that opt out of the site chrome (header, floating widget, light background)
+const STANDALONE_ROUTES = ["/audio"];
+
 export default function AppShell({ children }: AppShellProps) {
+  const pathname = usePathname();
+  const isStandalone = STANDALONE_ROUTES.some(
+    (route) => pathname === route || pathname?.startsWith(`${route}/`)
+  );
+
+  if (isStandalone) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-[#f4f6fb] text-black">
       <style>{`
