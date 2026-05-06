@@ -361,6 +361,20 @@ export async function POST(
       }
     }
 
+    // Send BulkSMS notification for CONTRACT_ISSUED (non-blocking)
+    if (newStatus === "CONTRACT_ISSUED" && existingApplication.phone) {
+      try {
+        const { sendBulkSMS } = await import("@/lib/sms");
+        const firstName = existingApplication.fullName.split(" ")[0];
+        await sendBulkSMS({
+          to: existingApplication.phone,
+          message: `Dear ${firstName}, your Auto Access contract (Ref: ${existingApplication.referenceNumber}) is ready for your review and signature. Please log in to your client portal at autoaccess.co.za/portal to review and sign your agreement. For assistance, contact us on WhatsApp: 074 546 2367.`,
+        });
+        console.log(`BulkSMS sent to ${existingApplication.fullName} for CONTRACT_ISSUED`);
+      } catch (smsError) {
+        console.error("BulkSMS CONTRACT_ISSUED failed (non-blocking):", smsError);
+      }
+    }
     // Send voice call notification (non-blocking)
     try {
       const voiceMessage = VOICE_STATUSES[newStatus];
