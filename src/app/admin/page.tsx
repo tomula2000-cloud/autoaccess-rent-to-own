@@ -9,7 +9,7 @@ import { authOptions } from "../../../auth";
 import { prisma } from "@/lib/prisma";
 
 type PageProps = {
-  searchParams?: Promise<{ status?: string; q?: string; dateFrom?: string; dateTo?: string }>;
+  searchParams?: Promise<{ status?: string; q?: string; dateFrom?: string; dateTo?: string; page?: string }>;
 };
 
 type AdminApplicationRow = {
@@ -100,6 +100,8 @@ export default async function AdminPage({ searchParams }: PageProps) {
   const searchQuery = (params.q || "").trim();
   const dateFromRaw = (params.dateFrom || "").trim();
   const dateToRaw = (params.dateTo || "").trim();
+  const PAGE_SIZE = 50;
+  const currentPage = Math.max(1, parseInt(params.page || "1", 10));
 
   // Parse dates; treat invalid input as missing. dateTo covers the entire day (end-of-day inclusive).
   let dateFromValid: Date | null = null;
@@ -164,6 +166,13 @@ export default async function AdminPage({ searchParams }: PageProps) {
     return 0;
   });
 
+  const filteredTotal = filteredApplications.length;
+  const totalPages = Math.ceil(filteredTotal / PAGE_SIZE);
+  const safeCurrentPage = Math.min(currentPage, Math.max(1, totalPages));
+  const paginatedApplications = filteredApplications.slice(
+    (safeCurrentPage - 1) * PAGE_SIZE,
+    safeCurrentPage * PAGE_SIZE
+  );
   const totalCount = allApplications.length;
   const docsCount = getSummaryCount(allApplications, ["AWAITING_DOCUMENTS", "ADDITIONAL_DOCUMENTS_REQUIRED"]);
   const reviewCount = getSummaryCount(allApplications, ["PRE_QUALIFICATION_REVIEW", "DOCUMENTS_UNDER_REVIEW", "PAYMENT_UNDER_VERIFICATION"]);
@@ -358,18 +367,18 @@ export default async function AdminPage({ searchParams }: PageProps) {
         {/* Results count */}
         <div className="mb-3 flex items-center justify-between gap-2 px-1">
           <span className="text-[12px] font-semibold text-[#68708a]">
-            Showing <span className="text-[#1b2345]">{applications.length}</span> application{applications.length === 1 ? "" : "s"}
+            Showing <span className="text-[#1b2345]">{(safeCurrentPage - 1) * PAGE_SIZE + 1}–{Math.min(safeCurrentPage * PAGE_SIZE, filteredTotal)}</span> of <span className="text-[#1b2345]">{filteredTotal}</span> application{filteredTotal === 1 ? "" : "s"}
             {activeStatus !== "ALL" ? <> · <span className="text-[#1b2345]">{formatStatus(activeStatus)}</span></> : null}
             {searchQuery ? <> matching <span className="text-[#1b2345]">"{searchQuery}"</span></> : null}
           </span>
-          {applications.length > 0 ? (
+          {paginatedApplications.length > 0 ? (
             <a
               href={"/api/admin/export-phones?status=" + encodeURIComponent(activeStatus) + "&q=" + encodeURIComponent(searchQuery)}
               className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-[11px] font-semibold text-emerald-700 transition hover:bg-emerald-100"
               download
             >
               <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Download Numbers ({applications.length})
+              Download Numbers ({filteredTotal})
             </a>
           ) : null}
         </div>
@@ -381,17 +390,57 @@ export default async function AdminPage({ searchParams }: PageProps) {
             <h2 className="text-[1rem] font-semibold text-white">All Submitted Applications</h2>
           </div>
 
-          {applications.length === 0 ? (
+          {paginatedApplications.length === 0 ? (
             <div className="p-10 text-center">
               <p className="text-[13px] font-semibold text-[#1b2345]">No applications found</p>
               <p className="mt-1 text-[12px] text-[#68708a]">Try adjusting your search or filter criteria.</p>
             </div>
           ) : (
             <AdminApplicationTable
-              applications={applications}
+              applications={paginatedApplications}
               statusTimestampMap={statusTimestampMap}
               priorityStatuses={priorityStatuses}
             />
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-between border-t border-[#eef0f7] pt-5">
+              <p className="text-[12px] text-[#68708a]">
+                Page <span className="font-semibold text-[#1b2345]">{safeCurrentPage}</span> of <span className="font-semibold text-[#1b2345]">{totalPages}</span>
+              </p>
+              <div className="flex items-center gap-2">
+                {safeCurrentPage > 1 && (
+                  <Link
+                    href={`/admin?status=${encodeURIComponent(activeStatus)}&q=${encodeURIComponent(searchQuery)}${dateFromRaw ? `&dateFrom=${dateFromRaw}` : ""}${dateToRaw ? `&dateTo=${dateToRaw}` : ""}&page=${safeCurrentPage - 1}`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#dde1ee] bg-white px-4 py-2 text-[12px] font-semibold text-[#39425d] transition hover:border-[#2f67de]/30 hover:text-[#2f67de]"
+                  >
+                    ← Previous
+                  </Link>
+                )}
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const page = safeCurrentPage <= 3 ? i + 1 : safeCurrentPage - 2 + i;
+                  if (page < 1 || page > totalPages) return null;
+                  return (
+                    <Link
+                      key={page}
+                      href={`/admin?status=${encodeURIComponent(activeStatus)}&q=${encodeURIComponent(searchQuery)}${dateFromRaw ? `&dateFrom=${dateFromRaw}` : ""}${dateToRaw ? `&dateTo=${dateToRaw}` : ""}&page=${page}`}
+                      className={`inline-flex h-9 w-9 items-center justify-center rounded-full text-[12px] font-semibold transition ${page === safeCurrentPage ? "bg-gradient-to-r from-[#1b2345] to-[#2a3563] text-white shadow-[0_4px_12px_-4px_rgba(27,35,69,0.4)]" : "border border-[#dde1ee] bg-white text-[#39425d] hover:border-[#2f67de]/30 hover:text-[#2f67de]"}`}
+                    >
+                      {page}
+                    </Link>
+                  );
+                })}
+                {safeCurrentPage < totalPages && (
+                  <Link
+                    href={`/admin?status=${encodeURIComponent(activeStatus)}&q=${encodeURIComponent(searchQuery)}${dateFromRaw ? `&dateFrom=${dateFromRaw}` : ""}${dateToRaw ? `&dateTo=${dateToRaw}` : ""}&page=${safeCurrentPage + 1}`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#dde1ee] bg-white px-4 py-2 text-[12px] font-semibold text-[#39425d] transition hover:border-[#2f67de]/30 hover:text-[#2f67de]"
+                  >
+                    Next →
+                  </Link>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </div>
