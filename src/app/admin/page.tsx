@@ -2,13 +2,14 @@ import Link from "next/link";
 import AdminBulkReminder from "@/components/admin-bulk-reminder";
 import AdminBulkApprovalSms from "@/components/admin-bulk-approval-sms";
 import AdminBulkApprove from "@/components/admin-bulk-approve";
+import AdminApplicationTable from "@/components/admin-application-table";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth";
 import { prisma } from "@/lib/prisma";
 
 type PageProps = {
-  searchParams?: Promise<{ status?: string; q?: string }>;
+  searchParams?: Promise<{ status?: string; q?: string; dateFrom?: string; dateTo?: string }>;
 };
 
 type AdminApplicationRow = {
@@ -97,10 +98,32 @@ export default async function AdminPage({ searchParams }: PageProps) {
   const params = searchParams ? await searchParams : {};
   const activeStatus = params.status || "ALL";
   const searchQuery = (params.q || "").trim();
+  const dateFromRaw = (params.dateFrom || "").trim();
+  const dateToRaw = (params.dateTo || "").trim();
+
+  // Parse dates; treat invalid input as missing. dateTo covers the entire day (end-of-day inclusive).
+  let dateFromValid: Date | null = null;
+  if (dateFromRaw) {
+    const d = new Date(dateFromRaw);
+    if (!isNaN(d.getTime())) dateFromValid = d;
+  }
+  let dateToValid: Date | null = null;
+  if (dateToRaw) {
+    const d = new Date(dateToRaw);
+    if (!isNaN(d.getTime())) {
+      d.setHours(23, 59, 59, 999);
+      dateToValid = d;
+    }
+  }
 
   const priorityStatuses = ["CONTRACT_REQUESTED", "AWAITING_INVOICE"];
 
+  const createdAtRange: { gte?: Date; lte?: Date } = {};
+  if (dateFromValid) createdAtRange.gte = dateFromValid;
+  if (dateToValid) createdAtRange.lte = dateToValid;
+
   const allApplications = await prisma.application.findMany({
+    where: Object.keys(createdAtRange).length > 0 ? { createdAt: createdAtRange } : undefined,
     orderBy: { createdAt: "desc" },
     select: {
       id: true, referenceNumber: true, fullName: true, email: true, phone: true,
@@ -238,18 +261,54 @@ export default async function AdminPage({ searchParams }: PageProps) {
             <h2 className="text-[1rem] font-semibold text-white">Find Applications</h2>
           </div>
           <div className="p-5">
-            <form className="grid gap-3 sm:grid-cols-[1fr_auto]">
-              <input
-                type="text"
-                name="q"
-                defaultValue={searchQuery}
-                placeholder="Search by reference, name, email, phone, ID or vehicle..."
-                className="w-full rounded-[14px] border border-[#dde1ee] bg-[#fafbff] px-4 py-3 text-sm text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
-              />
-              <input type="hidden" name="status" value={activeStatus} />
-              <button type="submit" className="rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_-6px_rgba(47,103,222,0.4)]">
-                Search
-              </button>
+            <form className="space-y-3">
+              <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                <input
+                  type="text"
+                  name="q"
+                  defaultValue={searchQuery}
+                  placeholder="Search by reference, name, email, phone, ID or vehicle..."
+                  className="w-full rounded-[14px] border border-[#dde1ee] bg-[#fafbff] px-4 py-3 text-sm text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
+                />
+                <input type="hidden" name="status" value={activeStatus} />
+                <button type="submit" className="rounded-full bg-gradient-to-r from-[#2f67de] to-[#3f78ea] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_-6px_rgba(47,103,222,0.4)]">
+                  Search
+                </button>
+              </div>
+              <div className="flex flex-wrap items-end gap-3">
+                <div>
+                  <label htmlFor="dateFrom" className="mb-1 block text-[9px] font-bold uppercase tracking-[0.18em] text-[#a3aac0]">From date</label>
+                  <input
+                    id="dateFrom"
+                    type="date"
+                    name="dateFrom"
+                    defaultValue={dateFromRaw}
+                    className="rounded-[14px] border border-[#dde1ee] bg-[#fafbff] px-3 py-2.5 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="dateTo" className="mb-1 block text-[9px] font-bold uppercase tracking-[0.18em] text-[#a3aac0]">To date</label>
+                  <input
+                    id="dateTo"
+                    type="date"
+                    name="dateTo"
+                    defaultValue={dateToRaw}
+                    className="rounded-[14px] border border-[#dde1ee] bg-[#fafbff] px-3 py-2.5 text-sm text-[#1b2345] outline-none transition focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10"
+                  />
+                </div>
+                {(dateFromRaw || dateToRaw) ? (
+                  <Link
+                    href={`/admin?status=${encodeURIComponent(activeStatus)}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""}`}
+                    className="mb-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#2f67de] transition hover:text-[#1b2345]"
+                  >
+                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                    Clear dates
+                  </Link>
+                ) : null}
+              </div>
             </form>
 
             {/* Compact Filter Pills */}
@@ -258,7 +317,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
               <div className="flex flex-wrap gap-1.5">
                 {STATUS_OPTIONS.map((status) => {
                   const isActive = activeStatus === status;
-                  const href = `/admin?status=${encodeURIComponent(status)}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""}`;
+                  const href = `/admin?status=${encodeURIComponent(status)}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""}${dateFromRaw ? `&dateFrom=${encodeURIComponent(dateFromRaw)}` : ""}${dateToRaw ? `&dateTo=${encodeURIComponent(dateToRaw)}` : ""}`;
                   const count = status === "ALL" ? totalCount : (countsByStatus[status] || 0);
                   return (
                     <Link
@@ -328,84 +387,11 @@ export default async function AdminPage({ searchParams }: PageProps) {
               <p className="mt-1 text-[12px] text-[#68708a]">Try adjusting your search or filter criteria.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-[#eef0f7] bg-[#fafbff]">
-                    {["Reference", "Applicant", "Contact", "Employment", "Vehicle", "Status", "Date", "Action"].map((h) => (
-                      <th key={h} className="px-3 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a]">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {applications.map((application: AdminApplicationRow, index: number) => (
-                    <tr
-                      key={application.id}
-                      className={`border-t border-[#eef0f7] align-top transition hover:bg-[#fafbff] ${index % 2 === 0 ? "bg-white" : "bg-[#fdfdff]"}`}
-                    >
-                      <td className="px-3 py-3">
-                        <span className="font-mono text-[12px] font-bold text-[#2f67de]">{application.referenceNumber}</span>
-                      </td>
-                      <td className="px-3 py-3">
-                        <p className="text-[13px] font-semibold text-[#1b2345]">{application.fullName}</p>
-                        <p className="mt-0.5 text-[11px] text-[#68708a]">{application.email}</p>
-                      </td>
-                      <td className="px-3 py-3">
-                        <p className="text-[12px] font-medium text-[#39425d]">{application.phone}</p>
-                        <p className="mt-0.5 text-[11px] text-[#68708a]">{formatIdentityType(application.identityType)} · {application.identityNumber || "—"}</p>
-                      </td>
-                      <td className="px-3 py-3">
-                        <p className="text-[12px] font-medium text-[#39425d]">{application.employmentStatus}</p>
-                        <p className="mt-0.5 text-[11px] text-[#68708a]">R {application.monthlyIncome}</p>
-                      </td>
-                      <td className="px-3 py-3 text-[12px] text-[#39425d]">{application.preferredVehicle}</td>
-                      <td className="whitespace-nowrap px-3 py-3">
-                        <span className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${getStatusBadge(application.status)}`}>
-                          {formatStatus(application.status)}
-                        </span>
-                        {application.status === "AWAITING_INVOICE" && !application.adminSeen ? (
-                          <span className="ml-2 inline-flex items-center gap-1.5 align-middle text-[10px] font-bold uppercase tracking-[0.12em] text-red-600">
-                            <span className="relative flex h-2 w-2">
-                              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
-                              <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
-                            </span>
-                            ! New
-                          </span>
-                        ) : null}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-3 text-[11px] text-[#68708a]">
-                        {priorityStatuses.includes(application.status) && statusTimestampMap[application.id] ? (
-                          <span className="text-fuchsia-300">
-                            <span className="block font-semibold">{new Date(statusTimestampMap[application.id]).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })}</span>
-                            <span className="block text-[10px]">{new Date(statusTimestampMap[application.id]).toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit" })}</span>
-                          </span>
-                        ) : (
-                          <span>
-                            <span className="block font-semibold">{new Date(application.createdAt).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })}</span>
-                            <span className="block text-[10px]">{new Date(application.createdAt).toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit" })}</span>
-                          </span>
-                        )}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-3">
-                        <Link
-                          href={`/admin/${application.id}`}
-                          className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[11px] font-bold text-white transition ${
-                            priorityStatuses.includes(application.status)
-                              ? application.adminSeen
-                                ? "bg-gradient-to-r from-[#4b5563] to-[#6b7280] hover:from-[#6b7280] hover:to-[#9ca3af]"
-                                : "bg-gradient-to-r from-[#1b2345] to-[#2a3563] hover:from-[#2a3563] hover:to-[#3b4a82]"
-                              : "bg-gradient-to-r from-[#1b2345] to-[#2a3563] hover:from-[#2a3563] hover:to-[#3b4a82]"
-                          }`}
-                        >
-                          {priorityStatuses.includes(application.status) && application.adminSeen ? "✓ Viewed" : "View"}
-                          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <AdminApplicationTable
+              applications={applications}
+              statusTimestampMap={statusTimestampMap}
+              priorityStatuses={priorityStatuses}
+            />
           )}
         </div>
       </div>
