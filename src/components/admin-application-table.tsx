@@ -148,6 +148,9 @@ export default function AdminApplicationTable({
     if (fail > 0) msg += ` · ${fail} failed`;
     if (missing > 0) msg += ` (endpoint not yet implemented)`;
     showToast({ kind: fail === 0 ? "success" : "error", message: msg });
+    if (ok > 0) {
+      window.setTimeout(() => window.location.reload(), 1500);
+    }
   }
 
   async function sendReminder() {
