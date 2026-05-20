@@ -242,10 +242,21 @@ function getStatusTemplate(status: string, note?: string | null) {
             </a>
             <p style="margin:12px 0 0; font-size:11px; color:rgba(255,255,255,0.45);">Opens in your browser — no app required</p>
           </div>
-          <div style="margin:0 0 24px; border:1px solid #dcfce7; background:#f0fdf4; border-radius:16px; padding:22px; text-align:center;">
-            <p style="margin:0 0 6px; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#16a34a; font-weight:700;">Contact your appointed sales consultant</p>
-            <p style="margin:0 0 14px; font-size:13px; line-height:1.7; color:#374151;">Your dedicated sales consultant is available to assist you in finalising this process — from vehicle selection to contract signing. Reach out via WhatsApp for prompt assistance.</p>
-            <a href="https://wa.me/27745462367" style="display:inline-block; background:#25d366; color:#ffffff; text-decoration:none; font-size:14px; font-weight:700; padding:12px 28px; border-radius:100px;">Chat on WhatsApp</a>
+          <div style="margin:0 0 24px; border:1px solid #e2e8f0; background:#ffffff; border-radius:16px; padding:24px; text-align:center; box-shadow:0 2px 12px rgba(15,23,42,0.06);">
+            <p style="margin:0 0 4px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#64748b; font-weight:700;">Your Dedicated Advisor</p>
+            <p style="margin:0 0 4px; font-size:18px; font-weight:700; color:#1b2345;">Caleb</p>
+            <p style="margin:0 0 16px; font-size:11px; color:#64748b; font-weight:500;">Auto Access Sales Consultant</p>
+            <div style="width:40px; height:2px; background:#c9973a; border-radius:2px; margin:0 auto 16px;"></div>
+            <p style="margin:0 0 20px; font-size:13px; line-height:1.7; color:#475569;">For the fastest assistance with your vehicle selection and next steps, contact Caleb directly. He is available to guide you through every step of the process.</p>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+              <a href="https://wa.me/27745462367" style="display:inline-flex; align-items:center; gap:8px; background:#25d366; color:#ffffff; text-decoration:none; font-size:13px; font-weight:700; padding:11px 24px; border-radius:100px;">
+                <span style="font-size:15px;">💬</span> WhatsApp: 074 546 2367
+              </a>
+              <a href="tel:0212110015" style="display:inline-flex; align-items:center; gap:8px; background:#1b2345; color:#ffffff; text-decoration:none; font-size:13px; font-weight:700; padding:11px 24px; border-radius:100px;">
+                <span style="font-size:15px;">📞</span> Call: 021 211 0015
+              </a>
+            </div>
+            <p style="margin:14px 0 0; font-size:11px; color:#94a3b8;">Available Monday – Friday · 8:00am – 5:00pm</p>
           </div>
           <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:22px;">
             <p style="margin:0 0 10px; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#f97316; font-weight:700;">

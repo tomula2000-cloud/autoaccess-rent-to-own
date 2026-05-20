@@ -378,7 +378,7 @@ export default async function AdminApplicationDetailPage({
   }
   const applicantUser = await prisma.user.findUnique({
     where: { id: (application as { applicantId: string }).applicantId },
-    select: { id: true, isBlocked: true },
+    select: { id: true },
   });
 
   // Mark application as seen by admin (non-blocking, fire-and-forget)

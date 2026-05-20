@@ -353,7 +353,7 @@ export async function POST(
         const firstName = existingApplication.fullName.split(" ")[0];
         await sendBulkSMS({
           to: existingApplication.phone,
-          message: `Dear ${firstName}, great news! Your Auto Access rent-to-own application (Ref: ${existingApplication.referenceNumber}) has been approved in principle. Log in to your portal at autoaccess.co.za/portal using your reference number and email to proceed. Need help? Speak to your appointed sales champion on WhatsApp: 074 546 2367.`,
+          message: `Dear ${firstName}, congratulations! Your Auto Access rent-to-own application (Ref: ${existingApplication.referenceNumber}) has been approved in principle. Vehicle offers selected for you are ready to view — log in now at autoaccess.co.za/portal. For a faster experience, contact your dedicated advisor Caleb directly on WhatsApp: 074 546 2367 or call 021 211 0015. We look forward to getting you behind the wheel.`,
         });
         console.log(`BulkSMS sent to ${existingApplication.fullName} for APPROVED_IN_PRINCIPLE`);
       } catch (smsError) {
