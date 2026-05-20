@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 import { sendStatusUpdateEmail } from "@/lib/email";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../../../auth";
@@ -335,16 +336,38 @@ export async function POST(
 
     // Send status update email (non-blocking)
     try {
-  await sendStatusUpdateEmail({
-    to: existingApplication.email,
-    fullName: existingApplication.fullName,
-    referenceNumber: existingApplication.referenceNumber,
-    status: newStatus,
-    note: note || null,
-  });
-} catch (emailError) {
-  console.error("Status email failed (non-blocking):", emailError);
-}
+      // Fetch available vehicles for APPROVED_IN_PRINCIPLE email
+      let availableVehicles: { title: string; featuredImage: string; monthlyPayment: string; yearModel: string; mileage: string; slug: string; }[] = [];
+      let magicLink: string | undefined;
+      if (newStatus === "APPROVED_IN_PRINCIPLE") {
+        availableVehicles = await prisma.vehicleOffer.findMany({
+          where: { status: "AVAILABLE" },
+          select: { title: true, featuredImage: true, monthlyPayment: true, yearModel: true, mileage: true, slug: true },
+          orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
+          take: 3,
+        });
+        // Generate magic link token valid for 7 days
+        const token = randomBytes(32).toString("hex");
+        const expiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        await prisma.application.update({
+          where: { id },
+          data: { portalToken: token, portalTokenExpiry: expiry },
+        });
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://autoaccess.co.za";
+        magicLink = `${baseUrl}/api/portal-magic?token=${token}`;
+      }
+      await sendStatusUpdateEmail({
+        to: existingApplication.email,
+        fullName: existingApplication.fullName,
+        referenceNumber: existingApplication.referenceNumber,
+        status: newStatus,
+        note: note || null,
+        vehicles: availableVehicles,
+        magicLink,
+      });
+    } catch (emailError) {
+      console.error("Status email failed (non-blocking):", emailError);
+    }
 
     // Send BulkSMS notification for APPROVED_IN_PRINCIPLE (non-blocking)
     if (newStatus === "APPROVED_IN_PRINCIPLE" && existingApplication.phone) {

@@ -14,6 +14,8 @@ type StatusUpdateEmailParams = {
   referenceNumber: string;
   status: string;
   note?: string | null;
+  vehicles?: { title: string; featuredImage: string; monthlyPayment: string; yearModel: string; mileage: string; slug: string; }[];
+  magicLink?: string;
 };
 
 function formatStatus(status: string) {
@@ -852,6 +854,8 @@ export async function sendStatusUpdateEmail({
   referenceNumber,
   status,
   note,
+  vehicles,
+  magicLink,
 }: StatusUpdateEmailParams) {
   if (!process.env.RESEND_API_KEY) {
     throw new Error("RESEND_API_KEY is not set.");
@@ -859,6 +863,33 @@ export async function sendStatusUpdateEmail({
 
   const portalUrl = getPortalUrl();
   const template = getStatusTemplate(status, note);
+
+  let vehicleGridHtml = "";
+  if (status === "APPROVED_IN_PRINCIPLE" && vehicles && vehicles.length > 0) {
+    const cards = vehicles.map(v =>
+      `<td width="33%" style="padding:0 6px 12px;vertical-align:top;">` +
+      `<a href="${magicLink || 'https://autoaccess.co.za/portal'}" style="display:block;text-decoration:none;border-radius:12px;overflow:hidden;background:#ffffff;">` +
+      `<div style="position:relative;width:100%;padding-top:66%;overflow:hidden;border-radius:12px 12px 0 0;">` +
+      `<img src="${v.featuredImage}" alt="${v.title}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;" />` +
+      `</div>` +
+      `<div style="padding:10px 12px 12px;background:#ffffff;">` +
+      `<p style="margin:0 0 2px;font-size:11px;font-weight:700;color:#1b2345;line-height:1.3;">${v.title}</p>` +
+      `<p style="margin:0 0 6px;font-size:10px;color:#94a3b8;">${v.yearModel} · ${v.mileage}</p>` +
+      `<p style="margin:0;font-size:12px;font-weight:700;color:#c9973a;">R ${v.monthlyPayment}/mo</p>` +
+      `</div></a></td>`
+    ).join("");
+    vehicleGridHtml =
+      `<div style="margin:28px 0;">` +
+      `<div style="background:#1b2345;border-radius:16px;padding:20px 20px 8px;">` +
+      `<p style="margin:0 0 4px;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#f4c89a;font-weight:700;">🚗 Vehicles Selected For You</p>` +
+      `<p style="margin:0 0 16px;font-size:12px;color:rgba(255,255,255,0.6);line-height:1.5;">Based on your approval — log in to your portal to view full details and make your selection.</p>` +
+      `<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>` +
+      `${cards}` +
+      `</tr></table>` +
+      `<div style="padding:16px 0 8px;text-align:center;">` +
+      `<a href="${magicLink || 'https://autoaccess.co.za/portal'}" style="display:inline-block;background:linear-gradient(135deg,#d59758,#e4ad72);color:#1b2345;text-decoration:none;font-size:12px;font-weight:700;padding:11px 28px;border-radius:100px;letter-spacing:0.05em;">View All Available Vehicles →</a>` +
+      `</div></div></div>`;
+  }
 
   return resend.emails.send({
     from: "Auto Access <noreply@autoaccess.co.za>",
@@ -870,8 +901,8 @@ export async function sendStatusUpdateEmail({
       heading: template.heading,
       motto: template.motto,
       intro: `Hello ${fullName}, ${template.intro}`,
-      detailHtml: template.detailHtml,
-      portalUrl,
+      detailHtml: template.detailHtml + vehicleGridHtml,
+      portalUrl: magicLink || portalUrl,
       to,
       referenceNumber,
     }),

@@ -96,6 +96,8 @@ model Application {
   proofOfPaymentSubmittedAt    DateTime?
   clientPaymentCompletedAt     DateTime?
   adminSeen                    Boolean           @default(true)
+  portalToken                  String?
+  portalTokenExpiry            DateTime?
   createdAt                    DateTime          @default(now())
   updatedAt                    DateTime          @updatedAt
   applicant                    User              @relation(fields: [applicantId], references: [id])
