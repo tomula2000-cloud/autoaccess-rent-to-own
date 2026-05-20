@@ -433,6 +433,28 @@ export default async function MobilePortalDashboardView() {
         </Link>
       ) : null}
 
+      {/* Caleb advisor card — only when approved in principle */}
+      {isApprovedInPrinciple ? (
+        <div className="mt-3 flex items-center gap-3 rounded-[14px] border border-[#e2e8f0] bg-white px-4 py-3 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#1b2345] to-[#2a3563] text-white text-[13px] font-bold">
+            C
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#64748b]">Your Dedicated Advisor</p>
+            <p className="mt-0.5 text-[13px] font-bold text-[#1b2345]">Caleb</p>
+            <p className="text-[10px] text-[#64748b]">Sales Consultant · Mon–Fri 8am–5pm</p>
+          </div>
+          <div className="flex shrink-0 flex-col gap-1.5">
+            <a href="https://wa.me/27745462367" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-full bg-[#25d366] px-2.5 py-1.5 text-[10px] font-bold text-white">
+              💬 WhatsApp
+            </a>
+            <a href="tel:0212110015" className="inline-flex items-center gap-1 rounded-full bg-[#1b2345] px-2.5 py-1.5 text-[10px] font-bold text-white">
+              📞 021 211 0015
+            </a>
+          </div>
+        </div>
+      ) : null}
+
       {/* ── APPROVED - SELECT VEHICLE ── */}
       {isApprovedInPrinciple ? (
         <PortalMobileSectionCard eyebrow="Action Required" title="Select your vehicle">

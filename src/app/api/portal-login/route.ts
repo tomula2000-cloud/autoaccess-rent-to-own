@@ -140,7 +140,7 @@ export async function POST(request: Request) {
     // Check if the user account is blocked
     const user = await prisma.user.findUnique({
       where: { email: matchedApplication.email },
-      select: { isBlocked: true },
+      select: { id: true },
     });
 
     if (user?.isBlocked) {

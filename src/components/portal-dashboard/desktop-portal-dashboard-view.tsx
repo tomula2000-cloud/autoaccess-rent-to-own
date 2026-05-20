@@ -653,6 +653,27 @@ export default async function ClientPortalPage() {
             </span>
           </Link>
         ) : null}
+        {/* Caleb advisor card — only when approved in principle */}
+        {isApprovedInPrinciple ? (
+          <div className="mt-4 flex items-center gap-4 rounded-[14px] border border-[#e2e8f0] bg-white px-5 py-4 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#1b2345] to-[#2a3563] text-white text-[15px] font-bold shadow-[0_6px_16px_-4px_rgba(27,35,69,0.4)]">
+              C
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748b]">Your Dedicated Advisor</p>
+              <p className="mt-0.5 text-[14px] font-bold text-[#1b2345]">Caleb</p>
+              <p className="text-[11px] text-[#64748b]">Auto Access Sales Consultant · Mon–Fri 8am–5pm</p>
+            </div>
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+              <a href="https://wa.me/27745462367" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-[#25d366] px-3 py-2 text-[11px] font-bold text-white transition hover:opacity-90">
+                💬 WhatsApp
+              </a>
+              <a href="tel:0212110015" className="inline-flex items-center gap-1.5 rounded-full bg-[#1b2345] px-3 py-2 text-[11px] font-bold text-white transition hover:opacity-90">
+                📞 021 211 0015
+              </a>
+            </div>
+          </div>
+        ) : null}
 
         <div className="mt-6 overflow-hidden rounded-[30px] border border-[#e1e4ee] bg-white/95 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.18)] backdrop-blur md:p-2">
           <div className="rounded-[26px] bg-white p-5 md:p-7">
