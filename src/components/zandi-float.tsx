@@ -52,6 +52,17 @@ export default function ZandiFloat() {
 
   const isPortal = pathname?.startsWith("/portal");
 
+  const portalStatus = typeof document !== "undefined"
+    ? document.cookie.split(";").find(c => c.trim().startsWith("autoaccess_portal_status="))?.split("=")[1] || ""
+    : "";
+
+  const APPROVED_STATUSES = [
+    "APPROVED_IN_PRINCIPLE","CONTRACT_REQUESTED","CONTRACT_ISSUED",
+    "AWAITING_INVOICE","INVOICE_ISSUED","AWAITING_PAYMENT",
+    "PAYMENT_UNDER_VERIFICATION","PAYMENT_VERIFIED","COMPLETED"
+  ];
+  const showCaleb = isPortal && APPROVED_STATUSES.includes(portalStatus);
+
   useEffect(() => {
     setMounted(true);
     if (isPortal) {
@@ -80,7 +91,7 @@ export default function ZandiFloat() {
   if (pathname?.startsWith("/admin")) return null;
 
   // ── CALEB PORTAL FLOAT ──
-  if (isPortal) {
+  if (showCaleb) {
     return (
       <div
         className="fixed bottom-6 right-4 z-[9999] flex flex-col items-end gap-2"

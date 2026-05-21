@@ -307,13 +307,91 @@ const PRINT_STYLES = `
 
 `;
 
+function SlideButton({ label, color, onConfirm, idPrefix }: { label: string; color: string; onConfirm: () => void; idPrefix: string }) {
+  const wrapId = idPrefix + "-slide-wrap";
+  const thumbId = idPrefix + "-slide-thumb";
+  const fillId = idPrefix + "-slide-fill";
+  const labelId = idPrefix + "-slide-label";
+
+  function handleStart(clientX: number) {
+    const wrap = document.getElementById(wrapId);
+    const thumb = document.getElementById(thumbId);
+    const fill = document.getElementById(fillId);
+    const lbl = document.getElementById(labelId);
+    if (!wrap || !thumb || !fill || !lbl) return;
+    const maxSlide = wrap.offsetWidth - 56;
+    const startX = clientX - (parseFloat(thumb.style.left) - 4);
+    const onMove = (ev: MouseEvent | TouchEvent) => {
+      const cx = "touches" in ev ? (ev as TouchEvent).touches[0].clientX : (ev as MouseEvent).clientX;
+      const pos = Math.max(0, Math.min(cx - startX, maxSlide));
+      thumb.style.left = (4 + pos) + "px";
+      fill.style.width = (56 + pos) + "px";
+      lbl.style.opacity = String(Math.max(0, 1 - (pos / maxSlide) * 2));
+      if (pos >= maxSlide - 2) {
+        fill.style.background = color;
+        thumb.style.background = color;
+        cleanup();
+        setTimeout(() => { onConfirm(); reset(); }, 300);
+      }
+    };
+    const onUp = () => { reset(); cleanup(); };
+    const cleanup = () => {
+      document.removeEventListener("mousemove", onMove as EventListener);
+      document.removeEventListener("mouseup", onUp);
+      document.removeEventListener("touchmove", onMove as EventListener);
+      document.removeEventListener("touchend", onUp);
+    };
+    const reset = () => {
+      if (!thumb || !fill || !lbl) return;
+      thumb.style.transition = "left 0.25s";
+      fill.style.transition = "width 0.25s, background 0.3s";
+      thumb.style.left = "4px"; fill.style.width = "56px";
+      fill.style.background = color + "66"; thumb.style.background = "#fff";
+      lbl.style.opacity = "1";
+      setTimeout(() => { thumb.style.transition = ""; fill.style.transition = "background 0.3s"; }, 250);
+    };
+    document.addEventListener("mousemove", onMove as EventListener);
+    document.addEventListener("mouseup", onUp);
+    document.addEventListener("touchmove", onMove as EventListener, {passive:false});
+    document.addEventListener("touchend", onUp);
+  }
+
+  return (
+    <div id={wrapId} style={{background:"#f4f6fb", height:"52px", borderRadius:"100px", position:"relative", overflow:"hidden", cursor:"pointer", userSelect:"none", border:`1.5px solid ${color}33`}}>
+      <div id={fillId} style={{position:"absolute", top:0, left:0, height:"100%", width:"52px", background:color+"66", borderRadius:"100px", transition:"background 0.3s"}}></div>
+      <div id={thumbId} style={{position:"absolute", top:"4px", left:"4px", width:"44px", height:"44px", background:"#fff", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(0,0,0,0.1)", cursor:"grab", zIndex:2, border:`1.5px solid ${color}44`}}
+        onMouseDown={(e) => handleStart(e.clientX)}
+        onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </div>
+      <div id={labelId} style={{position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", paddingLeft:"58px", paddingRight:"12px", pointerEvents:"none"}}>
+        <span style={{color:color, fontSize:"12px", fontWeight:600}}>{label}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function ContractReviewModal({ contract }: ContractReviewModalProps) {
   const [open, setOpen] = useState(false);
   const [showSignPad, setShowSignPad] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmStep, setConfirmStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signError, setSignError] = useState<string | null>(null);
   const [hasSigned, setHasSigned] = useState(contract.contractAccepted ?? false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [flowStage, setFlowStage] = useState<"idle"|"signing"|"banking"|"processing"|"success">("idle");
+  const [bankError, setBankError] = useState<string | null>(null);
+  const [bankData, setBankData] = useState({
+    clientBankName: "",
+    clientAccountHolder: "",
+    clientAccountNumber: "",
+    clientAccountType: "",
+    clientBranchCode: "",
+  });
   const printRef = useRef<HTMLDivElement>(null);
   const sigPadRef = useRef<SignatureCanvas | null>(null);
   const router = useRouter();
@@ -331,6 +409,8 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
     }
     setIsSubmitting(true);
     setSignError(null);
+    setFlowStage("signing");
+    setShowSignPad(false);
     try {
       const dataUrl = sigPadRef.current.toDataURL("image/png");
       const res = await fetch(`/api/applications/${contract.id}/sign`, {
@@ -345,18 +425,48 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
         const err = await res.json().catch(() => ({ error: "Failed to submit" }));
         throw new Error(err.error || "Failed to submit signature");
       }
-      setHasSigned(true);
-      setShowSignPad(false);
-      setOpen(false);
-      setShowSuccessToast(true);
-      router.refresh();
-      setTimeout(() => setShowSuccessToast(false), 6000);
-    } catch (err: any) {
-      setSignError(err.message || "Something went wrong. Please try again.");
-    } finally {
+      // Show signing animation for 3 seconds then show banking form
+      setTimeout(() => {
+        setFlowStage("banking");
+        setIsSubmitting(false);
+      }, 3000);
+    } catch (err: unknown) {
+      setSignError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setFlowStage("idle");
+      setShowSignPad(true);
       setIsSubmitting(false);
     }
   }, [contract.id, contract.contractClientFullName, router]);
+
+  const submitBanking = useCallback(async () => {
+    const { clientBankName, clientAccountHolder, clientAccountNumber, clientAccountType, clientBranchCode } = bankData;
+    if (!clientBankName || !clientAccountHolder || !clientAccountNumber || !clientAccountType || !clientBranchCode) {
+      setBankError("Please complete all banking fields before continuing.");
+      return;
+    }
+    setIsSubmitting(true);
+    setBankError(null);
+    try {
+      const res = await fetch("/api/portal/sign-and-bank", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bankData),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Failed to submit" }));
+        throw new Error(err.error || "Failed to submit banking details");
+      }
+      setFlowStage("processing");
+      setTimeout(() => {
+        setFlowStage("success");
+        setTimeout(() => router.refresh(), 3000);
+      }, 3000);
+    } catch (err: unknown) {
+      setBankError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [bankData, router]);
 
 
   useEffect(() => {
@@ -696,7 +806,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
                         ✓ Signed — Close
                       </button>
                     ) : (
-                      <button type="button" onClick={() => setShowSignPad(true)} className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#c37d43] px-8 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(213,151,88,0.55)] transition hover:from-[#c37d43] hover:to-[#b86e35]">
+                      <button type="button" onClick={() => { setShowConfirm(true); setConfirmStep(0); }} className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#c37d43] px-8 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(213,151,88,0.55)] transition hover:from-[#c37d43] hover:to-[#b86e35]">
                         <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 19l7-7 3 3-7 7-3-3z" />
                           <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
@@ -710,6 +820,152 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
                 </div>
               </div>
 
+            </div>
+          </div>
+        </PortalLayer>
+      ) : null}
+      {showConfirm ? (
+        <PortalLayer>
+          <div className="fixed inset-0 z-[9999999] flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center p-4">
+            <div className="w-full max-w-[480px] rounded-3xl bg-white p-6 shadow-2xl">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">Before you sign — {confirmStep + 1} of 4</p>
+                  <h3 className="text-base font-semibold text-[#1b2345]">Please confirm you understand</h3>
+                </div>
+                <button type="button" onClick={() => setShowConfirm(false)} className="rounded-full p-1 text-[#68708a] hover:bg-[#f4f6fb]" aria-label="Close">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <div className="flex gap-1.5 mb-5">
+                {[0,1,2,3].map(i => (
+                  <div key={i} className={"h-1 flex-1 rounded-full transition-all " + (i < confirmStep ? "bg-[#1b2345]" : i === confirmStep ? "bg-[#d59758]" : "bg-[#e1e4ee]")} />
+                ))}
+              </div>
+              {confirmStep === 0 && (
+                <div className="rounded-[16px] border border-[#e1e4ee] bg-[#fafbff] p-4 mb-4">
+                  <p className="text-[13px] leading-6 text-[#39425d]">I have read and understood the full Vehicle Rental Agreement issued to me.</p>
+                </div>
+              )}
+              {confirmStep === 1 && (
+                <div className="rounded-[16px] border border-[#e1e4ee] bg-[#fafbff] p-4 mb-4">
+                  <p className="text-[13px] leading-6 text-[#39425d]">I understand that once I sign, my selected vehicle will be <strong className="text-[#1b2345] font-semibold">reserved exclusively for me</strong> and removed from available inventory for all other clients.</p>
+                </div>
+              )}
+              {confirmStep === 2 && (
+                <div className="rounded-[16px] border border-amber-200 bg-amber-50 p-4 mb-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-700 mb-2">Important commitment</p>
+                  <p className="text-[13px] leading-6 text-[#39425d]">I understand that I have <strong className="text-[#1b2345] font-semibold">24 hours to complete payment</strong> after my invoice is released. Failure to pay will result in <strong className="text-[#1b2345] font-semibold">automatic cancellation</strong> of my contract.</p>
+                  <p className="mt-2 text-[12px] leading-5 text-[#68708a]">Your application remains valid for 12 days — there is no rush if you need more time.</p>
+                </div>
+              )}
+              {confirmStep === 3 && (
+                <div className="rounded-[16px] border border-[#e1e4ee] bg-[#fafbff] p-4 mb-4">
+                  <p className="text-[13px] leading-6 text-[#39425d]">I confirm that my personal details and vehicle selection on record are correct and accurately reflect my application.</p>
+                </div>
+              )}
+              <div className="space-y-2">
+                <div
+                  style={{background:"#1b2345", height:"56px", borderRadius:"100px", position:"relative", overflow:"hidden", cursor:"pointer", userSelect:"none"}}
+                  id="confirm-slider-wrap"
+                >
+                  <div id="confirm-slider-fill" style={{position:"absolute", top:0, left:0, height:"100%", width:"56px", background:"#d59758", borderRadius:"100px", transition:"background 0.3s"}}></div>
+                  <div id="confirm-slider-thumb" style={{position:"absolute", top:"4px", left:"4px", width:"48px", height:"48px", background:"#fff", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(0,0,0,0.2)", cursor:"grab", zIndex:2}}
+                    onMouseDown={(e) => {
+                      const wrap = document.getElementById("confirm-slider-wrap");
+                      const thumb = document.getElementById("confirm-slider-thumb");
+                      const fill = document.getElementById("confirm-slider-fill");
+                      const label = document.getElementById("confirm-slider-label");
+                      if (!wrap || !thumb || !fill || !label) return;
+                      const maxSlide = wrap.offsetWidth - 56;
+                      const startX = e.clientX - (parseFloat(thumb.style.left) - 4);
+                      const onMove = (ev: MouseEvent) => {
+                        const pos = Math.max(0, Math.min(ev.clientX - startX, maxSlide));
+                        thumb.style.left = (4 + pos) + "px";
+                        fill.style.width = (56 + pos) + "px";
+                        label.style.opacity = String(Math.max(0, 1 - (pos / maxSlide) * 2));
+                        if (pos >= maxSlide - 2) {
+                          fill.style.background = "#22c55e";
+                          thumb.style.background = "#22c55e";
+                          document.removeEventListener("mousemove", onMove);
+                          document.removeEventListener("mouseup", onUp);
+                          setTimeout(() => {
+                            if (confirmStep < 3) { setConfirmStep(s => s + 1); }
+                            else { setShowConfirm(false); setShowSignPad(true); }
+                            thumb.style.left = "4px"; fill.style.width = "56px";
+                            fill.style.background = "#d59758"; thumb.style.background = "#fff";
+                            label.style.opacity = "1";
+                          }, 300);
+                        }
+                      };
+                      const onUp = () => {
+                        thumb.style.transition = "left 0.25s"; fill.style.transition = "width 0.25s";
+                        thumb.style.left = "4px"; fill.style.width = "56px"; label.style.opacity = "1";
+                        document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp);
+                        setTimeout(() => { thumb.style.transition = ""; fill.style.transition = "background 0.3s"; }, 250);
+                      };
+                      document.addEventListener("mousemove", onMove);
+                      document.addEventListener("mouseup", onUp);
+                    }}
+                    onTouchStart={(e) => {
+                      const wrap = document.getElementById("confirm-slider-wrap");
+                      const thumb = document.getElementById("confirm-slider-thumb");
+                      const fill = document.getElementById("confirm-slider-fill");
+                      const label = document.getElementById("confirm-slider-label");
+                      if (!wrap || !thumb || !fill || !label) return;
+                      const maxSlide = wrap.offsetWidth - 56;
+                      const startX = e.touches[0].clientX - (parseFloat(thumb.style.left) - 4);
+                      const onMove = (ev: TouchEvent) => {
+                        ev.preventDefault();
+                        const pos = Math.max(0, Math.min(ev.touches[0].clientX - startX, maxSlide));
+                        thumb.style.left = (4 + pos) + "px";
+                        fill.style.width = (56 + pos) + "px";
+                        label.style.opacity = String(Math.max(0, 1 - (pos / maxSlide) * 2));
+                        if (pos >= maxSlide - 2) {
+                          fill.style.background = "#22c55e";
+                          thumb.style.background = "#22c55e";
+                          document.removeEventListener("touchmove", onMove);
+                          document.removeEventListener("touchend", onUp);
+                          setTimeout(() => {
+                            if (confirmStep < 3) { setConfirmStep(s => s + 1); }
+                            else { setShowConfirm(false); setShowSignPad(true); }
+                            thumb.style.left = "4px"; fill.style.width = "56px";
+                            fill.style.background = "#d59758"; thumb.style.background = "#fff";
+                            label.style.opacity = "1";
+                          }, 300);
+                        }
+                      };
+                      const onUp = () => {
+                        thumb.style.transition = "left 0.25s"; fill.style.transition = "width 0.25s";
+                        thumb.style.left = "4px"; fill.style.width = "56px"; label.style.opacity = "1";
+                        document.removeEventListener("touchmove", onMove); document.removeEventListener("touchend", onUp);
+                        setTimeout(() => { thumb.style.transition = ""; fill.style.transition = "background 0.3s"; }, 250);
+                      };
+                      document.addEventListener("touchmove", onMove, {passive:false});
+                      document.addEventListener("touchend", onUp);
+                    }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d59758" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                  </div>
+                  <div id="confirm-slider-label" style={{position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", paddingLeft:"64px", paddingRight:"16px", pointerEvents:"none"}}>
+                    <span style={{color:"rgba(255,255,255,0.55)", fontSize:"13px", fontWeight:500}}>
+                      {confirmStep < 3 ? "Slide to confirm & continue" : "Slide to confirm & sign"}
+                    </span>
+                  </div>
+                </div>
+                <a
+                  href="https://wa.me/27745462367?text=Hi%20Caleb%2C%20I%20have%20received%20my%20Auto%20Access%20contract%20and%20would%20like%20to%20speak%20to%20you%20before%20I%20sign."
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-full border border-[#25d366] bg-white px-6 py-3 text-sm font-semibold text-[#1a7a43] transition hover:bg-[#f0fdf4]"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.878-1.42A9.945 9.945 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+                  I prefer to speak to Caleb first
+                </a>
+                <button type="button" onClick={() => setShowConfirm(false)} className="group flex w-full items-center justify-center gap-2 rounded-full border-2 border-red-200 bg-red-50 px-6 py-3 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-100 animate-[pulse_3s_ease-in-out_infinite]"><svg className="h-4 w-4 transition group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>I prefer to wait — I'm not ready yet</button>
+              </div>
             </div>
           </div>
         </PortalLayer>
@@ -792,6 +1048,251 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
               to { opacity: 1; transform: translate(-50%, 0); }
             }
           `}</style>
+        </PortalLayer>
+      ) : null}
+
+      {flowStage === "signing" ? (
+        <PortalLayer>
+          <div className="fixed inset-0 z-[9999999] flex items-center justify-center bg-[#0b1532]/95 backdrop-blur-sm">
+            <style>{`
+              @keyframes spinRing { to { transform: rotate(360deg); } }
+              @keyframes fadeUpIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+            `}</style>
+            <div className="flex flex-col items-center gap-6 text-center px-8">
+              <div className="relative h-20 w-20">
+                <div className="absolute inset-0 rounded-full border-4 border-white/10" />
+                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#d59758]" style={{animation:"spinRing 1s linear infinite"}} />
+                <div className="absolute inset-3 rounded-full bg-[#d59758]/10 flex items-center justify-center">
+                  <svg className="h-7 w-7 text-[#d59758]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                  </svg>
+                </div>
+              </div>
+              <div style={{animation:"fadeUpIn 0.5s ease 0.2s both"}}>
+                <p className="text-xl font-semibold text-white">Signing your contract</p>
+                <p className="mt-2 text-[13px] text-blue-100/60">Please wait while we securely record your signature...</p>
+              </div>
+            </div>
+          </div>
+        </PortalLayer>
+      ) : null}
+
+      {flowStage === "banking" ? (
+        <PortalLayer>
+          <div className="fixed inset-0 z-[9999999] flex items-end justify-center bg-[#0b1532]/90 backdrop-blur-sm sm:items-center p-4">
+            <style>{`@keyframes slideUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }`}</style>
+            <div className="w-full max-w-[520px] rounded-3xl bg-white shadow-2xl overflow-hidden" style={{animation:"slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1)", maxHeight:"90vh", overflowY:"auto"}}>
+              <div className="bg-gradient-to-r from-[#0b1532] to-[#1b2345] px-6 py-5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#d59758]/20">
+                    <svg className="h-5 w-5 text-[#d59758]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f4c89a]">One more step</p>
+                    <h3 className="text-[1rem] font-semibold text-white">Enter your payment banking details</h3>
+                  </div>
+                </div>
+                <p className="mt-3 text-[12px] leading-5 text-blue-100/60">Please provide the bank account you will use to make your deposit payment.</p>
+              </div>
+              <div className="p-6 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2">
+                    <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a] mb-1.5">Bank Name</label>
+                    <select value={bankData.clientBankName} onChange={e => setBankData(p => ({...p, clientBankName: e.target.value}))} className="w-full rounded-[10px] border border-[#dbe0ed] bg-[#fafbff] px-3 py-2.5 text-sm text-[#1b2345] outline-none focus:border-[#d59758] focus:ring-2 focus:ring-[#d59758]/20">
+                      <option value="">Select your bank</option>
+                      <option>ABSA</option>
+                      <option>Capitec Bank</option>
+                      <option>First National Bank (FNB)</option>
+                      <option>Nedbank</option>
+                      <option>Standard Bank</option>
+                      <option>African Bank</option>
+                      <option>Investec</option>
+                      <option>TymeBank</option>
+                      <option>Discovery Bank</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a] mb-1.5">Account Holder Name</label>
+                    <input type="text" placeholder="Full name as on bank account" value={bankData.clientAccountHolder} onChange={e => setBankData(p => ({...p, clientAccountHolder: e.target.value}))} className="w-full rounded-[10px] border border-[#dbe0ed] bg-[#fafbff] px-3 py-2.5 text-sm text-[#1b2345] outline-none focus:border-[#d59758] focus:ring-2 focus:ring-[#d59758]/20" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a] mb-1.5">Account Number</label>
+                    <input type="text" placeholder="Account number" value={bankData.clientAccountNumber} onChange={e => setBankData(p => ({...p, clientAccountNumber: e.target.value}))} className="w-full rounded-[10px] border border-[#dbe0ed] bg-[#fafbff] px-3 py-2.5 text-sm text-[#1b2345] outline-none focus:border-[#d59758] focus:ring-2 focus:ring-[#d59758]/20" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a] mb-1.5">Branch Code</label>
+                    <input type="text" placeholder="e.g. 632005" value={bankData.clientBranchCode} onChange={e => setBankData(p => ({...p, clientBranchCode: e.target.value}))} className="w-full rounded-[10px] border border-[#dbe0ed] bg-[#fafbff] px-3 py-2.5 text-sm text-[#1b2345] outline-none focus:border-[#d59758] focus:ring-2 focus:ring-[#d59758]/20" />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#68708a] mb-1.5">Account Type</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {["Cheque","Savings","Current"].map(t => (
+                        <button key={t} type="button" onClick={() => setBankData(p => ({...p, clientAccountType: t}))} className={"rounded-[10px] border py-2.5 text-[12px] font-semibold transition " + (bankData.clientAccountType === t ? "border-[#1b2345] bg-[#1b2345] text-white" : "border-[#dbe0ed] bg-white text-[#39425d] hover:border-[#d59758]")}>
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                {bankError && <div className="rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{bankError}</div>}
+                {bankError && <div className="rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700 mt-1">{bankError}</div>}
+                <div className="mt-3 rounded-[100px] overflow-hidden" style={{background:"rgba(255,255,255,0.08)", height:"56px", position:"relative", cursor:"pointer", userSelect:"none"}}
+                  id="bank-slider-wrap"
+                >
+                  <div id="bank-slider-fill" style={{position:"absolute", top:0, left:0, height:"100%", width:"56px", background:"#d59758", borderRadius:"100px", transition:"background 0.3s"}}></div>
+                  <div id="bank-slider-thumb" style={{position:"absolute", top:"4px", left:"4px", width:"48px", height:"48px", background:"#fff", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(0,0,0,0.2)", cursor:"grab", zIndex:2}}
+                    onMouseDown={(e) => {
+                      if (isSubmitting) return;
+                      const wrap = document.getElementById("bank-slider-wrap");
+                      const thumb = document.getElementById("bank-slider-thumb");
+                      const fill = document.getElementById("bank-slider-fill");
+                      const label = document.getElementById("bank-slider-label");
+                      if (!wrap || !thumb || !fill || !label) return;
+                      const maxSlide = wrap.offsetWidth - 56;
+                      let startX = e.clientX - (parseFloat(thumb.style.left) - 4);
+                      const onMove = (ev: MouseEvent) => {
+                        const pos = Math.max(0, Math.min(ev.clientX - startX, maxSlide));
+                        thumb.style.left = (4 + pos) + "px";
+                        fill.style.width = (56 + pos) + "px";
+                        label.style.opacity = String(Math.max(0, 1 - (pos / maxSlide) * 2));
+                        if (pos >= maxSlide - 2) {
+                          fill.style.background = "#22c55e";
+                          thumb.style.background = "#22c55e";
+                          label.style.opacity = "0";
+                          document.removeEventListener("mousemove", onMove);
+                          document.removeEventListener("mouseup", onUp);
+                          setTimeout(() => submitBanking(), 200);
+                        }
+                      };
+                      const onUp = () => {
+                        thumb.style.transition = "left 0.25s";
+                        fill.style.transition = "width 0.25s";
+                        thumb.style.left = "4px";
+                        fill.style.width = "56px";
+                        label.style.opacity = "1";
+                        document.removeEventListener("mousemove", onMove);
+                        document.removeEventListener("mouseup", onUp);
+                        setTimeout(() => { thumb.style.transition = ""; fill.style.transition = "background 0.3s"; }, 250);
+                      };
+                      document.addEventListener("mousemove", onMove);
+                      document.addEventListener("mouseup", onUp);
+                    }}
+                    onTouchStart={(e) => {
+                      if (isSubmitting) return;
+                      const wrap = document.getElementById("bank-slider-wrap");
+                      const thumb = document.getElementById("bank-slider-thumb");
+                      const fill = document.getElementById("bank-slider-fill");
+                      const label = document.getElementById("bank-slider-label");
+                      if (!wrap || !thumb || !fill || !label) return;
+                      const maxSlide = wrap.offsetWidth - 56;
+                      let startX = e.touches[0].clientX - (parseFloat(thumb.style.left) - 4);
+                      const onMove = (ev: TouchEvent) => {
+                        ev.preventDefault();
+                        const pos = Math.max(0, Math.min(ev.touches[0].clientX - startX, maxSlide));
+                        thumb.style.left = (4 + pos) + "px";
+                        fill.style.width = (56 + pos) + "px";
+                        label.style.opacity = String(Math.max(0, 1 - (pos / maxSlide) * 2));
+                        if (pos >= maxSlide - 2) {
+                          fill.style.background = "#22c55e";
+                          thumb.style.background = "#22c55e";
+                          label.style.opacity = "0";
+                          document.removeEventListener("touchmove", onMove);
+                          document.removeEventListener("touchend", onUp);
+                          setTimeout(() => submitBanking(), 200);
+                        }
+                      };
+                      const onUp = () => {
+                        thumb.style.transition = "left 0.25s";
+                        fill.style.transition = "width 0.25s";
+                        thumb.style.left = "4px";
+                        fill.style.width = "56px";
+                        label.style.opacity = "1";
+                        document.removeEventListener("touchmove", onMove);
+                        document.removeEventListener("touchend", onUp);
+                        setTimeout(() => { thumb.style.transition = ""; fill.style.transition = "background 0.3s"; }, 250);
+                      };
+                      document.addEventListener("touchmove", onMove, {passive:false});
+                      document.addEventListener("touchend", onUp);
+                    }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d59758" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                  </div>
+                  <div id="bank-slider-label" style={{position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", paddingLeft:"64px", paddingRight:"16px", pointerEvents:"none"}}>
+                    <span style={{color:"rgba(255,255,255,0.6)", fontSize:"13px", fontWeight:500}}>
+                      {isSubmitting ? "Processing..." : "Slide to confirm & complete"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </PortalLayer>
+      ) : null}
+
+      {flowStage === "processing" ? (
+        <PortalLayer>
+          <div className="fixed inset-0 z-[9999999] flex items-center justify-center bg-[#0b1532]/95 backdrop-blur-sm">
+            <style>{`
+              @keyframes spinRing2 { to { transform: rotate(360deg); } }
+              @keyframes fadeUp2 { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+              @keyframes dotPulse { 0%,80%,100% { transform:scale(0.6); opacity:0.4; } 40% { transform:scale(1); opacity:1; } }
+            `}</style>
+            <div className="flex flex-col items-center gap-6 text-center px-8">
+              <div className="relative h-20 w-20">
+                <div className="absolute inset-0 rounded-full border-4 border-white/10" />
+                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-emerald-400" style={{animation:"spinRing2 1s linear infinite"}} />
+                <div className="absolute inset-3 rounded-full bg-emerald-400/10 flex items-center justify-center">
+                  <svg className="h-7 w-7 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+                  </svg>
+                </div>
+              </div>
+              <div style={{animation:"fadeUp2 0.5s ease 0.2s both"}}>
+                <p className="text-xl font-semibold text-white">Securing your details</p>
+                <p className="mt-2 text-[13px] text-blue-100/60">Please wait while we process your banking information...</p>
+              </div>
+              <div className="flex gap-2">
+                {[0,1,2].map(i => (
+                  <div key={i} className="h-2 w-2 rounded-full bg-emerald-400" style={{animation:`dotPulse 1.4s ease-in-out ${i*0.16}s infinite`}} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </PortalLayer>
+      ) : null}
+
+      {flowStage === "success" ? (
+        <PortalLayer>
+          <div className="fixed inset-0 z-[9999999] flex items-center justify-center bg-[#0b1532]/95 backdrop-blur-sm">
+            <style>{`
+              @keyframes scaleIn { from { opacity:0; transform:scale(0.5); } to { opacity:1; transform:scale(1); } }
+              @keyframes checkDraw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+              @keyframes ringPulse { 0%,100% { transform:scale(1); opacity:0.6; } 50% { transform:scale(1.3); opacity:0; } }
+            `}</style>
+            <div className="flex flex-col items-center gap-5 text-center px-8">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full bg-emerald-400/20" style={{animation:"ringPulse 2s ease infinite"}} />
+                <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-emerald-500" style={{animation:"scaleIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both"}}>
+                  <svg className="h-12 w-12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray:100,strokeDashoffset:0,animation:"checkDraw 0.6s ease 0.7s both"}}>
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">Contract Signed Digitally</p>
+                <p className="mt-2 text-[13px] text-blue-100/70">Your banking details have been recorded.</p>
+                <p className="mt-1 text-[13px] text-blue-100/70">Your invoice will be issued by our team shortly.</p>
+              </div>
+              <div className="rounded-full border border-[#d59758]/30 bg-[#d59758]/10 px-5 py-2">
+                <p className="text-[12px] font-semibold text-[#f4c89a]">Application status: Awaiting Invoice</p>
+              </div>
+            </div>
+          </div>
         </PortalLayer>
       ) : null}
 

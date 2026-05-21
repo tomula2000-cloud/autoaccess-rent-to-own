@@ -5,6 +5,8 @@ import Link from "next/link";
 import ApprovalCountdownCard from "@/components/approval-countdown-card";
 import PortalApplicationProgressCard from "@/components/portal-application-progress-card";
 import ContractReviewModal from "@/components/contract-review-modal";
+import ContractSignFlow from "@/components/contract-sign-flow";
+import PaymentCountdownCard from "@/components/payment-countdown-card";
 import InvoiceDownloadButton from "@/components/invoice-download-button";
 import ProofOfPaymentUpload from "@/components/proof-of-payment-upload";
 import PortalMobileShell from "@/components/portal-mobile/portal-mobile-shell";
@@ -327,6 +329,9 @@ export default async function MobilePortalDashboardView() {
     contractIssuedAt: application.contractIssuedAt,
   };
 
+  const contractExpiresAtIso = application.contractExpiresAt
+    ? new Date(application.contractExpiresAt).toISOString()
+    : null;
   const countdownText = (isContractIssued || isAwaitingInvoice || isInvoiceIssued || isAwaitingPayment || isPaymentUnderVerification)
     ? getCompactCountdown(application.contractExpiresAt)
     : getCompactCountdown(application.approvalValidUntil);
@@ -335,6 +340,74 @@ export default async function MobilePortalDashboardView() {
   const showAnimatedCard = isDocsSubmitted || isDocsUnderReview || isAdditionalDocs;
   const acceptedAtText = formatCompactDateTime(application.contractAcceptedAt);
   const contractIssuedAtText = formatCompactDateTime(application.contractIssuedAt);
+
+  // CONTRACT ISSUED — clean focused mobile signing page
+  if (isContractIssued) {
+    return (
+      <PortalMobileShell>
+        <div className="space-y-3 pb-8">
+          {/* Minimal header */}
+          <div className="flex items-center justify-between px-1 pt-2">
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#68708a]">Auto Access · Portal</p>
+              <p className="mt-0.5 text-[14px] font-semibold text-[#1b2345]">Contract Ready to Sign</p>
+            </div>
+            <div className="rounded-full border border-[#e1e4ee] bg-white px-2.5 py-1 shadow-sm">
+              <p className="font-mono text-[10px] font-bold text-[#2f67de]">{application.referenceNumber}</p>
+            </div>
+          </div>
+          {/* Countdown */}
+          {contractExpiresAtIso ? (
+            <ApprovalCountdownCard approvalValidUntil={contractExpiresAtIso} mode="contract" />
+          ) : null}
+          {/* Caleb advisor */}
+          <div className="flex items-center gap-3 rounded-[14px] border border-[#e2e8f0] bg-white px-3.5 py-3 shadow-[0_2px_6px_rgba(15,23,42,0.06)]">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#1b2345] to-[#2a3563] text-white text-[13px] font-bold">C</div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#64748b]">Your Advisor</p>
+              <p className="mt-0.5 text-[12px] font-bold text-[#1b2345]">Caleb — Sales Consultant</p>
+            </div>
+            <div className="flex shrink-0 flex-col gap-1.5">
+              <a href="https://wa.me/27745462367" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-full bg-[#25d366] px-2.5 py-1.5 text-[10px] font-bold text-white">💬 WhatsApp</a>
+              <a href="tel:0212110015" className="inline-flex items-center gap-1 rounded-full bg-[#1b2345] px-2.5 py-1.5 text-[10px] font-bold text-white">📞 021 211 0015</a>
+            </div>
+          </div>
+          {/* Contract sign flow */}
+          {!isContractAccepted ? (
+            <ContractSignFlow
+              contract={contractDataForModal}
+              depositNum={contractDepositNum}
+              licensingNum={contractLicensingNum}
+              totalNowNum={contractTotalNowNum}
+              monthlyNum={contractMonthlyNum}
+            />
+          ) : (
+            <div className="overflow-hidden rounded-[20px] border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-green-50">
+              <div className="border-b border-emerald-100 bg-gradient-to-r from-[#0a3b2a] to-[#0f5239] px-4 py-3.5">
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-emerald-200">Contract Signed</p>
+                <h2 className="text-[1rem] font-semibold text-white">Digital Acceptance Recorded</h2>
+              </div>
+              <div className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white">
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-semibold text-emerald-900">Contract signed successfully.</p>
+                    <p className="mt-1 text-[12px] leading-5 text-[#4d546a]">Your signature has been recorded. Awaiting invoice release.</p>
+                    {application.contractAcceptedName ? <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700">Signed by <span className="font-mono normal-case tracking-normal text-[#1b2345]">{application.contractAcceptedName}</span></p> : null}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <p className="text-center text-[11px] text-[#a3aac0] pt-2">
+            Need help? <a href="https://wa.me/27745462367" className="text-[#25d366] font-semibold">Chat with Caleb</a>
+          </p>
+        </div>
+      </PortalMobileShell>
+    );
+  }
 
   return (
     <PortalMobileShell>
@@ -560,11 +633,22 @@ export default async function MobilePortalDashboardView() {
                       <input type="checkbox" name="confirmedDetails" value="yes" required className="mt-0.5 h-4 w-4 accent-[#2f67de]" />
                       <span className="text-[12px] leading-5 text-[#39425d]">I confirm that all my personal and financial details in this contract are correct.</span>
                     </label>
+                    <div className="rounded-[12px] border-2 border-red-300 bg-red-50 p-3">
+                      <div className="flex items-start gap-2.5">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-red-700">⚠️ Inventory Block Warning</p>
+                          <p className="mt-1 text-[11.5px] leading-5 text-red-800">Once you sign, your selected vehicle will be <strong>immediately reserved and blocked</strong> for all other clients. Only proceed if you are fully committed and ready to complete payment.</p>
+                        </div>
+                      </div>
+                    </div>
                     <button
                       type="submit"
                       className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-5 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_-8px_rgba(213,151,88,0.5)]"
                     >
-                      Confirm & Accept Contract
+                      Sign Contract &amp; Request Invoice Now
                     </button>
                   </form>
                 </div>
@@ -593,6 +677,9 @@ export default async function MobilePortalDashboardView() {
       {isAwaitingInvoice ? (
         <PortalMobileSectionCard eyebrow="Invoice Stage" title="Awaiting invoice release">
           <div className="space-y-2">
+            {application.contractAcceptedAt ? (
+              <PaymentCountdownCard contractAcceptedAt={new Date(application.contractAcceptedAt).toISOString()} />
+            ) : null}
             <div className="rounded-[14px] border border-emerald-200 bg-emerald-50/70 px-3.5 py-3">
               <div className="flex items-center gap-2">
                 <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-500" />

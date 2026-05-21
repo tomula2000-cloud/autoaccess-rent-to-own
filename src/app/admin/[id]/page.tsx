@@ -9,6 +9,7 @@ import PrepareInvoiceForm from "@/components/prepare-invoice-form";
 import AdminStatusForm from "@/components/admin-status-form";
 import AdminApprovalValidityForm from "@/components/admin-approval-validity-form";
 import AdminEditApplicationForm from "@/components/admin-edit-application-form";
+import AdminContractView from "@/components/admin-contract-view";
 
 type PageProps = {
   params: Promise<{
@@ -420,6 +421,48 @@ export default async function AdminApplicationDetailPage({
     !!application.contractVehicleTitle ||
     !!application.contractDepositAmount ||
     !!application.contractTerms;
+
+  // CONTRACT FOCUSED VIEW
+  if (application.status === "CONTRACT_ISSUED" || application.status === "AWAITING_INVOICE") {
+    return (
+      <AdminContractView
+        application={{
+          id: application.id,
+          fullName: application.fullName,
+          email: application.email,
+          phone: application.phone,
+          referenceNumber: application.referenceNumber,
+          status: application.status,
+          createdAt: application.createdAt,
+          contractAccepted: application.contractAccepted,
+          contractAcceptedAt: application.contractAcceptedAt,
+          contractAcceptedName: application.contractAcceptedName,
+          contractIssuedAt: application.contractIssuedAt,
+          contractExpiresAt: application.contractExpiresAt,
+          contractSignatureImage: application.contractSignatureImage,
+          contractVehicleTitle: application.contractVehicleTitle,
+          contractVehicleImage: application.contractVehicleImage,
+          contractVehicleYearModel: application.contractVehicleYearModel,
+          contractVehicleTransmission: application.contractVehicleTransmission,
+          contractVehicleFuelType: application.contractVehicleFuelType,
+          contractTerm: application.contractTerm,
+          contractDepositAmount: application.contractDepositAmount,
+          contractLicensingFee: application.contractLicensingFee,
+          contractMonthlyPayment: application.contractMonthlyPayment,
+          contractTotalPayableNow: application.contractTotalPayableNow,
+          clientBankName: application.clientBankName,
+          clientAccountHolder: application.clientAccountHolder,
+          clientAccountNumber: application.clientAccountNumber,
+          clientAccountType: application.clientAccountType,
+          clientBranchCode: application.clientBranchCode,
+          clientBankSubmittedAt: application.clientBankSubmittedAt,
+          invoiceNumber: application.invoiceNumber,
+          invoiceSentAt: application.invoiceSentAt,
+          contractClientFullName: application.contractClientFullName,
+        }}
+      />
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white px-6 py-16 text-black">
@@ -1253,9 +1296,7 @@ export default async function AdminApplicationDetailPage({
               )}
             </div>
 
-            {(application.status === "CONTRACT_ISSUED" ||
-              application.status === "AWAITING_INVOICE" ||
-              application.status === "INVOICE_ISSUED") && (
+            {(application.status === "INVOICE_ISSUED") && (
               <div className="space-y-4">
                 <div className="rounded-2xl border border-[#dde1ec] bg-[#f8f9fc] p-5">
                   <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.16em] text-[#8a9bbf]">Contract Stage Overview</h2>
@@ -1298,8 +1339,7 @@ export default async function AdminApplicationDetailPage({
                     </div>
                   )}
                 </div>
-                {(application.status === "AWAITING_INVOICE" ||
-                  application.status === "INVOICE_ISSUED") && application.clientBankSubmittedAt && (
+                {(application.status === "INVOICE_ISSUED") && application.clientBankSubmittedAt && (
                   <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
                     <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">✅ Client Banking Details Submitted</p>
                     <p className="mb-3 text-[11px] text-emerald-600">Submitted on {new Date(application.clientBankSubmittedAt).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" })}</p>
@@ -1327,8 +1367,7 @@ export default async function AdminApplicationDetailPage({
                     </div>
                   </div>
                 )}
-                {(application.status === "AWAITING_INVOICE" ||
-                  application.status === "INVOICE_ISSUED") && (
+                {(application.status === "INVOICE_ISSUED") && (
                   <PrepareInvoiceForm
                     applicationId={application.id}
                     referenceNumber={application.referenceNumber}

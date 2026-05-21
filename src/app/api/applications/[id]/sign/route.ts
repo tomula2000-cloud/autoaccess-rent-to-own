@@ -80,8 +80,7 @@ export async function POST(
         contractAccepted: true,
         contractAcceptedAt: signedAt,
         contractAcceptedName: signedName || existing.fullName,
-        status: "AWAITING_INVOICE",
-        adminSeen: false,
+        // Status stays CONTRACT_ISSUED until banking details submitted
       },
     });
 
@@ -89,8 +88,8 @@ export async function POST(
       data: {
         applicationId: id,
         fromStatus: "CONTRACT_ISSUED",
-        toStatus: "AWAITING_INVOICE",
-        note: "Contract signed digitally by client — auto-advanced to awaiting invoice",
+        toStatus: "CONTRACT_ISSUED",
+        note: "Contract signed digitally by client — awaiting banking details",
         updatedById: existing.applicantId,
       },
     });

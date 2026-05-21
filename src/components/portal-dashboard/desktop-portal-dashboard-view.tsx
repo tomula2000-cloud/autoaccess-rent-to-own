@@ -8,6 +8,9 @@ import ContractReviewModal from "@/components/contract-review-modal";
 import InvoiceDownloadButton from "@/components/invoice-download-button";
 import ProofOfPaymentUpload from "@/components/proof-of-payment-upload";
 import PortalDashboardHero from "@/components/portal-dashboard/portal-dashboard-hero";
+import ContractSignFlow from "@/components/contract-sign-flow";
+import PortalStatusCookie from "@/components/portal-status-cookie";
+import PaymentCountdownCard from "@/components/payment-countdown-card";
 
 type StatusLogItem = {
   id: string;
@@ -581,8 +584,81 @@ export default async function ClientPortalPage() {
     contractIssuedAt: application.contractIssuedAt,
   };
 
+  // CONTRACT ISSUED — clean focused signing page
+  if (isContractIssued) {
+    return (
+      <main className="relative min-h-screen bg-[#f4f6fb] px-4 py-6 sm:px-6 md:py-10">
+        <PortalStatusCookie status={application.status} />
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(213,151,88,0.08),transparent_55%),radial-gradient(circle_at_bottom_left,rgba(47,103,222,0.06),transparent_50%)]" />
+        </div>
+        <div className="mx-auto max-w-2xl">
+          {/* Minimal header */}
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#68708a]">Auto Access · Client Portal</p>
+              <p className="mt-0.5 text-[15px] font-semibold text-[#1b2345]">Contract Ready for Signing</p>
+            </div>
+            <div className="rounded-full border border-[#e1e4ee] bg-white px-3 py-1.5 shadow-sm">
+              <p className="font-mono text-[11px] font-bold text-[#2f67de]">{application.referenceNumber}</p>
+            </div>
+          </div>
+          {/* Countdown if applicable */}
+          {contractExpiresAtIso ? (
+            <div className="mb-4"><ApprovalCountdownCard approvalValidUntil={contractExpiresAtIso} mode="contract" /></div>
+          ) : null}
+          {/* Caleb advisor card */}
+          <div className="mb-4 flex items-center gap-3 rounded-[14px] border border-[#e2e8f0] bg-white px-4 py-3 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#1b2345] to-[#2a3563] text-white text-[13px] font-bold">C</div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748b]">Your Dedicated Advisor</p>
+              <p className="mt-0.5 text-[13px] font-bold text-[#1b2345]">Caleb — Sales Consultant</p>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              <a href="https://wa.me/27745462367" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-[#25d366] px-3 py-2 text-[11px] font-bold text-white">💬 WhatsApp</a>
+              <a href="tel:0212110015" className="inline-flex items-center gap-1.5 rounded-full bg-[#1b2345] px-3 py-2 text-[11px] font-bold text-white">📞 021 211 0015</a>
+            </div>
+          </div>
+          {/* Contract sign flow */}
+          {!isContractAccepted ? (
+            <ContractSignFlow
+              contract={contractDataForModal}
+              depositNum={contractDepositNum}
+              licensingNum={contractLicensingNum}
+              totalNowNum={contractTotalNowNum}
+              monthlyNum={contractMonthlyNum}
+            />
+          ) : (
+            <div className="overflow-hidden rounded-[24px] border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-green-50 shadow-[0_8px_24px_-12px_rgba(16,185,129,0.15)]">
+              <div className="border-b border-emerald-100 bg-gradient-to-r from-[#0a3b2a] to-[#0f5239] px-5 py-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-200">Contract Signed</p>
+                <h2 className="text-[1.05rem] font-semibold text-white">Digital Acceptance Recorded</h2>
+              </div>
+              <div className="p-5">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-[0_10px_24px_-8px_rgba(16,185,129,0.55)]">
+                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <p className="text-base font-semibold text-emerald-900">Contract signed successfully.</p>
+                    <p className="mt-1.5 text-sm leading-6 text-[#4d546a]">Your signature has been recorded. Your application is now awaiting invoice release.</p>
+                    {application.contractAcceptedName ? <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-700">Signed by <span className="font-mono normal-case tracking-normal text-[#1b2345]">{application.contractAcceptedName}</span></p> : null}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <p className="mt-6 text-center text-[11px] text-[#a3aac0]">
+            Questions? Contact Caleb on <a href="https://wa.me/27745462367" className="text-[#25d366] font-semibold">WhatsApp</a> or call <a href="tel:0212110015" className="text-[#1b2345] font-semibold">021 211 0015</a>
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#f4f6fb] px-4 py-6 text-black sm:px-6 md:py-10">
+      <PortalStatusCookie status={application.status} />
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(47,103,222,0.08),transparent_55%),radial-gradient(circle_at_top_right,rgba(213,151,88,0.06),transparent_50%)]" />
         <div
@@ -839,65 +915,13 @@ export default async function ClientPortalPage() {
             ) : null}
 
             {isContractIssued && !isContractAccepted ? (
-              <div className="mt-5 grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
-                <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
-                  <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4 sm:px-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Contract Review</p>
-                    <h2 className="text-[1.05rem] font-semibold text-white sm:text-[1.15rem]">Issued Contract Summary</h2>
-                  </div>
-                  <div className="p-5 sm:p-6">
-                    <div className="overflow-hidden rounded-[18px] border border-[#e7eaf2] bg-[#fafbff]">
-                      {application.contractVehicleImage ? (
-                        <div className="overflow-hidden bg-[#f4f6fb]"><img src={application.contractVehicleImage} alt={application.contractVehicleTitle || "Vehicle"} className="h-[220px] w-full object-cover" /></div>
-                      ) : selectedVehicle?.featuredImage ? (
-                        <div className="overflow-hidden bg-[#f4f6fb]"><img src={selectedVehicle.featuredImage} alt={selectedVehicle.title} className="h-[220px] w-full object-cover" /></div>
-                      ) : null}
-                      <div className="p-4">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">Contract Vehicle</p>
-                        <p className="mt-2 text-lg font-semibold text-[#1b2345]">{application.contractVehicleTitle || selectedVehicle?.title || "—"}</p>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {(application.contractVehicleYearModel || selectedVehicle?.yearModel) && (<span className="rounded-full border border-[#dbe6ff] bg-[#eef4ff] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#2f67de]">{application.contractVehicleYearModel || selectedVehicle?.yearModel}</span>)}
-                          {(application.contractVehicleTransmission || selectedVehicle?.transmission) && (<span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">{application.contractVehicleTransmission || selectedVehicle?.transmission}</span>)}
-                          {(application.contractVehicleFuelType || selectedVehicle?.fuelType) && (<span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">{application.contractVehicleFuelType || selectedVehicle?.fuelType}</span>)}
-                          {application.contractTerm && (<span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700">{application.contractTerm} months</span>)}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-4 rounded-[18px] border border-[#f1dfd1] bg-gradient-to-r from-[#fbf2ea] to-white p-4">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#c37d43]">Contract Notice</p>
-                      <p className="mt-2 text-sm leading-6 text-[#39425d]">Your contract has been formally issued and your completion stage is now active. The original approval period no longer applies from this point forward.</p>
-                      <p className="mt-3 text-sm leading-6 text-[#39425d]">A strict <span className="font-semibold text-[#1b2345]">24-hour completion window</span> is now active. You are required to review the full contract, complete the digital acceptance below and fulfil all outstanding payment requirements within this period.</p>
-                      <p className="mt-3 text-sm leading-6 text-[#39425d]">Failure to complete within the active contract period may result in the expiry or cancellation of your contract stage, which could affect the outcome of your application.</p>
-                    </div>
-                    <div className="mt-4"><ContractReviewModal contract={contractDataForModal} /></div>
-                  </div>
-                </div>
-
-                <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)]">
-                  <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4 sm:px-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Action Required</p>
-                    <h2 className="text-[1.05rem] font-semibold text-white sm:text-[1.15rem]">Digital Contract Acceptance</h2>
-                  </div>
-                  <div className="p-5 sm:p-6">
-                    <div className="rounded-[18px] border border-[#e7eaf2] bg-white p-4">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">Financial Summary</p>
-                      <div className="mt-3 space-y-3">
-                        <div className="flex items-center justify-between gap-3"><span className="text-sm text-[#68708a]">Deposit</span><span className="text-sm font-semibold text-[#1b2345]">{formatCurrency(contractDepositNum)}</span></div>
-                        <div className="flex items-center justify-between gap-3"><span className="text-sm text-[#68708a]">Licensing &amp; Registration Fee</span><span className="text-sm font-semibold text-[#1b2345]">{formatCurrency(contractLicensingNum)}</span></div>
-                        <div className="border-t border-[#eef0f7] pt-3"><div className="flex items-center justify-between gap-3"><span className="text-sm font-semibold text-[#1b2345]">Total Required Now</span><span className="text-lg font-semibold text-[#2f67de]">{formatCurrency(contractTotalNowNum)}</span></div></div>
-                        <div className="flex items-center justify-between gap-3 border-t border-[#eef0f7] pt-3"><span className="text-sm text-[#68708a]">First Monthly Instalment</span><span className="text-sm font-semibold text-[#1b2345]">{formatCurrency(contractMonthlyNum)}</span></div>
-                      </div>
-                    </div>
-                    <form action="/api/portal/accept-contract" method="POST" className="mt-5 space-y-4">
-                      <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e1e4ee] bg-[#fafbff] p-4 transition hover:border-[#d59758]/50 hover:bg-[#fffaf5]"><input type="checkbox" name="acceptedTerms" value="yes" required className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-[#d59758]" /><span className="text-sm leading-6 text-[#39425d]">I confirm that I have read and reviewed the full Vehicle Rental Agreement and that I understand my contract has been formally issued with a strict <span className="font-semibold text-[#1b2345]">24-hour completion window</span>. I acknowledge that failure to complete within this period may result in the expiry or cancellation of my contract stage.</span></label>
-                      <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e1e4ee] bg-[#fafbff] p-4 transition hover:border-[#d59758]/50 hover:bg-[#fffaf5]"><input type="checkbox" name="confirmedDetails" value="yes" required className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-[#d59758]" /><span className="text-sm leading-6 text-[#39425d]">I have reviewed and confirm that my personal details and selected vehicle information on record are correct and accurately reflect my application.</span></label>
-                      <div className="rounded-[16px] border border-[#e1e4ee] bg-white p-4"><label htmlFor="acceptedName" className="block text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">Digital Signature</label><p className="mt-1 text-xs leading-5 text-[#68708a]">Type your full legal name below to act as your digital signature and confirm your acceptance of this contract.</p><input type="text" id="acceptedName" name="acceptedName" required placeholder="Type your full legal name" className="mt-3 w-full rounded-[10px] border border-[#dbe0ed] bg-[#fafbff] px-4 py-3 text-sm font-medium text-[#1b2345] placeholder-[#a3aac0] outline-none ring-0 transition focus:border-[#d59758] focus:ring-2 focus:ring-[#d59758]/20" /></div>
-                      <div className="rounded-[16px] border-l-4 border-[#2f67de] bg-gradient-to-r from-[#eef4ff] to-white p-4"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#2f67de]">Important Notice</p><p className="mt-2 text-sm leading-6 text-[#39425d]">By submitting this form you are digitally accepting the terms of your issued Vehicle Rental Agreement. Your acceptance will be securely recorded along with a timestamp and your full name as provided above.</p><p className="mt-2 text-sm leading-6 text-[#39425d]">Upon successful contract acceptance, your application will move to <span className="font-semibold text-[#1b2345]">Awaiting Invoice</span>. Your invoice will be released later by admin, and only then will payment instructions appear in your portal.</p></div>
-                      <button type="submit" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#c37d43] px-6 py-4 text-sm font-semibold text-white shadow-[0_14px_30px_-10px_rgba(213,151,88,0.55)] transition hover:from-[#c37d43] hover:to-[#b86e35] hover:shadow-[0_16px_36px_-10px_rgba(213,151,88,0.7)]"><svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>Accept Contract and Continue</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
+              <ContractSignFlow
+                contract={contractDataForModal}
+                depositNum={contractDepositNum}
+                licensingNum={contractLicensingNum}
+                totalNowNum={contractTotalNowNum}
+                monthlyNum={contractMonthlyNum}
+              />
             ) : null}
 
             {isContractIssued && isContractAccepted ? (
@@ -921,6 +945,9 @@ export default async function ClientPortalPage() {
 
             {isAwaitingInvoice ? (
               <div className="mt-5 space-y-5">
+                {application.contractAcceptedAt ? (
+                  <PaymentCountdownCard contractAcceptedAt={new Date(application.contractAcceptedAt).toISOString()} />
+                ) : null}
                 <div className="overflow-hidden rounded-[24px] border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-green-50 shadow-[0_8px_24px_-12px_rgba(16,185,129,0.15)]">
                   <div className="border-b border-emerald-100 bg-gradient-to-r from-[#0a3b2a] to-[#0f5239] px-5 py-4 sm:px-6"><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-200">Contract Accepted</p><h2 className="text-[1.05rem] font-semibold text-white sm:text-[1.15rem]">Digital Acceptance Recorded</h2></div>
                   <div className="p-5 sm:p-6">
