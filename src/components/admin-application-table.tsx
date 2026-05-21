@@ -184,6 +184,24 @@ export default function AdminApplicationTable({
     });
   }
 
+  async function approveAndNotify() {
+    const eligible = [...selectedIds].filter((id) => {
+      const s = byId.get(id)?.status;
+      return s === "DOCUMENTS_UNDER_REVIEW" || s === "DOCUMENTS_SUBMITTED" || s === "PRE_QUALIFIED";
+    });
+    if (eligible.length === 0) {
+      showToast({ kind: "error", message: "No selected applications are eligible for approval (must be Pre-Qualified, Docs Submitted, or Under Review)." });
+      return;
+    }
+    if (!window.confirm(`Approve ${eligible.length} application(s) to Approved in Principle and send each client an approval email + SMS?`)) return;
+    await runBulk({
+      ids: eligible,
+      url: (id) => `/api/applications/${id}/status`,
+      body: () => ({ status: "APPROVED_IN_PRINCIPLE" }),
+      successLabel: "approved — email & SMS sent",
+    });
+  }
+
   return (
     <>
       <div className="overflow-x-auto">
@@ -323,6 +341,15 @@ export default function AdminApplicationTable({
               Send Approval SMS
             </button>
 
+            <button
+              type="button"
+              onClick={approveAndNotify}
+              disabled={isProcessing}
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 px-4 py-2 text-[12px] font-bold text-white shadow-[0_8px_18px_-6px_rgba(16,185,129,0.5)] transition hover:from-emerald-600 hover:to-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Approve &amp; Notify
+            </button>
             <button
               type="button"
               onClick={markUnderReview}
