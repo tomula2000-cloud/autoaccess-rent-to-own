@@ -11,6 +11,7 @@ import PortalDashboardHero from "@/components/portal-dashboard/portal-dashboard-
 import ContractSignFlow from "@/components/contract-sign-flow";
 import PortalStatusCookie from "@/components/portal-status-cookie";
 import PaymentCountdownCard from "@/components/payment-countdown-card";
+import BankingFormInline from "@/components/banking-form-inline";
 
 type StatusLogItem = {
   id: string;
@@ -629,22 +630,23 @@ export default async function ClientPortalPage() {
               monthlyNum={contractMonthlyNum}
             />
           ) : (
-            <div className="overflow-hidden rounded-[24px] border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-green-50 shadow-[0_8px_24px_-12px_rgba(16,185,129,0.15)]">
-              <div className="border-b border-emerald-100 bg-gradient-to-r from-[#0a3b2a] to-[#0f5239] px-5 py-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-200">Contract Signed</p>
-                <h2 className="text-[1.05rem] font-semibold text-white">Digital Acceptance Recorded</h2>
+            <div className="overflow-hidden rounded-[24px] border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 shadow-[0_8px_24px_-12px_rgba(213,151,88,0.15)]">
+              <div className="border-b border-amber-100 bg-gradient-to-r from-[#92400e] to-[#b45309] px-5 py-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-200">One more step</p>
+                <h2 className="text-[1.05rem] font-semibold text-white">Please complete your banking details</h2>
               </div>
               <div className="p-5">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-[0_10px_24px_-8px_rgba(16,185,129,0.55)]">
-                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100">
+                    <svg className="h-6 w-6 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
                   <div>
-                    <p className="text-base font-semibold text-emerald-900">Contract signed successfully.</p>
-                    <p className="mt-1.5 text-sm leading-6 text-[#4d546a]">Your signature has been recorded. Your application is now awaiting invoice release.</p>
-                    {application.contractAcceptedName ? <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-700">Signed by <span className="font-mono normal-case tracking-normal text-[#1b2345]">{application.contractAcceptedName}</span></p> : null}
+                    <p className="text-base font-semibold text-amber-900">Your contract has been signed.</p>
+                    <p className="mt-1.5 text-sm leading-6 text-[#4d546a]">To complete the process and move to <strong className="text-[#1b2345]">Awaiting Invoice</strong>, please provide your banking details below.</p>
+                    {application.contractAcceptedName ? <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.16em] text-amber-700">Signed by <span className="font-mono normal-case tracking-normal text-[#1b2345]">{application.contractAcceptedName}</span></p> : null}
                   </div>
                 </div>
+                <BankingFormInline applicationId={application.id} />
               </div>
             </div>
           )}
