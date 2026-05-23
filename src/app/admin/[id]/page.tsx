@@ -460,6 +460,8 @@ export default async function AdminApplicationDetailPage({
           invoiceSentAt: application.invoiceSentAt,
           contractClientFullName: application.contractClientFullName,
         }}
+        documents={application.documents}
+        statusLogs={application.statusLogs}
       />
     );
   }

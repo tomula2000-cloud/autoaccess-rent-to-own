@@ -2,6 +2,8 @@ import Link from "next/link";
 import PaymentCountdownCard from "@/components/payment-countdown-card";
 import PrepareInvoiceForm from "@/components/prepare-invoice-form";
 import ResendContractButton from "@/components/resend-contract-button";
+import AdminStatusForm from "@/components/admin-status-form";
+import AdminDocumentViewer from "@/components/admin-document-viewer";
 
 function formatCurrency(val: string | null | undefined) {
   if (!val) return "—";
@@ -16,6 +18,19 @@ function formatDate(d: Date | string | null | undefined) {
 }
 
 interface AdminContractViewProps {
+  documents: {
+    id: string;
+    fileName: string;
+    fileUrl: string;
+    documentType: string;
+    createdAt: Date | string;
+  }[];
+  statusLogs: {
+    id: string;
+    toStatus: string;
+    note: string | null;
+    createdAt: Date | string;
+  }[];
   application: {
     id: string;
     fullName: string;
@@ -52,7 +67,7 @@ interface AdminContractViewProps {
   };
 }
 
-export default function AdminContractView({ application }: AdminContractViewProps) {
+export default function AdminContractView({ application, documents, statusLogs }: AdminContractViewProps) {
   const isSigned = !!application.contractAccepted;
   const isAwaitingInvoice = application.status === "AWAITING_INVOICE";
   const hasBanking = !!application.clientBankSubmittedAt;
@@ -329,6 +344,46 @@ export default function AdminContractView({ application }: AdminContractViewProp
                 ))}
               </div>
             </div>
+
+            {/* Status change */}
+            <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_4px_16px_-8px_rgba(15,23,42,0.08)]">
+              <div className="border-b border-[#eef0f7] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-4 py-3.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f4c89a]">Change Status</p>
+              </div>
+              <div className="p-4">
+                <AdminStatusForm applicationId={application.id} currentStatus={application.status} />
+              </div>
+            </div>
+
+            {/* Status history */}
+            <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_4px_16px_-8px_rgba(15,23,42,0.08)]">
+              <div className="border-b border-[#eef0f7] px-4 py-3.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">Status History</p>
+              </div>
+              <div className="p-4 space-y-2 max-h-[300px] overflow-y-auto">
+                {statusLogs.length === 0 ? (
+                  <p className="text-[12px] text-[#a3aac0]">No status changes recorded.</p>
+                ) : statusLogs.map((log) => (
+                  <div key={log.id} className="rounded-[10px] border border-[#f0f2f8] bg-[#fafbff] px-3 py-2">
+                    <p className="text-[11px] font-bold text-[#1b2345]">{log.toStatus.replace(/_/g, " ")}</p>
+                    {log.note && <p className="mt-0.5 text-[10px] text-[#68708a] leading-4">{log.note}</p>}
+                    <p className="mt-1 text-[9px] text-[#a3aac0]">{new Date(log.createdAt).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" })}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Documents */}
+            {documents.length > 0 && (
+              <div className="overflow-hidden rounded-[24px] border border-[#e1e4ee] bg-white shadow-[0_4px_16px_-8px_rgba(15,23,42,0.08)]">
+                <div className="border-b border-[#eef0f7] px-4 py-3.5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#68708a]">Client Documents ({documents.length})</p>
+                </div>
+                <div className="p-4">
+                  <AdminDocumentViewer documents={documents} />
+                </div>
+              </div>
+            )}
 
           </div>
         </div>
