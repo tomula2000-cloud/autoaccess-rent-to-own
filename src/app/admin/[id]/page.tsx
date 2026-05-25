@@ -330,6 +330,8 @@ export default async function AdminApplicationDetailPage({
       clientAccountType: true,
       clientBranchCode: true,
       clientBankSubmittedAt: true,
+      proofOfPaymentUrls: true,
+      proofOfPaymentSubmittedAt: true,
       applicantId: true,
 
       selectedVehicle: {
@@ -1381,6 +1383,38 @@ export default async function AdminApplicationDetailPage({
                     invoiceNumber={application.invoiceNumber}
                     invoiceSentAt={application.invoiceSentAt}
                   />
+                )}
+                {(["PAYMENT_UNDER_VERIFICATION", "PAYMENT_CONFIRMED", "COMPLETED"].includes(application.status as string)) &&
+                  application.proofOfPaymentUrls && (
+                  <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+                    <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-blue-700">
+                      📎 Proof of Payment Submitted
+                    </p>
+                    {application.proofOfPaymentSubmittedAt && (
+                      <p className="mb-3 text-[11px] text-blue-600">
+                        Submitted on {new Date(application.proofOfPaymentSubmittedAt).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" })}
+                      </p>
+                    )}
+                    <div className="space-y-2">
+                      {(application.proofOfPaymentUrls as { url: string; filename: string }[]).map((file, i) => (
+                        <a
+                          key={i}
+                          href={file.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 rounded-xl border border-blue-200 bg-white px-4 py-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition"
+                        >
+                          <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                          </svg>
+                          <span className="truncate">{file.filename || "Proof of Payment " + (i + 1)}</span>
+                          <svg className="ml-auto h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+                          </svg>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
             )}
