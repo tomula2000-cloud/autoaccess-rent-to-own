@@ -9,6 +9,7 @@ import PrepareInvoiceForm from "@/components/prepare-invoice-form";
 import AdminStatusForm from "@/components/admin-status-form";
 import AdminApprovalValidityForm from "@/components/admin-approval-validity-form";
 import AdminEditApplicationForm from "@/components/admin-edit-application-form";
+import InvoiceDownloadButton from "@/components/invoice-download-button";
 import AdminContractView from "@/components/admin-contract-view";
 
 type PageProps = {
@@ -1419,6 +1420,30 @@ export default async function AdminApplicationDetailPage({
               </div>
             )}
           </div>
+
+          {/* Invoice view — shows for all statuses with an invoice */}
+          {application.invoiceNumber && (
+            <div className="mt-6 rounded-2xl border border-[#dbe6ff] bg-[#eef4ff] p-5">
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#2f67de]">View / Print Invoice</p>
+              <InvoiceDownloadButton
+                invoiceNumber={application.invoiceNumber}
+                referenceNumber={application.referenceNumber}
+                invoiceIssuedAt={application.invoiceIssuedAt ? application.invoiceIssuedAt.toISOString() : null}
+                invoiceDueAt={application.invoiceDueAt ? application.invoiceDueAt.toISOString() : null}
+                invoiceDepositAmount={application.invoiceDepositAmount}
+                invoiceLicensingFee={application.invoiceLicensingFee}
+                invoiceMonthlyAmount={application.invoiceMonthlyAmount}
+                invoiceTotalDue={application.invoiceTotalDue}
+                invoiceBankName={application.invoiceBankName}
+                invoiceBankHolder={application.invoiceBankHolder}
+                invoiceBankAccount={application.invoiceBankAccount}
+                invoiceBankBranch={application.invoiceBankBranch}
+                invoiceBankType={application.invoiceBankType}
+                invoicePaymentReference={application.invoicePaymentReference}
+                invoiceTerms={application.invoiceTerms}
+              />
+            </div>
+          )}
 
           {/* Standalone Proof of Payment — shows for all payment stages */}
           {application.proofOfPaymentUrls &&

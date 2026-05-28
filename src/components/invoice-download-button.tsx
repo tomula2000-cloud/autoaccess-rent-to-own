@@ -21,7 +21,10 @@ interface InvoiceDownloadButtonProps {
 export default function InvoiceDownloadButton(props: InvoiceDownloadButtonProps) {
   const handlePrint = () => {
     const w = window.open("", "_blank");
-    if (!w) return;
+    if (!w) {
+      alert("Please allow popups for this site to view the invoice. Check your browser address bar for a blocked popup notification.");
+      return;
+    }
     const fmtDate = (d: string | null) =>
       d ? new Date(d).toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" }) : "";
 
