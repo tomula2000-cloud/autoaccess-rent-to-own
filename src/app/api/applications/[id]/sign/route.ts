@@ -3,6 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { sendContractSignedClientEmail, sendContractSignedAdminEmail } from "@/lib/email";
 import { generateContractPdf } from "@/lib/contract-pdf";
 
+function addDays(date: Date, days: number) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -80,6 +86,10 @@ export async function POST(
         contractAccepted: true,
         contractAcceptedAt: signedAt,
         contractAcceptedName: signedName || existing.fullName,
+        // Start the 24-hour completion window now that the client has signed.
+        // The 12-day approval timer falls away at this point.
+        contractExpiresAt: addDays(signedAt, 1),
+        approvalValidUntil: null,
         // Status stays CONTRACT_ISSUED until banking details submitted
       },
     });

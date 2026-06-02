@@ -265,11 +265,12 @@ export async function POST(
 
     if (newStatus === "CONTRACT_ISSUED") {
       const now = new Date();
-      updateData.approvalValidUntil = null;
+      // Keep the 12-day approval timer running until the client SIGNS.
+      // The 24-hour completion window only starts at signing (see sign route).
       updateData.contractRequestedAt =
         existingApplication.contractRequestedAt || now;
       updateData.contractIssuedAt = now;
-      updateData.contractExpiresAt = addDays(now, 1);
+      updateData.contractExpiresAt = null;
       updateData.contractCancelledAt = null;
       updateData.contractAccepted = false;
       updateData.contractAcceptedAt = null;

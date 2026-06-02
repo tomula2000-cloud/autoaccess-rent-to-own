@@ -120,23 +120,19 @@ export default function RequestContractConfirmationCard({
                 Important Notice
               </p>
               <p className="mt-2 text-sm leading-7 text-[#39425d]">
-                By proceeding with this request, you confirm that you are ready to
-                move forward with the transaction promptly.
+                Requesting a contract does <span className="font-semibold text-[#1b2345]">not</span> guarantee the
+                availability of your selected vehicle.
               </p>
               <p className="mt-3 text-sm leading-7 text-[#39425d]">
-                Once your contract has been issued, the current 12-day
-                approval-in-principle validity period will immediately fall away
-                and a strict <span className="font-semibold text-[#1b2345]">24-hour completion window</span> will apply.
+                Your selected vehicle is only secured once you have
+                <span className="font-semibold text-[#1b2345]"> reviewed and signed the contract</span>. You will
+                receive the contract to review first, and you can choose to sign it
+                when you are ready to proceed.
               </p>
               <p className="mt-3 text-sm leading-7 text-[#39425d]">
-                During this 24-hour period, you will be expected to complete the
-                required payment and any remaining completion steps. This action is
-                treated as a firm indication that you are ready to proceed.
-              </p>
-              <p className="mt-3 text-sm leading-7 font-medium text-[#8b5a2b]">
-                If you are not fully prepared to pay and complete the process within
-                24 hours once the contract is issued, do not proceed with this
-                contract request at this stage.
+                Your approval in principle remains valid for
+                <span className="font-semibold text-[#1b2345]"> 12 days</span>, so there is no rush &mdash; take the
+                time you need before signing.
               </p>
             </div>
 
