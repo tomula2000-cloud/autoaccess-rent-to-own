@@ -83,6 +83,16 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    const monthlyIncomeNumber = parseInt(monthlyIncome.replace(/\D/g, ""), 10) || 0;
+    if (monthlyIncomeNumber < 7000) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Salary does not meet requirements. Minimum monthly income must be R7,000.",
+        },
+        { status: 400 }
+      );
+    }
 
     if (identityType === "SA_ID") {
       const oneMonthAgo = new Date();

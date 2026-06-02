@@ -14,6 +14,30 @@ function digitsOnly(value: string) {
   return value.replace(/\D/g, "");
 }
 
+function capitalizeName(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function capitalizeSingleName(value: string) {
+  // Remove spaces (single word only) then capitalize first letter
+  const noSpaces = value.replace(/\s/g, "");
+  return noSpaces.charAt(0).toUpperCase() + noSpaces.slice(1).toLowerCase();
+}
+
+function formatCurrency(value: string) {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return "";
+  const number = parseInt(digits, 10);
+  return "R " + number.toLocaleString("en-ZA") + ".00";
+}
+
+function parseCurrencyToNumber(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return digits ? parseInt(digits, 10) : 0;
+}
+
 function SharedApplicationFormFallback({
   compact = false,
 }: SharedApplicationFormProps) {
@@ -42,7 +66,9 @@ function SharedApplicationFormContent({
     [searchParams]
   );
 
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [secondName, setSecondName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [identityType, setIdentityType] = useState("SA_ID");
@@ -97,7 +123,9 @@ function SharedApplicationFormContent({
   }, [showSubmitNotice]);
 
   function resetForm() {
-    setFullName("");
+    setFirstName("");
+    setSecondName("");
+    setLastName("");
     setEmail("");
     setPhone("");
     setIdentityType("SA_ID");
@@ -133,7 +161,7 @@ function SharedApplicationFormContent({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          fullName,
+          fullName: [firstName.trim(), secondName.trim(), lastName.trim()].filter(Boolean).join(" "),
           email,
           phone: normalizedPhone,
           identityType,
@@ -193,6 +221,27 @@ function SharedApplicationFormContent({
 
     if (!isValidSouthAfricanId) {
       setMessage("South African ID number must be exactly 13 digits.");
+      return;
+    }
+
+    if (!firstName.trim() || !lastName.trim()) {
+      setMessage("Please enter both your first name and last name as they appear on your ID.");
+      return;
+    }
+
+    // Duplicate name detection
+    const firstWords = firstName.toLowerCase().trim().split(/\s+/);
+    const secondWords = secondName.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const lastWords = lastName.toLowerCase().trim().split(/\s+/);
+    const allNameWords = [...firstWords, ...secondWords, ...lastWords];
+    const uniqueWords = new Set(allNameWords.filter(Boolean));
+    if (uniqueWords.size < allNameWords.filter(Boolean).length) {
+      setMessage("Please check your names. It looks like a name was entered more than once.");
+      return;
+    }
+
+    if (parseCurrencyToNumber(monthlyIncome) < 7000) {
+      setMessage("Salary does not meet requirements. Minimum monthly income must be R7,000.");
       return;
     }
 
@@ -273,15 +322,55 @@ function SharedApplicationFormContent({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
+                <div className="mb-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
+                  <p className="text-[11px] font-semibold leading-5 text-red-700">
+                    &#9888; Enter your names exactly as they appear on your ID document
+                  </p>
+                </div>
+              </div>
+
+              <div className="col-span-2">
                 <label className="mb-1.5 block text-xs font-medium text-gray-700">
-                  Full Name
+                  First Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  value={firstName}
+                  onChange={(e) => setFirstName(capitalizeSingleName(e.target.value))}
                   className={inputClass}
-                  placeholder="Enter full name"
+                  placeholder="e.g. John"
+                  required
+                  disabled={formLocked}
+                />
+                <p className="mt-1 text-[11px] text-gray-500">
+                  First name only &mdash; one word.
+                </p>
+              </div>
+
+              <div className="col-span-2">
+                <label className="mb-1.5 block text-xs font-medium text-gray-700">
+                  Second Name(s) <span className="text-gray-400">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={secondName}
+                  onChange={(e) => setSecondName(capitalizeName(e.target.value))}
+                  className={inputClass}
+                  placeholder="e.g. Michael"
+                  disabled={formLocked}
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="mb-1.5 block text-xs font-medium text-gray-700">
+                  Last Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(capitalizeName(e.target.value))}
+                  className={inputClass}
+                  placeholder="e.g. Smith"
                   required
                   disabled={formLocked}
                 />
@@ -407,12 +496,18 @@ function SharedApplicationFormContent({
                 <input
                   type="text"
                   value={monthlyIncome}
-                  onChange={(e) => setMonthlyIncome(e.target.value)}
+                  onChange={(e) => setMonthlyIncome(e.target.value.replace(/[^\d]/g, ""))}
+                  onFocus={(e) => setMonthlyIncome(e.target.value.replace(/[^\d]/g, ""))}
+                  onBlur={(e) => setMonthlyIncome(formatCurrency(e.target.value))}
+                  inputMode="numeric"
                   className={inputClass}
-                  placeholder="Monthly income"
+                  placeholder="12000"
                   required
                   disabled={formLocked}
                 />
+                <p className="mt-1 text-[11px] text-gray-500">
+                  Enter amount in Rands. Minimum R 7,000.00 per month.
+                </p>
               </div>
 
               <div>

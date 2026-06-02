@@ -13,6 +13,26 @@ function digitsOnly(value: string) {
   return value.replace(/\D/g, "");
 }
 
+function capitalizeSingleName(value: string) {
+  const noSpaces = value.replace(/\s/g, "");
+  return noSpaces.charAt(0).toUpperCase() + noSpaces.slice(1).toLowerCase();
+}
+
+function capitalizeName(value: string) {
+  return value.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatCurrency(value: string) {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return "";
+  return "R " + parseInt(digits, 10).toLocaleString("en-ZA") + ".00";
+}
+
+function parseCurrencyToNumber(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return digits ? parseInt(digits, 10) : 0;
+}
+
 const inputCls =
   "w-full rounded-2xl border border-[#dde1ee] bg-white px-4 py-3 text-[14px] text-[#1b2345] outline-none transition placeholder:text-[#a3aac0] focus:border-[#2f67de] focus:ring-4 focus:ring-[#2f67de]/10 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400";
 
@@ -208,7 +228,9 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
     [searchParams]
   );
 
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [secondName, setSecondName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [identityType, setIdentityType] = useState("SA_ID");
@@ -261,7 +283,9 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
   useReveal("step-reveal");
 
   function resetForm() {
-    setFullName("");
+    setFirstName("");
+    setSecondName("");
+    setLastName("");
     setEmail("");
     setPhone("");
     setIdentityType("SA_ID");
@@ -294,7 +318,7 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fullName,
+          fullName: [firstName.trim(), secondName.trim(), lastName.trim()].filter(Boolean).join(" "),
           email,
           phone: normalizedPhone,
           identityType,
@@ -353,6 +377,25 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
 
     if (!isValidSouthAfricanId) {
       setMessage("South African ID number must be exactly 13 digits.");
+      return;
+    }
+
+    if (!firstName.trim() || !lastName.trim()) {
+      setMessage("Please enter both your first name and last name as they appear on your ID.");
+      return;
+    }
+
+    const firstWords = firstName.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const secondWords = secondName.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const lastWords = lastName.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const allNameWords = [...firstWords, ...secondWords, ...lastWords];
+    if (new Set(allNameWords).size < allNameWords.length) {
+      setMessage("Please check your names. It looks like a name was entered more than once.");
+      return;
+    }
+
+    if (parseCurrencyToNumber(monthlyIncome) < 7000) {
+      setMessage("Salary does not meet requirements. Minimum monthly income must be R7,000.");
       return;
     }
 
@@ -643,13 +686,44 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
               <FormSection label="Personal Information" />
               <div className="mt-3 grid gap-4">
                 <div>
-                  <label className={labelCls}>Full Name</label>
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2">
+                    <p className="text-[11px] font-semibold leading-5 text-red-700">
+                      &#9888; Enter your names exactly as they appear on your ID document
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>First Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    value={firstName}
+                    onChange={(e) => setFirstName(capitalizeSingleName(e.target.value))}
                     className={inputCls}
-                    placeholder="Enter full name"
+                    placeholder="e.g. John"
+                    required
+                    disabled={formLocked}
+                  />
+                  <p className="mt-1.5 text-[11px] text-[#68708a]">First name only &mdash; one word.</p>
+                </div>
+                <div>
+                  <label className={labelCls}>Second Name(s) <span className="text-gray-400">(optional)</span></label>
+                  <input
+                    type="text"
+                    value={secondName}
+                    onChange={(e) => setSecondName(capitalizeName(e.target.value))}
+                    className={inputCls}
+                    placeholder="e.g. Michael"
+                    disabled={formLocked}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>Last Name <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(capitalizeName(e.target.value))}
+                    className={inputCls}
+                    placeholder="e.g. Smith"
                     required
                     disabled={formLocked}
                   />
@@ -778,9 +852,12 @@ function MobileHomeContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Re
                   <input
                     type="text"
                     value={monthlyIncome}
-                    onChange={(e) => setMonthlyIncome(e.target.value)}
+                    onChange={(e) => setMonthlyIncome(e.target.value.replace(/[^\d]/g, ""))}
+                    onFocus={(e) => setMonthlyIncome(e.target.value.replace(/[^\d]/g, ""))}
+                    onBlur={(e) => setMonthlyIncome(formatCurrency(e.target.value))}
+                    inputMode="numeric"
                     className={inputCls}
-                    placeholder="Enter monthly income"
+                    placeholder="12000"
                     required
                     disabled={formLocked}
                   />
