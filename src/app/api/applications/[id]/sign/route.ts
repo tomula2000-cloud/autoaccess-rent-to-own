@@ -90,7 +90,11 @@ export async function POST(
         // The 12-day approval timer falls away at this point.
         contractExpiresAt: addDays(signedAt, 1),
         approvalValidUntil: null,
-        // Status stays CONTRACT_ISSUED until banking details submitted
+        // Move straight to AWAITING_INVOICE on signing so admin sees every
+        // signature immediately. Banking is still collected in the portal
+        // (admin uses the banking flag to decide when to issue the invoice).
+        status: "AWAITING_INVOICE",
+        adminSeen: false,
       },
     });
 
@@ -98,8 +102,8 @@ export async function POST(
       data: {
         applicationId: id,
         fromStatus: "CONTRACT_ISSUED",
-        toStatus: "CONTRACT_ISSUED",
-        note: "Contract signed digitally by client — awaiting banking details",
+        toStatus: "AWAITING_INVOICE",
+        note: "Contract signed digitally by client — auto-advanced to awaiting invoice (banking to follow in portal)",
         updatedById: existing.applicantId,
       },
     });

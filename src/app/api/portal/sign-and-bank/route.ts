@@ -23,7 +23,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Application not found" }, { status: 404 });
     }
 
-    if (application.status !== "CONTRACT_ISSUED" || !application.contractAccepted) {
+    if (
+      (application.status !== "CONTRACT_ISSUED" && application.status !== "AWAITING_INVOICE") ||
+      !application.contractAccepted
+    ) {
       return NextResponse.json({ error: "Invalid application state" }, { status: 400 });
     }
 

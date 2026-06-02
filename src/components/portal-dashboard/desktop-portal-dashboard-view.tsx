@@ -12,6 +12,7 @@ import ContractSignFlow from "@/components/contract-sign-flow";
 import PortalStatusCookie from "@/components/portal-status-cookie";
 import PaymentCountdownCard from "@/components/payment-countdown-card";
 import BankingFormInline from "@/components/banking-form-inline";
+import BankingReminderPopup from "@/components/banking-reminder-popup";
 
 type StatusLogItem = {
   id: string;
@@ -630,7 +631,7 @@ export default async function ClientPortalPage() {
               monthlyNum={contractMonthlyNum}
             />
           ) : (
-            <div className="overflow-hidden rounded-[24px] border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 shadow-[0_8px_24px_-12px_rgba(213,151,88,0.15)]">
+            <div id="banking-details-section" className="overflow-hidden rounded-[24px] border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 shadow-[0_8px_24px_-12px_rgba(213,151,88,0.15)]">
               <div className="border-b border-amber-100 bg-gradient-to-r from-[#92400e] to-[#b45309] px-5 py-4">
                 <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-200">One more step</p>
                 <h2 className="text-[1.05rem] font-semibold text-white">Please complete your banking details</h2>
@@ -650,6 +651,7 @@ export default async function ClientPortalPage() {
               </div>
             </div>
           )}
+
           <p className="mt-6 text-center text-[11px] text-[#a3aac0]">
             Questions? Contact Caleb on <a href="https://wa.me/27745462367" className="text-[#25d366] font-semibold">WhatsApp</a> or call <a href="tel:0212110015" className="text-[#1b2345] font-semibold">021 211 0015</a>
           </p>
@@ -947,6 +949,7 @@ export default async function ClientPortalPage() {
 
             {isAwaitingInvoice ? (
               <div className="mt-5 space-y-5">
+                {!application.clientBankSubmittedAt ? <BankingReminderPopup /> : null}
                 {application.contractAcceptedAt ? (
                   <PaymentCountdownCard contractAcceptedAt={new Date(application.contractAcceptedAt).toISOString()} />
                 ) : null}
@@ -965,7 +968,7 @@ export default async function ClientPortalPage() {
                     <div className="mt-5 border-t border-emerald-100 pt-5"><ContractReviewModal contract={contractDataForModal} /></div>
                   </div>
                 </div>
-                <div className="overflow-hidden rounded-[24px] border border-[#f1dfd1] bg-gradient-to-br from-[#fffaf5] via-white to-[#fbf2ea] shadow-[0_8px_24px_-12px_rgba(213,151,88,0.15)]">
+                <div id="banking-details-section" className="overflow-hidden rounded-[24px] border border-[#f1dfd1] bg-gradient-to-br from-[#fffaf5] via-white to-[#fbf2ea] shadow-[0_8px_24px_-12px_rgba(213,151,88,0.15)]">
                   <div className="border-b border-[#f1dfd1] bg-gradient-to-r from-[#1b2345] to-[#2a3563] px-5 py-4 sm:px-6"><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#f4c89a]">Next Milestone</p><h2 className="text-[1.05rem] font-semibold text-white sm:text-[1.15rem]">Awaiting Invoice Release</h2></div>
                   <div className="p-5 sm:p-6">
                     {application.clientBankSubmittedAt ? (

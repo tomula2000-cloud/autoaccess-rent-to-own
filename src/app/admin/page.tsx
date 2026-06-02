@@ -131,7 +131,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
       id: true, referenceNumber: true, fullName: true, email: true, phone: true,
       identityType: true, identityNumber: true, employmentStatus: true,
       monthlyIncome: true, preferredVehicle: true, status: true, createdAt: true,
-      adminSeen: true,
+      adminSeen: true, clientBankSubmittedAt: true,
     },
   });
 

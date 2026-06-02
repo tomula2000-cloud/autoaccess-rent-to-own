@@ -17,6 +17,7 @@ type Application = {
   status: string;
   createdAt: Date | string;
   adminSeen: boolean;
+  clientBankSubmittedAt?: Date | string | null;
 };
 
 type Props = {
@@ -277,6 +278,17 @@ export default function AdminApplicationTable({
                         </span>
                         ! New
                       </span>
+                    ) : null}
+                    {application.status === "AWAITING_INVOICE" ? (
+                      application.clientBankSubmittedAt ? (
+                        <span className="ml-2 inline-flex items-center gap-1 align-middle rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-emerald-700">
+                          ✓ Banking in
+                        </span>
+                      ) : (
+                        <span className="ml-2 inline-flex items-center gap-1 align-middle rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-amber-700">
+                          ⚠ Banking pending
+                        </span>
+                      )
                     ) : null}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3 text-[11px] text-[#68708a]">
