@@ -11,7 +11,7 @@ type AppShellProps = {
   children: ReactNode;
 };
 
-const PHONE_LINK = "tel:0870126734";
+const PHONE_LINK = "tel:+27212110080";
 const WHATSAPP_LINK = "https://wa.me/27610490061";
 
 // Routes that opt out of the site chrome (header, floating widget, light background)

@@ -520,7 +520,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
       <div>
         <div class="print-company-name">Access Holdings (Pty) Ltd T/A Auto Access</div>
         <div class="print-company-reg">Reg No: 1999/002599/10</div>
-        <div class="print-company-addr">22 Eiland St, Eiland Park, Paarl, 7646, South Africa<br/>Tel: 087 012 6734 &nbsp;|&nbsp; 021 211 0015 &nbsp;|&nbsp; admin@autoaccess.co.za</div>
+        <div class="print-company-addr">22 Eiland St, Eiland Park, Paarl, 7646, South Africa<br/>Tel: 021 211 0080 &nbsp;|&nbsp; 021 211 0015 &nbsp;|&nbsp; admin@autoaccess.co.za</div>
       </div>
     </div>
     <div class="print-header-right">
@@ -540,7 +540,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
       <span class="print-party-name">Access Holdings (Pty) Ltd T/A Auto Access</span>
       Reg No: 1999/002599/10<br/>
       22 Eiland St, Eiland Park, Paarl, 7646<br/>
-      Tel: 087 012 6734 | 021 211 0015<br/>
+      Tel: 021 211 0080 | 021 211 0015<br/>
       admin@autoaccess.co.za<br/>
       <em style="font-size:7.5pt;color:#68708a">(Hereinafter referred to as "the Rentor / Owner")</em>
     </div>
@@ -657,7 +657,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
                               <p className="text-[12px] font-bold text-[#1b2345]">Access Holdings (Pty) Ltd T/A Auto Access</p>
                               <p className="text-[10px] text-[#68708a]">Reg No: 1999/002599/10</p>
                               <p className="text-[10px] text-[#68708a]">22 Eiland St, Eiland Park, Paarl, 7646</p>
-                              <p className="text-[10px] text-[#68708a]">087 012 6734 | 021 211 0015 | admin@autoaccess.co.za</p>
+                              <p className="text-[10px] text-[#68708a]">021 211 0080 | 021 211 0015 | admin@autoaccess.co.za</p>
                             </div>
                           </div>
                           <div className="text-right">
@@ -680,7 +680,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
                               <p className="text-[12px] font-bold text-[#1b2345]">Access Holdings (Pty) Ltd T/A Auto Access</p>
                               <p className="text-[#555]">Reg No: 1999/002599/10</p>
                               <p className="text-[#555]">22 Eiland St, Eiland Park, Paarl, 7646</p>
-                              <p className="text-[#555]">Tel: 087 012 6734 | 021 211 0015</p>
+                              <p className="text-[#555]">Tel: 021 211 0080 | 021 211 0015</p>
                               <p className="text-[#555]">admin@autoaccess.co.za</p>
                               <p className="mt-2 text-[9px] italic text-[#68708a]">(Hereinafter referred to as &ldquo;the Rentor / Owner&rdquo;)</p>
                             </div>

@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
                 <p style="color:#dc2626;font-size:13px;margin:0;font-weight:600;">Your account access has been suspended.</p>
               </div>
               <p style="color:#4d546a;font-size:14px;line-height:1.7;">If you believe this is an error or would like to discuss your account status, please contact us directly:</p>
-              <p style="color:#1b2345;font-size:14px;"><strong>Email:</strong> admin@autoaccess.co.za<br/><strong>Phone:</strong> 087 012 6734<br/><strong>WhatsApp:</strong> 074 546 2367</p>
+              <p style="color:#1b2345;font-size:14px;"><strong>Email:</strong> admin@autoaccess.co.za<br/><strong>Phone:</strong> 021 211 0080<br/><strong>WhatsApp:</strong> 074 546 2367</p>
               <p style="color:#8a9bbf;font-size:12px;margin-top:24px;">Auto Access — Access Holdings (Pty) Ltd</p>
             </div>
           </div>

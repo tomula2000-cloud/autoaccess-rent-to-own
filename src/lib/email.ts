@@ -800,7 +800,7 @@ export async function sendDocumentReminderEmail({
           <div style="font-size:10px; color:#c9973a; letter-spacing:0.22em; text-transform:uppercase; font-weight:700; margin-bottom:6px;">Access Holdings (Pty) Ltd</div>
           <div style="font-size:10px; color:#8a9bbf; line-height:1.8;">
             22 Eiland Street, Eiland Park, Paarl, 7646<br/>
-            Reg. No. 1999/002599/10 &nbsp;&middot;&nbsp; 087 012 6734 &nbsp;&middot;&nbsp; admin@autoaccess.co.za
+            Reg. No. 1999/002599/10 &nbsp;&middot;&nbsp; 021 211 0080 &nbsp;&middot;&nbsp; admin@autoaccess.co.za
           </div>
         </div>
 
@@ -1090,7 +1090,7 @@ export async function sendInvoiceEmail({
                 <div style="font-size:10px; color:#8a9bbf; letter-spacing:0.18em; text-transform:uppercase; margin-top:2px;">Access Holdings (Pty) Ltd T/A Auto Access</div>
                 <div style="font-size:11px; color:#8a9bbf; margin-top:10px; line-height:1.7;">
                   22 Eiland St, Eiland Park, Paarl, 7646<br/>
-                  087 012 6734 &nbsp;|&nbsp; admin@autoaccess.co.za
+                  021 211 0080 &nbsp;|&nbsp; admin@autoaccess.co.za
                 </div>
               </td>
               <td style="text-align:right; vertical-align:top;">
@@ -1252,7 +1252,7 @@ export async function sendInvoiceEmail({
           </div>
 
           <p style="font-size:12px; color:#8a9bbf; line-height:1.7; text-align:center; margin:0;">
-            Questions? Call us on <strong style="color:#1b2345;">087 012 6734</strong> or reply to this email.<br/>
+            Questions? Call us on <strong style="color:#1b2345;">021 211 0080</strong> or reply to this email.<br/>
             Monday to Friday, 8am to 5pm.
           </p>
 

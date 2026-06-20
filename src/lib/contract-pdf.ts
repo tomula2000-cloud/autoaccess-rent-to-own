@@ -108,7 +108,7 @@ export async function generateContractPdf(data: ContractPdfData): Promise<Buffer
         .font("Helvetica")
         .text("Reg No: 1999/002599/10", headerTextX, 57)
         .text("22 Eiland St, Eiland Park, Paarl, 7646, South Africa", headerTextX, 68)
-        .text("Tel: 087 012 6734  |  021 211 0015  |  admin@autoaccess.co.za", headerTextX, 79);
+        .text("Tel: 021 211 0080  |  021 211 0015  |  admin@autoaccess.co.za", headerTextX, 79);
 
       // ── Document title (right) ────────────────────────────────────
       doc
@@ -183,7 +183,7 @@ export async function generateContractPdf(data: ContractPdfData): Promise<Buffer
       doc.fillColor(DARK).fontSize(8).font("Helvetica")
         .text("Reg No: 1999/002599/10", leftX + 10, y + 36)
         .text("22 Eiland St, Eiland Park, Paarl, 7646", leftX + 10, y + 48)
-        .text("Tel: 087 012 6734 | 021 211 0015", leftX + 10, y + 60)
+        .text("Tel: 021 211 0080 | 021 211 0015", leftX + 10, y + 60)
         .text("admin@autoaccess.co.za", leftX + 10, y + 72);
       doc.fillColor(GRAY).fontSize(7).font("Helvetica-Oblique")
         .text('(Hereinafter "the Rentor / Owner")', leftX + 10, y + 86);

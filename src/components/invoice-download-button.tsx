@@ -52,7 +52,7 @@ export default function InvoiceDownloadButton(props: InvoiceDownloadButtonProps)
       <div>
         <div style="font-size:20px;font-weight:700;color:#c9973a;">Auto Access</div>
         <div style="font-size:10px;color:#8a9bbf;margin-top:2px;">Access Holdings (Pty) Ltd T/A Auto Access</div>
-        <div style="font-size:11px;color:#8a9bbf;margin-top:8px;line-height:1.6;">22 Eiland St, Eiland Park, Paarl, 7646<br/>087 012 6734 | admin@autoaccess.co.za</div>
+        <div style="font-size:11px;color:#8a9bbf;margin-top:8px;line-height:1.6;">22 Eiland St, Eiland Park, Paarl, 7646<br/>021 211 0080 | admin@autoaccess.co.za</div>
       </div>
       <div style="text-align:right;">
         <div style="font-size:24px;color:#fff;">Invoice</div>

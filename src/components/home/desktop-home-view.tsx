@@ -1387,12 +1387,12 @@ function HomePageContent({ featuredVehiclesSlot }: { featuredVehiclesSlot?: Reac
                     Contact
                   </p>
                   <div className="mt-4 grid gap-3">
-                    <a href="tel:0870126734"
+                    <a href="tel:+27212110080"
                       className="flex items-center gap-2.5 text-[13px] text-blue-50/55 transition hover:text-white">
                       <svg className="h-3.5 w-3.5 shrink-0 text-[#f4c89a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.63 19.79 19.79 0 01.12 1 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6z" />
                       </svg>
-                      087 012 6734
+                      021 211 0080
                     </a>
                     <a href="https://wa.me/27610490061" target="_blank" rel="noreferrer"
                       className="flex items-center gap-2.5 text-[13px] text-blue-50/55 transition hover:text-white">

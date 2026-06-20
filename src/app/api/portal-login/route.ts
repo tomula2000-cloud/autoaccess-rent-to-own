@@ -144,10 +144,10 @@ export async function POST(request: Request) {
     });
 
     if (user?.isBlocked) {
-      const blockedMsg = "Your%20profile%20has%20been%20suspended.%20Please%20contact%20us%20at%20admin%40autoaccess.co.za%20or%20call%20087%20012%206734.";
+      const blockedMsg = "Your%20profile%20has%20been%20suspended.%20Please%20contact%20us%20at%20admin%40autoaccess.co.za%20or%20call%20021%20211%200080.";
       if (contentType.includes("application/json")) {
         return NextResponse.json(
-          { success: false, message: "Your profile has been suspended. Please contact us at admin@autoaccess.co.za or call 087 012 6734." },
+          { success: false, message: "Your profile has been suspended. Please contact us at admin@autoaccess.co.za or call 021 211 0080." },
           { status: 403 }
         );
       }

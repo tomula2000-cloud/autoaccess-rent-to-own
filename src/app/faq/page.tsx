@@ -153,8 +153,8 @@ export default function FAQPage() {
               <a href="https://wa.me/27610490061" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-500/15 px-5 py-2.5 text-[13px] font-semibold text-emerald-300">
                 WhatsApp Us
               </a>
-              <a href="tel:0870126734" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-5 py-2.5 text-[13px] font-bold text-white">
-                Call 087 012 6734
+              <a href="tel:+27212110080" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#d59758] to-[#e4ad72] px-5 py-2.5 text-[13px] font-bold text-white">
+                Call 021 211 0080
               </a>
               <Link href="/apply" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-[13px] font-semibold text-white">
                 Apply Now
