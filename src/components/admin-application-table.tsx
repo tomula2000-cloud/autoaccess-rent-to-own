@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import AdminWhatsAppButton from "@/components/admin-whatsapp-button";
 import { useMemo, useState } from "react";
 
 type Application = {
@@ -18,6 +19,7 @@ type Application = {
   createdAt: Date | string;
   adminSeen: boolean;
   clientBankSubmittedAt?: Date | string | null;
+  whatsappContactedAt?: Date | string | null;
 };
 
 type Props = {
@@ -260,6 +262,17 @@ export default function AdminApplicationTable({
                   <td className="px-3 py-3">
                     <p className="text-[12px] font-medium text-[#39425d]">{application.phone}</p>
                     <p className="mt-0.5 text-[11px] text-[#68708a]">{formatIdentityType(application.identityType)} · {application.identityNumber || "—"}</p>
+                    <div className="mt-1.5">
+                      <AdminWhatsAppButton
+                        applicationId={application.id}
+                        phone={application.phone}
+                        name={application.fullName}
+                        referenceNumber={application.referenceNumber}
+                        status={application.status}
+                        whatsappContactedAt={application.whatsappContactedAt}
+                        size="sm"
+                      />
+                    </div>
                   </td>
                   <td className="px-3 py-3">
                     <p className="text-[12px] font-medium text-[#39425d]">{application.employmentStatus}</p>

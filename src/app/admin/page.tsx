@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AdminWhatsAppButton from "@/components/admin-whatsapp-button";
 import AdminBulkReminder from "@/components/admin-bulk-reminder";
 import AdminBulkApprovalSms from "@/components/admin-bulk-approval-sms";
 import AdminBulkApprove from "@/components/admin-bulk-approve";
@@ -25,6 +26,7 @@ type AdminApplicationRow = {
   preferredVehicle: string;
   status: string;
   createdAt: Date;
+  whatsappContactedAt?: Date | null;
   adminSeen: boolean;
 };
 
@@ -130,7 +132,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
     select: {
       id: true, referenceNumber: true, fullName: true, email: true, phone: true,
       identityType: true, identityNumber: true, employmentStatus: true,
-      monthlyIncome: true, preferredVehicle: true, status: true, createdAt: true,
+      monthlyIncome: true, preferredVehicle: true, status: true, createdAt: true, whatsappContactedAt: true,
       adminSeen: true, clientBankSubmittedAt: true,
     },
   });

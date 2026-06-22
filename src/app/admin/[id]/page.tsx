@@ -7,6 +7,7 @@ import BlockUserButton from "@/components/block-user-button";
 import SendApprovalSmsButton from "@/components/send-approval-sms-button";
 import PrepareInvoiceForm from "@/components/prepare-invoice-form";
 import AdminStatusForm from "@/components/admin-status-form";
+import AdminWhatsAppButton from "@/components/admin-whatsapp-button";
 import AdminApprovalValidityForm from "@/components/admin-approval-validity-form";
 import AdminEditApplicationForm from "@/components/admin-edit-application-form";
 import InvoiceDownloadButton from "@/components/invoice-download-button";
@@ -270,6 +271,7 @@ export default async function AdminApplicationDetailPage({
       fullName: true,
       email: true,
       phone: true,
+      whatsappContactedAt: true,
       status: true,
       identityType: true,
       identityNumber: true,
@@ -588,7 +590,6 @@ export default async function AdminApplicationDetailPage({
                 {[
                   { label: "Full Name", value: application.fullName },
                   { label: "Email", value: application.email },
-                  { label: "Phone", value: application.phone },
                   { label: "Identity Type", value: formatIdentityType(application.identityType) },
                   { label: "ID / Passport Number", value: application.identityNumber || "Not provided" },
                   { label: "Employment Status", value: application.employmentStatus },
@@ -600,6 +601,21 @@ export default async function AdminApplicationDetailPage({
                     <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{item.value}</p>
                   </div>
                 ))}
+                <div className="px-5 py-3.5 border-b border-[#eef0f7]">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Phone</p>
+                  <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{application.phone}</p>
+                  <div className="mt-2">
+                    <AdminWhatsAppButton
+                      applicationId={application.id}
+                      phone={application.phone}
+                      name={application.fullName}
+                      referenceNumber={application.referenceNumber}
+                      status={application.status}
+                      whatsappContactedAt={application.whatsappContactedAt}
+                      size="md"
+                    />
+                  </div>
+                </div>
                 <div className="col-span-2 border-b border-[#eef0f7] px-5 py-3.5 sm:col-span-2">
                   <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#68708a]">Preferred Vehicle</p>
                   <p className="mt-1 text-[13px] font-semibold text-[#1b2345]">{application.preferredVehicle}</p>

@@ -46,6 +46,7 @@ model Application {
   contractIssuedAt             DateTime?
   contractExpiresAt            DateTime?
   contractCancelledAt          DateTime?
+  whatsappContactedAt           DateTime?
   contractAccepted             Boolean           @default(false)
   contractAcceptedAt           DateTime?
   contractAcceptedName         String?
