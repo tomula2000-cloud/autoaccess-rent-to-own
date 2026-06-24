@@ -38,6 +38,7 @@
   ],
   "exclude": [
     "node_modules",
+    "ui-ux-pro-max-skill",
     "**/*.BACKUP*.tsx",
     "**/*.backup*.tsx",
     "**/*.BACKUP*.ts"

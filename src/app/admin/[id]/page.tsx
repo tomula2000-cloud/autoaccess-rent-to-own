@@ -81,7 +81,7 @@ const DEFAULT_LICENSING_FEE = 1850;
 
 const DEFAULT_CONTRACT_TERMS = `VEHICLE RENT TO OWN CONTRACT
 
-This contract of lease with option to own the vehicle after the 54th instalment (Vehicle Rent-to-Own Contract) is made and executed between Access Holdings (Pty) Ltd T/A Auto Access (Reg No: 1999/002599/10, 22 Eiland St, Eiland Park, Paarl, 7646) as the Rentor/Owner, and the Rentee/Client whose details are recorded in this contract snapshot.
+This contract of lease with option to own the vehicle after the 54th instalment (Vehicle Rent-to-Own Contract) is made and executed between Tokyo Investments (Pty) Ltd T/A Auto Access (Reg No: 1999/002599/10, 22 Eiland St, Eiland Park, Paarl, 7646) as the Rentor/Owner, and the Rentee/Client whose details are recorded in this contract snapshot.
 
 TERMS AND CONDITIONS
 

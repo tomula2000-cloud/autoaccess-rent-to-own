@@ -51,7 +51,7 @@ export default function InvoiceDownloadButton(props: InvoiceDownloadButtonProps)
     <div class="hdr">
       <div>
         <div style="font-size:20px;font-weight:700;color:#c9973a;">Auto Access</div>
-        <div style="font-size:10px;color:#8a9bbf;margin-top:2px;">Access Holdings (Pty) Ltd T/A Auto Access</div>
+        <div style="font-size:10px;color:#8a9bbf;margin-top:2px;">Tokyo Investments (Pty) Ltd T/A Auto Access</div>
         <div style="font-size:11px;color:#8a9bbf;margin-top:8px;line-height:1.6;">22 Eiland St, Eiland Park, Paarl, 7646<br/>021 211 0080 | admin@autoaccess.co.za</div>
       </div>
       <div style="text-align:right;">
@@ -95,7 +95,7 @@ export default function InvoiceDownloadButton(props: InvoiceDownloadButtonProps)
       ${props.invoiceTerms ? `<div class="terms">${props.invoiceTerms}</div>` : ""}
     </div>
     <div class="footer">
-      <span style="font-size:10px;color:#8a9bbf;">Access Holdings (Pty) Ltd T/A Auto Access | Reg No: 1999/002599/10 | admin@autoaccess.co.za</span>
+      <span style="font-size:10px;color:#8a9bbf;">Tokyo Investments (Pty) Ltd T/A Auto Access | Reg No: 1999/002599/10 | admin@autoaccess.co.za</span>
       <span style="font-size:10px;color:#5a6480;">Ref: ${props.invoiceNumber}</span>
     </div>
     </body></html>`);

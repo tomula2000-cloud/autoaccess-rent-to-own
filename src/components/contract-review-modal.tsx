@@ -518,7 +518,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
     <div class="print-header-left">
       <img src="${logoSrc}" alt="Auto Access" class="print-header-logo" />
       <div>
-        <div class="print-company-name">Access Holdings (Pty) Ltd T/A Auto Access</div>
+        <div class="print-company-name">Tokyo Investments (Pty) Ltd T/A Auto Access</div>
         <div class="print-company-reg">Reg No: 1999/002599/10</div>
         <div class="print-company-addr">22 Eiland St, Eiland Park, Paarl, 7646, South Africa<br/>Tel: 021 211 0080 &nbsp;|&nbsp; 021 211 0015 &nbsp;|&nbsp; admin@autoaccess.co.za</div>
       </div>
@@ -537,7 +537,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
   <div class="print-parties">
     <div class="print-party">
       <div class="print-party-label">The Rentor (Owner)</div>
-      <span class="print-party-name">Access Holdings (Pty) Ltd T/A Auto Access</span>
+      <span class="print-party-name">Tokyo Investments (Pty) Ltd T/A Auto Access</span>
       Reg No: 1999/002599/10<br/>
       22 Eiland St, Eiland Park, Paarl, 7646<br/>
       Tel: 021 211 0080 | 021 211 0015<br/>
@@ -579,7 +579,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
   <div class="print-sig-grid">
     <div class="print-sig-block print-stamp-wrap">
       <img src="${origin}/company-stamp.png" alt="" class="print-stamp" />
-      <div class="print-sig-line"><div class="print-sig-role">Rentor — Authorised Signatory</div><div class="print-sig-name">Access Holdings (Pty) Ltd T/A Auto Access</div></div>
+      <div class="print-sig-line"><div class="print-sig-role">Rentor — Authorised Signatory</div><div class="print-sig-name">Tokyo Investments (Pty) Ltd T/A Auto Access</div></div>
       <div style="margin-top:20pt;border-top:1px solid #c8d4e8;padding-top:4px;"><div class="print-sig-role" style="font-size:7pt">Witness</div></div>
     </div>
     <div class="print-sig-block">
@@ -589,7 +589,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
   </div>
   <div class="print-footer">
     <div class="print-gold-bar"></div>
-    Access Holdings (Pty) Ltd T/A Auto Access &nbsp;|&nbsp; Reg No: 1999/002599/10 &nbsp;|&nbsp; admin@autoaccess.co.za &nbsp;|&nbsp; Contract Ref: ${refNum}
+    Tokyo Investments (Pty) Ltd T/A Auto Access &nbsp;|&nbsp; Reg No: 1999/002599/10 &nbsp;|&nbsp; admin@autoaccess.co.za &nbsp;|&nbsp; Contract Ref: ${refNum}
   </div>
 </body></html>`);
     printWindow.document.close();
@@ -654,7 +654,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
                           <div className="flex items-center gap-4">
                             <img src="/autoaccess-logo.png" alt="Auto Access" className="h-16 w-16 shrink-0 rounded-full object-cover" />
                             <div>
-                              <p className="text-[12px] font-bold text-[#1b2345]">Access Holdings (Pty) Ltd T/A Auto Access</p>
+                              <p className="text-[12px] font-bold text-[#1b2345]">Tokyo Investments (Pty) Ltd T/A Auto Access</p>
                               <p className="text-[10px] text-[#68708a]">Reg No: 1999/002599/10</p>
                               <p className="text-[10px] text-[#68708a]">22 Eiland St, Eiland Park, Paarl, 7646</p>
                               <p className="text-[10px] text-[#68708a]">021 211 0080 | 021 211 0015 | admin@autoaccess.co.za</p>
@@ -677,7 +677,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
                           <div className="grid grid-cols-1 gap-0 border border-[#c8d4e8] sm:grid-cols-2">
                             <div className="border-b border-[#c8d4e8] bg-[#e8eef7] p-4 text-[11px] leading-[1.8] sm:border-b-0 sm:border-r">
                               <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.16em] text-[#1b2345]">The Rentor (Owner)</p>
-                              <p className="text-[12px] font-bold text-[#1b2345]">Access Holdings (Pty) Ltd T/A Auto Access</p>
+                              <p className="text-[12px] font-bold text-[#1b2345]">Tokyo Investments (Pty) Ltd T/A Auto Access</p>
                               <p className="text-[#555]">Reg No: 1999/002599/10</p>
                               <p className="text-[#555]">22 Eiland St, Eiland Park, Paarl, 7646</p>
                               <p className="text-[#555]">Tel: 021 211 0080 | 021 211 0015</p>
@@ -754,7 +754,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
                             <img src="/company-stamp.png" alt="" className="pointer-events-none absolute -top-8 right-0 w-[150px] rotate-[-6deg] opacity-90" />
                             <div className="mt-16 border-t-[1.5px] border-[#1b2345] pt-2">
                               <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#68708a]">Rentor — Authorised Signatory</p>
-                              <p className="mt-1 text-[11px] text-[#a3aac0]">Access Holdings (Pty) Ltd T/A Auto Access</p>
+                              <p className="mt-1 text-[11px] text-[#a3aac0]">Tokyo Investments (Pty) Ltd T/A Auto Access</p>
                             </div>
                             <div className="mt-8 border-t border-[#c8d4e8] pt-2">
                               <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#68708a]">Witness</p>
@@ -785,7 +785,7 @@ export default function ContractReviewModal({ contract }: ContractReviewModalPro
 
                         <div className="mt-8 border-t border-[#e1e4ee] pt-4 text-center text-[10px] text-[#a3aac0]">
                           <div className="mx-auto mb-2 h-[3px] w-24 rounded bg-[#c9973a]" />
-                          Access Holdings (Pty) Ltd T/A Auto Access &nbsp;|&nbsp; Reg No: 1999/002599/10 &nbsp;|&nbsp; admin@autoaccess.co.za &nbsp;|&nbsp; Ref: {contract.referenceNumber}
+                          Tokyo Investments (Pty) Ltd T/A Auto Access &nbsp;|&nbsp; Reg No: 1999/002599/10 &nbsp;|&nbsp; admin@autoaccess.co.za &nbsp;|&nbsp; Ref: {contract.referenceNumber}
                         </div>
 
                       </div>

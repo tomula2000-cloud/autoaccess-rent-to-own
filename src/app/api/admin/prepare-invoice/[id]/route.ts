@@ -54,9 +54,11 @@ export async function POST(
     }
 
     // Generate invoice number if first time
+    // Generate a random 6-digit numeric payment reference (no letters).
+    // Once set it never changes so payments always match.
     const invoiceNumber =
       existing.invoiceNumber ||
-      `INV-${existing.referenceNumber}-${String(Date.now()).slice(-4)}`;
+      String(Math.floor(100000 + Math.random() * 900000));
 
     const now = new Date();
     const dueAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
@@ -77,7 +79,7 @@ export async function POST(
         invoiceBankAccount,
         invoiceBankBranch,
         invoiceBankType,
-        invoicePaymentReference: existing.referenceNumber,
+        invoicePaymentReference: invoiceNumber,
         invoiceTerms,
         invoiceSentAt: now,
         status: "INVOICE_ISSUED",

@@ -101,7 +101,7 @@ export async function generateContractPdf(data: ContractPdfData): Promise<Buffer
         .fillColor(NAVY)
         .fontSize(11)
         .font("Helvetica-Bold")
-        .text("Access Holdings (Pty) Ltd T/A Auto Access", headerTextX, 42);
+        .text("Tokyo Investments (Pty) Ltd T/A Auto Access", headerTextX, 42);
       doc
         .fillColor(GRAY)
         .fontSize(7.5)
@@ -179,7 +179,7 @@ export async function generateContractPdf(data: ContractPdfData): Promise<Buffer
       doc.rect(leftX, y, partyWidth, partyHeight).fillColor(LIGHT_BLUE).fill();
       doc.rect(leftX, y, partyWidth, partyHeight).lineWidth(0.5).strokeColor(BORDER).stroke();
       doc.fillColor(NAVY).fontSize(7).font("Helvetica-Bold").text("THE RENTOR (OWNER)", leftX + 10, y + 8, { characterSpacing: 1 });
-      doc.fillColor(NAVY).fontSize(9).font("Helvetica-Bold").text("Access Holdings (Pty) Ltd T/A Auto Access", leftX + 10, y + 22);
+      doc.fillColor(NAVY).fontSize(9).font("Helvetica-Bold").text("Tokyo Investments (Pty) Ltd T/A Auto Access", leftX + 10, y + 22);
       doc.fillColor(DARK).fontSize(8).font("Helvetica")
         .text("Reg No: 1999/002599/10", leftX + 10, y + 36)
         .text("22 Eiland St, Eiland Park, Paarl, 7646", leftX + 10, y + 48)
@@ -327,7 +327,7 @@ export async function generateContractPdf(data: ContractPdfData): Promise<Buffer
 
       doc.moveTo(leftX, sigY).lineTo(leftX + sigW, sigY).lineWidth(1.2).strokeColor(NAVY).stroke();
       doc.fillColor(GRAY).fontSize(7).font("Helvetica-Bold").text("RENTOR — AUTHORISED SIGNATORY", leftX, sigY + 6, { characterSpacing: 1 });
-      doc.fillColor("#a3aac0").fontSize(8).font("Helvetica").text("Access Holdings (Pty) Ltd T/A Auto Access", leftX, sigY + 18);
+      doc.fillColor("#a3aac0").fontSize(8).font("Helvetica").text("Tokyo Investments (Pty) Ltd T/A Auto Access", leftX, sigY + 18);
 
       doc.moveTo(leftX + sigW + 40, sigY).lineTo(leftX + sigW * 2 + 40, sigY).lineWidth(1.2).strokeColor(NAVY).stroke();
       doc.fillColor(GRAY).fontSize(7).font("Helvetica-Bold").text("RENTEE — CLIENT SIGNATURE", leftX + sigW + 40, sigY + 6, { characterSpacing: 1 });
@@ -359,7 +359,7 @@ export async function generateContractPdf(data: ContractPdfData): Promise<Buffer
         const footerY = doc.page.height - 30;
         doc.moveTo(leftX, footerY).lineTo(leftX + pageWidth, footerY).lineWidth(1).strokeColor(GOLD).stroke();
         doc.fillColor("#a3aac0").fontSize(7).font("Helvetica").text(
-          `Access Holdings (Pty) Ltd T/A Auto Access  |  Reg No: 1999/002599/10  |  admin@autoaccess.co.za  |  Ref: ${data.referenceNumber}  |  Page ${i + 1} of ${range.count}`,
+          `Tokyo Investments (Pty) Ltd T/A Auto Access  |  Reg No: 1999/002599/10  |  admin@autoaccess.co.za  |  Ref: ${data.referenceNumber}  |  Page ${i + 1} of ${range.count}`,
           leftX,
           footerY + 6,
           { width: pageWidth, align: "center", lineBreak: false, height: 12 }

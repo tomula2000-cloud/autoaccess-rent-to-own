@@ -1087,7 +1087,7 @@ export async function sendInvoiceEmail({
             <tr>
               <td>
                 <div style="font-size:22px; font-weight:700; color:#c9973a; font-family:Georgia,serif;">Auto Access</div>
-                <div style="font-size:10px; color:#8a9bbf; letter-spacing:0.18em; text-transform:uppercase; margin-top:2px;">Access Holdings (Pty) Ltd T/A Auto Access</div>
+                <div style="font-size:10px; color:#8a9bbf; letter-spacing:0.18em; text-transform:uppercase; margin-top:2px;">Tokyo Investments (Pty) Ltd T/A Auto Access</div>
                 <div style="font-size:11px; color:#8a9bbf; margin-top:10px; line-height:1.7;">
                   22 Eiland St, Eiland Park, Paarl, 7646<br/>
                   021 211 0080 &nbsp;|&nbsp; admin@autoaccess.co.za
@@ -1263,7 +1263,7 @@ export async function sendInvoiceEmail({
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td style="font-size:10px; color:#8a9bbf; line-height:1.6;">
-                Access Holdings (Pty) Ltd T/A Auto Access &nbsp;|&nbsp; Reg No: 1999/002599/10<br/>
+                Tokyo Investments (Pty) Ltd T/A Auto Access &nbsp;|&nbsp; Reg No: 1999/002599/10<br/>
                 22 Eiland St, Eiland Park, Paarl, 7646 &nbsp;|&nbsp; admin@autoaccess.co.za
               </td>
               <td style="text-align:right; font-size:10px; color:#5a6480;">

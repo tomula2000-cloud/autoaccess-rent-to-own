@@ -7,7 +7,7 @@ const DEFAULT_INVOICE_TERMS = `1. Payment deadline. Full payment of the amount r
 
 2. Proof of payment. Upon payment, please email your proof of payment to admin@autoaccess.co.za with your reference number in the subject line, or upload it via your client portal.
 
-3. Payment reference. Always use your contract reference number as the payment reference. Payments received without a valid reference number cannot be allocated and may result in delays.
+3. PAYMENT REFERENCE (VERY IMPORTANT). You MUST use the 6-digit payment reference number shown on this invoice when making your payment. Do NOT use any other number. Payments made with an incorrect or missing reference number CANNOT be matched to your account and WILL result in delays to your vehicle. Please double-check the reference before you pay.
 
 4. Monthly instalments. Your first monthly instalment commences via debit order in the next calendar month following vehicle delivery. The total monthly rental escalates by 4% annually on the anniversary of the delivery date.
 
@@ -55,7 +55,7 @@ export default function PrepareInvoiceForm({
   const totalDue = (parseFloat(deposit || "0") + parseFloat(licensing || "0")).toFixed(2);
 
   const [bankName, setBankName] = useState("Nedbank");
-  const [bankHolder, setBankHolder] = useState("Access Holdings (Pty) Ltd");
+  const [bankHolder, setBankHolder] = useState("Tokyo Group");
   const [bankAccount, setBankAccount] = useState("");
   const [bankBranch, setBankBranch] = useState("");
   const [bankType, setBankType] = useState("Business Cheque");
@@ -221,7 +221,8 @@ export default function PrepareInvoiceForm({
             </div>
             <div>
               <label className={labelClass}>Payment Reference</label>
-              <input value={referenceNumber} readOnly className={`${inputClass} bg-[#f8f6f0] font-bold text-[#c9973a]`} />
+              <input value={invoiceNumber || "Auto-generated 6-digit number on issue"} readOnly className={`${inputClass} bg-[#f8f6f0] font-bold text-[#c9973a]`} />
+              <p className="mt-1 text-[10px] text-[#8a9bbf]">A unique 6-digit payment reference is generated automatically when the invoice is issued. The client must use this exact number when paying.</p>
             </div>
           </div>
         </div>
