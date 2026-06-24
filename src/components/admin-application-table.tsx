@@ -20,6 +20,7 @@ type Application = {
   adminSeen: boolean;
   clientBankSubmittedAt?: Date | string | null;
   whatsappContactedAt?: Date | string | null;
+  invoicePaymentReference?: string | null;
 };
 
 type Props = {
@@ -268,6 +269,7 @@ export default function AdminApplicationTable({
                         phone={application.phone}
                         name={application.fullName}
                         referenceNumber={application.referenceNumber}
+                        paymentReference={application.invoicePaymentReference}
                         status={application.status}
                         whatsappContactedAt={application.whatsappContactedAt}
                         size="sm"

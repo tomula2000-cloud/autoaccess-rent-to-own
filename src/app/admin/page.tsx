@@ -27,6 +27,7 @@ type AdminApplicationRow = {
   status: string;
   createdAt: Date;
   whatsappContactedAt?: Date | null;
+  invoicePaymentReference?: string | null;
   adminSeen: boolean;
 };
 
@@ -132,7 +133,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
     select: {
       id: true, referenceNumber: true, fullName: true, email: true, phone: true,
       identityType: true, identityNumber: true, employmentStatus: true,
-      monthlyIncome: true, preferredVehicle: true, status: true, createdAt: true, whatsappContactedAt: true,
+      monthlyIncome: true, preferredVehicle: true, status: true, createdAt: true, whatsappContactedAt: true, invoicePaymentReference: true,
       adminSeen: true, clientBankSubmittedAt: true,
     },
   });

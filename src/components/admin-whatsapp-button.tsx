@@ -6,6 +6,7 @@ interface AdminWhatsAppButtonProps {
   phone: string;
   name: string;
   referenceNumber: string;
+  paymentReference?: string | null;
   status: string;
   whatsappContactedAt?: Date | string | null;
   size?: "sm" | "md";
@@ -34,7 +35,7 @@ function getContactedLabel(whatsappContactedAt?: Date | string | null) {
   return "Contacted just now";
 }
 
-function getPrefilledMessage(status: string, name: string, ref: string): string {
+function getPrefilledMessage(status: string, name: string, ref: string, payRef: string): string {
   const messages: Record<string, string> = {
     APPLICATION_RECEIVED: "Hi " + name + " \uD83D\uDC4B This is Auto Access.\n\nWe have received your application and your reference number is " + ref + ".\n\nOur team is reviewing your details and will be in touch within 48 hours.\n\nIn the meantime you can track your application through your client portal:\nautoaccess.co.za/portal\n\nIf you have any questions please don't hesitate to reach out.\n\nAuto Access Team",
 
@@ -58,9 +59,9 @@ function getPrefilledMessage(status: string, name: string, ref: string): string 
 
     AWAITING_INVOICE: "Hi " + name + " \uD83D\uDC4B Auto Access here.\n\nYour signed contract for application " + ref + " has been received. Thank you!\n\nYour invoice is being prepared and will be sent to you shortly with full payment details.\n\n\u26A0\uFE0F Please ensure you are ready to make your deposit payment via bank transfer as soon as you receive the invoice. Your vehicle preparation begins only once payment is confirmed.\n\nIf you have any questions in the meantime:\n\uD83D\uDCAC WhatsApp: +27 61 049 0061\n\uD83D\uDCDE +27 21 211 0080 (Mon-Fri 09:00-17:00)\n\nAuto Access Team",
 
-    INVOICE_ISSUED: "Hi " + name + " \uD83D\uDC4B Auto Access here.\n\nYour invoice for application " + ref + " has been issued and is available on your portal:\nautoaccess.co.za/portal\n\n\uD83D\uDCB3 PAYMENT INSTRUCTIONS:\nPlease make your deposit payment via bank transfer using the banking details on your invoice. Include your reference number " + ref + " as your payment reference.\n\n\u26A0\uFE0F IMPORTANT:\n- Payment must be made via bank transfer only \u2014 no cash payments accepted\n- Use your reference number " + ref + " as the payment reference\n- Once payment is confirmed we will begin preparing your vehicle for delivery\n\nYou are almost there! \uD83D\uDE97\n\nQuestions? Contact us:\n\uD83D\uDCAC WhatsApp: +27 61 049 0061\n\uD83D\uDCDE +27 21 211 0080 (Mon-Fri 09:00-17:00)\n\nAuto Access Team",
+    INVOICE_ISSUED: "Hi " + name + " \uD83D\uDC4B Auto Access here.\n\nYour invoice for application " + ref + " has been issued and is available on your portal:\nautoaccess.co.za/portal\n\n\uD83D\uDCB3 PAYMENT INSTRUCTIONS:\nPlease make your deposit payment via bank transfer using the banking details on your invoice.\n\n\u26A0\uFE0F VERY IMPORTANT \u2014 PAYMENT REFERENCE:\nYou MUST use this exact 6-digit payment reference when paying: " + payRef + "\n\n- Do NOT use any other number\n- Payments made without this exact reference CANNOT be matched to your account and WILL delay your vehicle\n- Payment must be made via bank transfer only \u2014 no cash accepted\n- Once payment is confirmed we will begin preparing your vehicle for delivery\n\nYou are almost there! \uD83D\uDE97\n\nQuestions? Contact us:\n\uD83D\uDCAC WhatsApp: +27 61 049 0061\n\uD83D\uDCDE +27 21 211 0080 (Mon-Fri 09:00-17:00)\n\nAuto Access Team",
 
-    AWAITING_PAYMENT: "Hi " + name + " \uD83D\uDC4B Auto Access here.\n\nWe are following up on your application " + ref + ". We have not yet received your deposit payment.\n\nAs a reminder your invoice is available on your portal:\nautoaccess.co.za/portal\n\n\uD83D\uDCB3 Please make your payment via bank transfer and use your reference number " + ref + " as the payment reference.\n\n\u26A0\uFE0F Please note that your vehicle cannot be allocated or prepared for delivery until payment is confirmed. We would hate for you to lose your selected vehicle.\n\nIf you are experiencing any difficulties please contact us immediately:\n\uD83D\uDCAC WhatsApp: +27 61 049 0061\n\uD83D\uDCDE +27 21 211 0080 (Mon-Fri 09:00-17:00)\n\nAuto Access Team",
+    AWAITING_PAYMENT: "Hi " + name + " \uD83D\uDC4B Auto Access here.\n\nWe are following up on your application " + ref + ". We have not yet received your deposit payment.\n\nAs a reminder your invoice is available on your portal:\nautoaccess.co.za/portal\n\n\uD83D\uDCB3 Please make your payment via bank transfer.\n\n\u26A0\uFE0F VERY IMPORTANT \u2014 PAYMENT REFERENCE:\nYou MUST use this exact 6-digit payment reference when paying: " + payRef + "\nPayments without this exact reference CANNOT be matched to your account and WILL delay your vehicle.\n\nYour vehicle cannot be allocated or prepared for delivery until payment is confirmed. We would hate for you to lose your selected vehicle.\n\nIf you are experiencing any difficulties please contact us immediately:\n\uD83D\uDCAC WhatsApp: +27 61 049 0061\n\uD83D\uDCDE +27 21 211 0080 (Mon-Fri 09:00-17:00)\n\nAuto Access Team",
 
     PAYMENT_UNDER_VERIFICATION: "Hi " + name + " \uD83D\uDC4B Auto Access here.\n\nWe have received your payment for application " + ref + " and it is currently being verified by our team.\n\nThis process typically takes 24 to 48 hours. Once confirmed we will begin preparing your vehicle for delivery.\n\nYou can track your progress on your portal:\nautoaccess.co.za/portal\n\nThank you for your patience \u2014 exciting times ahead! \uD83D\uDE97\n\nAuto Access Team",
 
@@ -79,6 +80,7 @@ export default function AdminWhatsAppButton({
   phone,
   name,
   referenceNumber,
+  paymentReference,
   status,
   whatsappContactedAt,
   size = "md",
@@ -91,7 +93,7 @@ export default function AdminWhatsAppButton({
   const contactedLabel = getContactedLabel(contacted);
   const formattedPhone = formatPhone(phone);
   const firstName = name.split(" ")[0];
-  const message = getPrefilledMessage(status, firstName, referenceNumber);
+  const message = getPrefilledMessage(status, firstName, referenceNumber, paymentReference || referenceNumber);
   const waUrl = "https://wa.me/" + formattedPhone + "?text=" + encodeURIComponent(message);
 
   const handleClick = async () => {

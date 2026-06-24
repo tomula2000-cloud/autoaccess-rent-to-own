@@ -610,6 +610,7 @@ export default async function AdminApplicationDetailPage({
                       phone={application.phone}
                       name={application.fullName}
                       referenceNumber={application.referenceNumber}
+                      paymentReference={application.invoicePaymentReference}
                       status={application.status}
                       whatsappContactedAt={application.whatsappContactedAt}
                       size="md"
