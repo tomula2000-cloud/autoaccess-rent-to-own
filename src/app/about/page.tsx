@@ -98,6 +98,78 @@ export default function AboutPage() {
       </section>
 
       {/* ── 5 PILLARS ── */}
+
+      {/* ── Tokyo Group Heritage ── */}
+      <section className="bg-gradient-to-br from-[#0b1532] via-[#102046] to-[#1b3375] px-5 py-20 text-white">
+        <div className="mx-auto max-w-5xl">
+          <div className="text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#f4c89a]">Our Heritage</p>
+            <h2 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">
+              Born from a legacy of trust
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-8 text-white/70">
+              Auto Access did not appear overnight. It grew out of more than two decades of experience in the South African automotive industry — backed by the established name of Tokyo Group.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-6 lg:grid-cols-2 lg:items-stretch">
+            {/* Tokyo Group card */}
+            <div className="flex flex-col rounded-[28px] border border-white/10 bg-white/[0.04] p-8">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#d59758]/20">
+                  <span className="text-xl font-bold text-[#f4c89a]">TG</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f4c89a]">Est. 1999</p>
+                  <h3 className="text-xl font-bold">Tokyo Group</h3>
+                </div>
+              </div>
+              <p className="mt-5 text-[14px] leading-7 text-white/70">
+                Tokyo Group opened its doors in 1999 as an automotive car dealership in South Africa. Over more than twenty years it built a reputation for quality vehicles, honest dealing and a deep understanding of what South African motorists need. Through changing markets and tough economic times, one thing stayed constant — a commitment to helping people get behind the wheel of a car they could trust.
+              </p>
+            </div>
+
+            {/* Auto Access card */}
+            <div className="flex flex-col rounded-[28px] border border-[#d59758]/30 bg-gradient-to-br from-[#d59758]/15 to-transparent p-8">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#2f67de]/25">
+                  <span className="text-xl font-bold text-[#9db8f0]">AA</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9db8f0]">Born 2021</p>
+                  <h3 className="text-xl font-bold">Auto Access</h3>
+                </div>
+              </div>
+              <p className="mt-5 text-[14px] leading-7 text-white/75">
+                By 2021 the team behind Tokyo Group had seen a pattern too many times to ignore — hardworking, employed South Africans being turned away by the banks simply because of their credit history. They knew these were good people who deserved a fair chance. And so Auto Access was born: a rent-to-own company built specifically to open the door that traditional finance kept shut. The dealership heritage of Tokyo Group, reimagined for the people the system left behind.
+              </p>
+            </div>
+          </div>
+
+          {/* Timeline strip */}
+          <div className="mt-10 flex items-center justify-center gap-4 sm:gap-8">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-[#f4c89a] sm:text-3xl">1999</p>
+              <p className="mt-1 text-[11px] font-semibold text-white/50">Tokyo Group founded</p>
+            </div>
+            <div className="h-px w-12 bg-gradient-to-r from-[#f4c89a]/40 to-[#9db8f0]/40 sm:w-24"></div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-[#9db8f0] sm:text-3xl">2021</p>
+              <p className="mt-1 text-[11px] font-semibold text-white/50">Auto Access born</p>
+            </div>
+            <div className="h-px w-12 bg-gradient-to-r from-[#9db8f0]/40 to-emerald-400/40 sm:w-24"></div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-emerald-400 sm:text-3xl">Today</p>
+              <p className="mt-1 text-[11px] font-semibold text-white/50">Serving all 9 provinces</p>
+            </div>
+          </div>
+
+          <p className="mx-auto mt-12 max-w-2xl text-center text-[14px] leading-7 text-white/60">
+            Today Auto Access proudly operates as a division of Tokyo Group — combining the trust and automotive expertise of a dealership established in 1999 with a modern mission to make vehicle ownership possible for every employed South African.
+          </p>
+        </div>
+      </section>
+
       <section className="bg-[#f4f6fb] px-5 py-20">
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
