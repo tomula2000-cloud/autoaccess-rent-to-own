@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SendDeliveryDelayButton from "@/components/send-delivery-delay-button";
 import AdminWhatsAppButton from "@/components/admin-whatsapp-button";
 import AdminBulkReminder from "@/components/admin-bulk-reminder";
 import AdminBulkApprovalSms from "@/components/admin-bulk-approval-sms";
@@ -374,6 +375,8 @@ export default async function AdminPage({ searchParams }: PageProps) {
             {activeStatus !== "ALL" ? <> · <span className="text-[#1b2345]">{formatStatus(activeStatus)}</span></> : null}
             {searchQuery ? <> matching <span className="text-[#1b2345]">"{searchQuery}"</span></> : null}
           </span>
+          <div className="flex items-center gap-2">
+          <SendDeliveryDelayButton />
           {paginatedApplications.length > 0 ? (
             <a
               href={"/api/admin/export-phones?status=" + encodeURIComponent(activeStatus) + "&q=" + encodeURIComponent(searchQuery)}
@@ -384,6 +387,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
               Download Numbers ({filteredTotal})
             </a>
           ) : null}
+          </div>
         </div>
 
         {/* Applications Table */}
