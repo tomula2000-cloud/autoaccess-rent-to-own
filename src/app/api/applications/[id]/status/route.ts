@@ -223,6 +223,27 @@ export async function POST(
       contractAccepted?: boolean;
       contractAcceptedAt?: Date | null;
       contractAcceptedName?: string | null;
+      selectedVehicleId?: string | null;
+      contractVehicleTitle?: string | null;
+      contractVehicleImage?: string | null;
+      contractVehicleYearModel?: string | null;
+      contractVehicleMileage?: string | null;
+      contractVehicleTransmission?: string | null;
+      contractVehicleFuelType?: string | null;
+      contractDepositAmount?: string | null;
+      contractLicensingFee?: string | null;
+      contractMonthlyPayment?: string | null;
+      contractTotalPayableNow?: string | null;
+      contractTerm?: string | null;
+      contractClientFullName?: string | null;
+      contractClientEmail?: string | null;
+      contractClientPhone?: string | null;
+      contractClientIdentityType?: string | null;
+      contractClientIdentityNumber?: string | null;
+      contractClientAddress?: string | null;
+      contractTerms?: string | null;
+      contractSignatureImage?: string | null;
+      contractSignedAt?: Date | null;
     } = {
       status: newStatus as (typeof VALID_STATUSES)[number],
     };
@@ -289,6 +310,35 @@ export async function POST(
     if (newStatus === "CONTRACT_CANCELLED") {
       updateData.approvalValidUntil = null;
       updateData.contractCancelledAt = new Date();
+      // Clear the selected vehicle and full contract snapshot so the
+      // client gets a completely clean slate to reselect a vehicle.
+      updateData.selectedVehicleId = null;
+      updateData.contractVehicleTitle = null;
+      updateData.contractVehicleImage = null;
+      updateData.contractVehicleYearModel = null;
+      updateData.contractVehicleMileage = null;
+      updateData.contractVehicleTransmission = null;
+      updateData.contractVehicleFuelType = null;
+      updateData.contractDepositAmount = null;
+      updateData.contractLicensingFee = null;
+      updateData.contractMonthlyPayment = null;
+      updateData.contractTotalPayableNow = null;
+      updateData.contractTerm = null;
+      updateData.contractClientFullName = null;
+      updateData.contractClientEmail = null;
+      updateData.contractClientPhone = null;
+      updateData.contractClientIdentityType = null;
+      updateData.contractClientIdentityNumber = null;
+      updateData.contractClientAddress = null;
+      updateData.contractTerms = null;
+      updateData.contractRequestedAt = null;
+      updateData.contractIssuedAt = null;
+      updateData.contractExpiresAt = null;
+      updateData.contractAccepted = false;
+      updateData.contractAcceptedAt = null;
+      updateData.contractAcceptedName = null;
+      updateData.contractSignatureImage = null;
+      updateData.contractSignedAt = null;
     }
 
     if (
