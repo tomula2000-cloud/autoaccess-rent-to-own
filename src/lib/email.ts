@@ -848,6 +848,51 @@ export async function sendApplicationReceivedEmail({
   });
 }
 
+
+export async function sendDeliveryDelayEmail({
+  to,
+  fullName,
+  referenceNumber,
+}: ApplicationEmailParams) {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not set.");
+  }
+  const portalUrl = getPortalUrl();
+  return resend.emails.send({
+    from: "Auto Access <noreply@autoaccess.co.za>",
+    replyTo: "support@autoaccess.co.za",
+    to,
+    subject: "Important: Your Auto Access Delivery Update",
+    html: getEmailShell({
+      eyebrow: "Auto Access Rent To Own",
+      heading: "A quick update on your delivery",
+      motto: "Driven by progress. Built on trust.",
+      intro: `Hi ${fullName}, we wanted to reach out personally with an update on your vehicle delivery.`,
+      detailHtml: `
+        <div style="margin:24px 0; border:1px solid #e5e7eb; background:#f9fafb; border-radius:16px; padding:20px;">
+          <p style="margin:0 0 14px; font-size:15px; line-height:1.7; color:#4b5563;">
+            Due to the mass protests currently taking place across South Africa this week, our transport partner made the decision to temporarily pause vehicle deliveries. This was a safety precaution &mdash; for the vehicles being transported, and for our drivers, some of whom are foreign nationals and faced heightened risk during the unrest.
+          </p>
+          <p style="margin:0 0 14px; font-size:15px; line-height:1.7; color:#4b5563;">
+            We do not take this decision lightly, and we know you have been looking forward to your vehicle. Please know that:
+          </p>
+          <ul style="margin:0 0 14px; padding-left:20px; font-size:15px; line-height:1.9; color:#4b5563;">
+            <li>Your vehicle is safe and secure</li>
+            <li>Your order and payment are unaffected</li>
+            <li>Delivery is being rescheduled to next Tuesday &mdash; we will confirm the exact date before the end of this week</li>
+          </ul>
+          <p style="margin:0; font-size:15px; line-height:1.7; color:#4b5563;">
+            We will follow up with your confirmed delivery date shortly. Thank you for your patience and understanding during this time.
+          </p>
+        </div>
+      `,
+      portalUrl,
+      to,
+      referenceNumber,
+    }),
+  });
+}
+
 export async function sendStatusUpdateEmail({
   to,
   fullName,

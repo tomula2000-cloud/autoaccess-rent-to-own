@@ -18,6 +18,7 @@ import PortalMobileFooterBar from "@/components/portal-mobile/portal-mobile-foot
 import { portalMobileThemes } from "@/components/portal-mobile/portal-mobile-theme";
 import { getCompactCountdown } from "@/components/portal-mobile/portal-mobile-utils";
 import PortalStatusPoller from "@/components/portal-status-poller";
+import DeliveryDelayNotice from "@/components/delivery-delay-notice";
 import PortalDashboardHero from "@/components/portal-dashboard/portal-dashboard-hero";
 
 type StatusLogItem = {
@@ -279,6 +280,14 @@ export default async function MobilePortalDashboardView() {
   const isAwaitingPayment = application.status === "AWAITING_PAYMENT";
   const isPaymentUnderVerification = application.status === "PAYMENT_UNDER_VERIFICATION";
   const isPaymentConfirmed = application.status === "PAYMENT_CONFIRMED";
+  const DELIVERY_NOTICE_CUTOFF = new Date("2026-07-06T23:59:59+02:00");
+  const DELIVERY_NOTICE_START = new Date("2026-06-25T00:00:00+02:00");
+  const showDeliveryNotice =
+    application.status === "PAYMENT_CONFIRMED" &&
+    application.referenceNumber !== "AA69528" &&
+    application.clientPaymentCompletedAt &&
+    new Date(application.clientPaymentCompletedAt) >= DELIVERY_NOTICE_START &&
+    new Date() <= DELIVERY_NOTICE_CUTOFF;
   const isCompleted = application.status === "COMPLETED";
   const isDeclined = application.status === "DECLINED";
   const isContractExpired = application.status === "CONTRACT_EXPIRED";
@@ -412,6 +421,7 @@ export default async function MobilePortalDashboardView() {
   return (
     <PortalMobileShell>
       <PortalStatusPoller currentStatus={application.status} referenceNumber={application.referenceNumber} />
+      {showDeliveryNotice ? <DeliveryDelayNotice /> : null}
       <PortalDashboardHero
         status={application.status}
         fullName={application.fullName}

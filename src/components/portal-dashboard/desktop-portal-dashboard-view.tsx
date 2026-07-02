@@ -10,6 +10,7 @@ import ProofOfPaymentUpload from "@/components/proof-of-payment-upload";
 import PortalDashboardHero from "@/components/portal-dashboard/portal-dashboard-hero";
 import ContractSignFlow from "@/components/contract-sign-flow";
 import PortalStatusCookie from "@/components/portal-status-cookie";
+import DeliveryDelayNotice from "@/components/delivery-delay-notice";
 import PaymentCountdownCard from "@/components/payment-countdown-card";
 import BankingFormInline from "@/components/banking-form-inline";
 import BankingReminderPopup from "@/components/banking-reminder-popup";
@@ -490,6 +491,15 @@ export default async function ClientPortalPage() {
   const statusInfo = getStatusExplanation(application.status);
   const statusLabel = getStatusLabel(application.status);
   const progress = getProgressState(application.status);
+  const DELIVERY_NOTICE_CUTOFF = new Date("2026-07-06T23:59:59+02:00");
+  const DELIVERY_NOTICE_START = new Date("2026-06-25T00:00:00+02:00");
+  const now = new Date();
+  const showDeliveryNotice =
+    application.status === "PAYMENT_CONFIRMED" &&
+    application.referenceNumber !== "AA69528" &&
+    application.clientPaymentCompletedAt &&
+    new Date(application.clientPaymentCompletedAt) >= DELIVERY_NOTICE_START &&
+    now <= DELIVERY_NOTICE_CUTOFF;
   const approvalValidUntilIso = application.approvalValidUntil
     ? new Date(application.approvalValidUntil).toISOString()
     : null;
@@ -591,6 +601,7 @@ export default async function ClientPortalPage() {
     return (
       <main className="relative min-h-screen bg-[#f4f6fb] px-4 py-6 sm:px-6 md:py-10">
         <PortalStatusCookie status={application.status} />
+      {showDeliveryNotice ? <DeliveryDelayNotice /> : null}
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(213,151,88,0.08),transparent_55%),radial-gradient(circle_at_bottom_left,rgba(47,103,222,0.06),transparent_50%)]" />
         </div>
